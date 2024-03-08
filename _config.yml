@@ -117,4 +117,6 @@ theme: hexo-theme-aircloud
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
-  type: ''
+  type: git
+  repo: https://github.com/kehaha-5/kehaha-5.github.io
+  branch: [gh-pages]
