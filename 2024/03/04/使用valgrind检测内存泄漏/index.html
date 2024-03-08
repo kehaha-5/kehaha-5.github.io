@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang=zh-CN>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="website">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        valgrind检测内存泄漏--udp-transfiler - kehaha-5
+        
+    </title>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/aircloud.css">
+
+    
+<link rel="stylesheet" href="/css/gitment.css">
+
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_28hi1hpxx24.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i> Just record it ! </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar radius">
+            <img src="/img/avatar.jpg" />
+        </div>
+        <div class="name">
+            <i>我要料多的</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li >
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li >
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li >
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li >
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+            <li>
+                <a id="search">
+                    <i class="iconfont icon-sousuo1"></i>
+                    <span>搜索</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%A3%80%E6%B5%8B%E5%91%BD%E4%BB%A4-%E5%B7%A5%E5%85%B7"><span class="toc-text">检测命令 &amp;&amp; 工具</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A3%80%E6%B5%8B%E5%91%BD%E4%BB%A4"><span class="toc-text">检测命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E5%B7%A5%E5%85%B7"><span class="toc-text">查看工具</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E8%BF%87%E7%A8%8B"><span class="toc-text">测试过程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%A3%80%E6%B5%8B%E5%88%86%E6%9E%90"><span class="toc-text">检测分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E6%9E%90%E7%BB%93%E6%9E%9C"><span class="toc-text">分析结果</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E4%BF%AE%E5%A4%8D"><span class="toc-text">问题修复</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#ack-AckSet-setCbByAck"><span class="toc-text">ack::AckSet::setCbByAck</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#downfile-interruption"><span class="toc-text">downfile::interruption</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%87%8D%E6%96%B0%E6%B5%8B%E8%AF%95"><span class="toc-text">重新测试</span></a></li></ol></li></ol>
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-bg" id="search-bg"></div>
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input"/>
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+
+        <div class="index-about-mobile">
+            <i> Just record it ! </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        valgrind检测内存泄漏--udp-transfiler
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2024-03-04 14:11:24</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#c++" title="c++">c++</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#valgrind" title="valgrind">valgrind</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#massif" title="massif">massif</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#内存泄漏" title="内存泄漏">内存泄漏</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+</span>
+    </div>
+    <div class="post-content ">
+        <blockquote>
+<p>最近写了一个<a target="_blank" rel="noopener" href="https://github.com/kehaha-5/udp-transfiler">c++项目</a>来学习，发现客户端在多次下载文件后内存只增不减，因此想利用 <code>valgrind</code> 来对我写的客户端进行内存泄漏检测</p>
+</blockquote>
+<h1 id="检测命令-工具"><a href="#检测命令-工具" class="headerlink" title="检测命令 &amp;&amp; 工具"></a>检测命令 &amp;&amp; 工具</h1><h2 id="检测命令"><a href="#检测命令" class="headerlink" title="检测命令"></a>检测命令</h2><p>我这次主要是使用 valgrind 中的 <a target="_blank" rel="noopener" href="https://valgrind.org/docs/manual/ms-manual.html">massif</a> 来进行内存泄漏检测</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">valgrind --tool=massif --time-unit=ms --detailed-freq=1 --massif-out-file=./valgrindCheck/massif.out.client ./build/TRANFILER_CLIENT </span><br><span class="line"><span class="comment"># --time-unit=&lt;i|ms|B&gt; [default: i] 可以说是记录的颗粒度，如果程序运行很快就用B</span></span><br><span class="line"><span class="comment"># The time unit used for the profiling. There are three possibilities: instructions executed (i), which is good for most cases; real (wallclock) time (ms, i.e. milliseconds), which is sometimes useful; and bytes allocated/deallocated on the heap and/or stack (B), which is useful for very short-run programs, and for testing purposes, because it is the most reproducible across different machines.</span></span><br><span class="line"><span class="comment">#--detailed-freq=&lt;n&gt; [default: 10] 每多少次间隔记录一次详细信息</span></span><br><span class="line"><span class="comment"># Frequency of detailed snapshots. With --detailed-freq=1, every snapshot is detailed.</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="查看工具"><a href="#查看工具" class="headerlink" title="查看工具"></a>查看工具</h2><p>生成出来的<code>massif.out.client</code>文件，使用 <a target="_blank" rel="noopener" href="https://apps.kde.org/zh-cn/massif-visualizer/">massif-visualizer</a> 来查看</p>
+<h1 id="测试过程"><a href="#测试过程" class="headerlink" title="测试过程"></a>测试过程</h1><p>客户端下载一个文件，然后再下载另一个，以此反复几次</p>
+<h1 id="检测分析"><a href="#检测分析" class="headerlink" title="检测分析"></a>检测分析</h1><p>首先按照正常结构来说，客户端内存使用会在下载文件的时候上升(保存下载记录)，在下载完成后内存使用会下降</p>
+<h3 id="分析结果"><a href="#分析结果" class="headerlink" title="分析结果"></a>分析结果</h3><p><img src="/2024/03/04/%E4%BD%BF%E7%94%A8valgrind%E6%A3%80%E6%B5%8B%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/res.png" alt="结果"></p>
+<p>通过上图可以知道正常的内存使用都是在使用完后会被销毁的，即图中的有上下坡线的内存，而存在内存泄漏的内存的内存就只有不断的上升</p>
+<p><img src="/2024/03/04/%E4%BD%BF%E7%94%A8valgrind%E6%A3%80%E6%B5%8B%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/analysis-1.png" alt="分析-1"></p>
+<p>打开一个进行详情的分析</p>
+<ol>
+<li>程序中用的是<code>protobuf</code>进行消息序列化的，因此带有<code>google::protobuf</code>的内存信息，可以通过在下载结束的析构函数里面添加 <a target="_blank" rel="noopener" href="https://protobuf.dev/getting-started/cpptutorial/#:~:text=Also%20notice%20the,clean%20up%20everything">google::protobuf::ShutdownProtobufLibrary()</a> 去解决 在本项目中只要主线程有下载或者发送数据就会用到protobuf所以就不做处理了</li>
+<li>只有 <code>ack::AckSet::setCbByAck</code>是在程序中与 protobuf 不太相关的</li>
+<li>虽然 <code>downfile::interruption</code> 跟 protobuf 相关但是这个是本次下载数据的临时保存，因此在下载完也应该被释放</li>
+</ol>
+<h3 id="问题修复"><a href="#问题修复" class="headerlink" title="问题修复"></a>问题修复</h3><h4 id="ack-AckSet-setCbByAck"><a href="#ack-AckSet-setCbByAck" class="headerlink" title="ack::AckSet::setCbByAck"></a><code>ack::AckSet::setCbByAck</code></h4><p>查看对应的代码</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//调用段代码</span></span><br><span class="line">_ackSetPtr-&gt;<span class="built_in">setCbByAck</span>(ack, std::<span class="built_in">bind</span>(&amp;DownloaderEvents::timerExce, <span class="keyword">this</span>, ack, resMsg));</span><br><span class="line"><span class="comment">//对应方法</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">AckSet::setCbByAck</span><span class="params">(u_long&amp; ack, Cb cb)</span> </span>&#123;</span><br><span class="line">    <span class="function">std::lock_guard&lt;std::mutex&gt; <span class="title">lock_guard</span><span class="params">(_ackMsgMapLock)</span></span>;</span><br><span class="line">    <span class="keyword">auto</span> it = _ackMsgMap.<span class="built_in">find</span>(ack);</span><br><span class="line">    <span class="keyword">if</span> (it == _ackMsgMap.<span class="built_in">end</span>()) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    it-&gt;second = _timerPtr-&gt;<span class="built_in">runEvery</span>(config::ClientConfig::<span class="built_in">getInstance</span>().<span class="built_in">getPacketsTimerOut</span>(), cb);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//通过查看方法发现调用了添加定时器的代码</span></span><br><span class="line"><span class="function">uint <span class="title">Timer::runEvery</span><span class="params">(u_long timerout, TimerCb cb)</span> </span>&#123;</span><br><span class="line">    TimerEvenSharedPtr even = std::<span class="built_in">make_shared</span>&lt;timerEven&gt;();</span><br><span class="line">    even-&gt;timeout = timerout;</span><br><span class="line">    even-&gt;interval = <span class="literal">true</span>;</span><br><span class="line">    even-&gt;cd = cb;</span><br><span class="line">    <span class="built_in">runAfter</span>(even);</span><br><span class="line">    uint index = _currTimerIndex++;</span><br><span class="line">    _allTimerEven[index] = even;</span><br><span class="line">    <span class="keyword">return</span> index;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中 <code>std::unordered_map&lt;unsigned int, std::shared_ptr&lt;timer::timerEven&gt;</code> 就是 <code>_allTimerEven</code> 一个用于保存当前定时器中所有定时任务的成员对象，但是我在一定条件下会取消该定时任务，我查找到了对应的代码</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">cancelTimerEven</span><span class="params">(uint index)</span> </span>&#123; _allTimerEven[index].<span class="built_in">reset</span>(); &#125;;</span><br><span class="line"><span class="comment">//通过释放shared_ptr 可以导致在获取超时even(weak_ptr)时 无法通过 lock() 获取其对象 从而得出该定时事件已经被取消</span></span><br></pre></td></tr></table></figure>
+
+<p>是的，在这个方法里面只有释放了该定时器对应的 <code>TimerEvenSharedPtr even</code> 的指针，没有释放对应 <code>index</code> 的下标的空间，修改后的代码</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">cancelTimerEven</span><span class="params">(uint index)</span> </span>&#123;</span><br><span class="line">    _allTimerEven[index].<span class="built_in">reset</span>();</span><br><span class="line">    _allTimerEven.<span class="built_in">erase</span>(index);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h4 id="downfile-interruption"><a href="#downfile-interruption" class="headerlink" title="downfile::interruption"></a><code>downfile::interruption</code></h4><p>这个是用于保存 <code>protobuf</code> 的数据，其中 <code>SingleBlockInfo</code> 是一个 <code>repeated</code> 类型的数据，因此可以用只能指针的方式，在下载结束时条用其<code>clear()</code>和<code>reset()</code>方法来释放内存</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//下载结束要判断是否下载完成，未完成则保存中断数据到文件，完成的就刷新出正常的文件名出来</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">Downloader::flushAllInterruptionData</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">auto</span> &amp;it : _downfileInterruptionInfos) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!it.second-&gt;<span class="built_in">isfinish</span>()) &#123;</span><br><span class="line">            <span class="built_in">flushInterruptionData</span>(it.first);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="built_in">delFlushInterruptionFile</span>(it.first);</span><br><span class="line">        &#125;</span><br><span class="line">        it.second-&gt;<span class="built_in">clear_info</span>();</span><br><span class="line">        it.second.<span class="built_in">reset</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    _downfileInterruptionInfos.<span class="built_in">clear</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="重新测试"><a href="#重新测试" class="headerlink" title="重新测试"></a>重新测试</h2><p>经过上述的代码修改后，重新运行了一下程序，得到了以下结果</p>
+<p><img src="/2024/03/04/%E4%BD%BF%E7%94%A8valgrind%E6%A3%80%E6%B5%8B%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/res2.png" alt="结果-2"></p>
+<p>当观察内存详细时发现 <code>ack::AckSet::setCbByAck</code> 已经不见了，也就是说内存被正常释放了</p>
+<p><img src="/2024/03/04/%E4%BD%BF%E7%94%A8valgrind%E6%A3%80%E6%B5%8B%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/analysis-2-1.png" alt="分析-2-1"></p>
+<p>其中的<code>downfile::interruption</code>在一次下载完成后也出现了明显的内存使用下降</p>
+<p><img src="/2024/03/04/%E4%BD%BF%E7%94%A8valgrind%E6%A3%80%E6%B5%8B%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/analysis-2-2.png" alt="分析-2-2"></p>
+<p><img src="/2024/03/04/%E4%BD%BF%E7%94%A8valgrind%E6%A3%80%E6%B5%8B%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/analysis-2-3.png" alt="分析-2-3"></p>
+<p>内存泄漏分析至此就完成了 ✌✌✌</p>
+
+        
+        <br />
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+        <div id="lv-container"></div>
+        <div class="giscus"></div>
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+        <li>
+            <a target="_blank"  href="https://github.com/kehaha-5">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-github"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+    </ul>
+    
+    <p>
+        <span id="busuanzi_container_site_pv">
+            <span id="busuanzi_value_site_pv"></span>PV
+        </span>
+        <span id="busuanzi_container_site_uv">
+            <span id="busuanzi_value_site_uv"></span>UV
+        </span>
+        Created By <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>  Theme <a target="_blank" rel="noopener" href="https://github.com/aircloud/hexo-theme-aircloud">AirCloud</a></p>
+</footer>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = "search.json"
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="/js/index.js"></script>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+</html>
+
+<!-- fancybox support -->
+
+    <!-- for theme: default is false -->
+    <!-- for page: default is true -->
+    
+<script src="/js/fancybox/jquery.fancybox.min.js" key="fancybox_js"></script>
+<script src="/js/fancybox/wrapImage.js" key="wrap_image_js"></script>
+
+        
+<link rel="stylesheet" href="/js/fancybox/jquery.fancybox.min.css" key="fancybox_css">
+
+            
