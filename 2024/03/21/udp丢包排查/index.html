@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang=zh-CN>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="website">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        udp丢包排查 - kehaha-5
+        
+    </title>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/aircloud.css">
+
+    
+<link rel="stylesheet" href="/css/gitment.css">
+
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_28hi1hpxx24.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i> Just record it ! </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar radius">
+            <img src="/img/avatar.jpg" />
+        </div>
+        <div class="name">
+            <i>我要料多的</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li >
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li >
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li >
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li >
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+            <li>
+                <a id="search">
+                    <i class="iconfont icon-sousuo1"></i>
+                    <span>搜索</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0"><span class="toc-text">问题描述</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E5%A4%8D%E7%8E%B0"><span class="toc-text">问题复现</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C"><span class="toc-text">测试结果</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90"><span class="toc-text">问题分析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BD%91%E5%8D%A1%E9%A9%B1%E5%8A%A8%E4%B8%A2%E5%8C%85"><span class="toc-text">网卡驱动丢包</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E6%A0%B8%E7%BC%93%E5%86%B2%E5%8C%BA%E4%B8%A2%E5%8C%85"><span class="toc-text">内核缓冲区丢包</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%A7%E8%83%BD%E4%B8%8D%E8%B6%B3%E5%AF%BC%E8%87%B4%E4%B8%A2%E5%8C%85"><span class="toc-text">性能不足导致丢包</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95"><span class="toc-text">解决方法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A2%9E%E5%8A%A0%E7%BC%93%E5%86%B2%E5%8C%BA"><span class="toc-text">增加缓冲区</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%8D%E6%AC%A1%E6%B5%8B%E8%AF%95"><span class="toc-text">再次测试</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%A9%E5%B1%95"><span class="toc-text">扩展</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%9D%E8%80%83%F0%9F%A4%94"><span class="toc-text">思考🤔</span></a></li></ol></li></ol>
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-bg" id="search-bg"></div>
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input"/>
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+
+        <div class="index-about-mobile">
+            <i> Just record it ! </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        udp丢包排查
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2024-03-21 21:50:17</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#c++" title="c++">c++</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#linux" title="linux">linux</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#udp" title="udp">udp</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+</span>
+    </div>
+    <div class="post-content ">
+        <blockquote>
+<p>最近在写项目的时候，发现了udp丢包情况，特此记录一下</p>
+</blockquote>
+<h1 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h1><ul>
+<li>在使用<strong>本地网卡</strong>发送多个udp包时，会出现丢包问题<ul>
+<li>客户端发送1000个udp包</li>
+<li>服务端只收到900多个包</li>
+</ul>
+</li>
+</ul>
+<h1 id="问题复现"><a href="#问题复现" class="headerlink" title="问题复现"></a>问题复现</h1><p>我写了 server.cc 和 client.cc 来复现这个问题</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/kehaha-5/kehaha-5.github.io/blob/main/source/_posts/2024-03-21-udp%E4%B8%A2%E5%8C%85%E6%8E%92%E6%9F%A5/udp_dorp_packets_test/udp/server.cc">&#x2F;udp&#x2F;server.cc</a> </p>
+<p><a target="_blank" rel="noopener" href="https://github.com/kehaha-5/kehaha-5.github.io/blob/main/source/_posts/2024-03-21-udp%E4%B8%A2%E5%8C%85%E6%8E%92%E6%9F%A5/udp_dorp_packets_test/udp/client.cc">&#x2F;udp&#x2F;client.cc</a></p>
+<p>通过上述代码可知道，客户端将会每秒发送一定数量的udp包给服务端，服务端就是每秒显示它所接收到的包数量</p>
+<h1 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h1><p><img src="/2024/03/21/udp%E4%B8%A2%E5%8C%85%E6%8E%92%E6%9F%A5/1-1.png" alt="SER"></p>
+<p><img src="/2024/03/21/udp%E4%B8%A2%E5%8C%85%E6%8E%92%E6%9F%A5/1-2.png" alt="CLI"></p>
+<h1 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h1><p>我们从上图中可以看到当客户端每秒发送1000个udp包时，服务端只接受到了不到1000，那剩下没有接收到的包去哪里了🤔，这时我们可以利用<code>sar</code>来进行网络分析</p>
+<p><img src="/2024/03/21/udp%E4%B8%A2%E5%8C%85%E6%8E%92%E6%9F%A5/1-3.png" alt="CLI"></p>
+<p>我们可以看到 <code> odgm/s</code> 跟我们client每秒发送的包的数量一致，<code>idgm/s</code>表示的时每秒送达的包数量，但是不跟<code>odgm/s</code>相同，而没有收到的包数量刚好等于<code> idgmerr/s</code> 那么这个<code> idgmerr/s</code>所表示的是什么捏，通过查询发现解释如下 <a target="_blank" rel="noopener" href="https://www.man7.org/linux/man-pages/man1/sar.1.html#:~:text=idgmerr/s%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20The%20number%20of%20received%20UDP%20datagrams%20per%20second%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20that%20could%20not%20be%20delivered%20for%20reasons%20other%20than%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20the%20lack%20of%20an%20application%20at%20the%20destination%20port%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5BudpInErrors%5D.">查看</a></p>
+<blockquote>
+<p>idgmerr&#x2F;s<br>The number of received UDP datagrams per second that could not be delivered for reasons other than the lack of an application at the destination port [udpInErrors].</p>
+</blockquote>
+<p>但是udp丢包的原因有很多</p>
+<ul>
+<li>网卡驱动丢包</li>
+<li>内核缓冲区丢包</li>
+<li>性能不足导致丢包<ul>
+<li>cpu满载</li>
+<li>free mem太少</li>
+<li>….</li>
+</ul>
+</li>
+</ul>
+<p>为了更近一步地分析是什么原因导致的丢包，利用 <code>netstat </code> 进行分析</p>
+<h2 id="网卡驱动丢包"><a href="#网卡驱动丢包" class="headerlink" title="网卡驱动丢包"></a>网卡驱动丢包</h2><p>利用<code>netstat -i</code>看查看网卡信息</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Kernel Interface table</span><br><span class="line">Iface      MTU    RX-OK RX-ERR RX-DRP RX-OVR    TX-OK TX-ERR TX-DRP TX-OVR Flg</span><br><span class="line">eth0      1432      517      0      0 0           378      0      0      0 BMRU</span><br><span class="line">lo       65536    48420      0      0 0         48420      0      0      0 LRU</span><br></pre></td></tr></table></figure>
+
+<p>我们是在本地进行测试的，也就是说用的是本地网卡(lo)，但是通过查看发现它们的<code>RX-ERR</code> <code> RX-DRP</code> <code>RX-OVR</code> 都为0，即网卡驱动没有丢包</p>
+<h2 id="内核缓冲区丢包"><a href="#内核缓冲区丢包" class="headerlink" title="内核缓冲区丢包"></a>内核缓冲区丢包</h2><p>利用<code>netstat -su</code>来查看信息</p>
+<ul>
+<li><p>在开始测试前记录一次</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Udp:</span><br><span class="line">    18 packets received</span><br><span class="line">    0 packets to unknown port received</span><br><span class="line">    0 packet receive errors</span><br><span class="line">    18 packets sent</span><br><span class="line">    0 receive buffer errors</span><br><span class="line">    0 send buffer errors</span><br><span class="line">UdpLite:</span><br><span class="line">IpExt:</span><br><span class="line">    InOctets: 25796930</span><br><span class="line">    OutOctets: 25722753</span><br><span class="line">    InNoECTPkts: 1414</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在执行测试后再查看信息</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">IcmpMsg:</span><br><span class="line">    InType3: 1</span><br><span class="line">    OutType3: 1</span><br><span class="line">Udp:</span><br><span class="line">    11257 packets received</span><br><span class="line">    1 packets to unknown port received</span><br><span class="line">    373 packet receive errors</span><br><span class="line">    11631 packets sent</span><br><span class="line">    373 receive buffer errors</span><br><span class="line">    0 send buffer errors</span><br><span class="line">    IgnoredMulti: 1</span><br><span class="line">UdpLite:</span><br><span class="line">IpExt:</span><br><span class="line">    InBcastPkts: 1</span><br><span class="line">    InOctets: 616541094</span><br><span class="line">    OutOctets: 616446301</span><br><span class="line">    InBcastOctets: 229</span><br><span class="line">    InNoECTPkts: 17160</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>再结合<code>sar</code> 的信息进行查看</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">Linux 5.15.133.1-microsoft-standard-WSL2 (DESKTOP-4GO6ORF)      03/22/24        _x86_64_        (8 CPU)</span><br><span class="line"></span><br><span class="line">10:56:08       idgm/s    odgm/s  noport/s idgmerr/s</span><br><span class="line">10:56:09         0.00      0.00      0.00      0.00</span><br><span class="line">10:56:10         0.00      0.00      0.00      0.00</span><br><span class="line">10:56:11       993.00   1000.00      0.00      7.00</span><br><span class="line">10:56:12       926.00   1000.00      0.00     74.00</span><br><span class="line">10:56:13       931.00   1000.00      0.00     69.00</span><br><span class="line">10:56:14       943.00   1000.00      0.00     57.00</span><br><span class="line">10:56:15       980.00   1000.00      0.00     20.00</span><br><span class="line">10:56:16       983.00   1002.00      0.00     19.00</span><br><span class="line">10:56:17       981.00   1000.00      0.00     19.00</span><br><span class="line">10:56:18       957.00   1000.00      0.00     43.00</span><br><span class="line">10:56:19       935.00   1000.00      0.00     65.00</span><br><span class="line">10:56:20         0.00      0.00      0.00      0.00</span><br><span class="line">10:56:21         0.00      0.00      0.00      0.00</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>从上述中，发现 <code>packet receive errors</code>  统计到的丢包数量跟   <code>idgmerr/s</code> 的数量差不多，因此可以确定丢包的<a target="_blank" rel="noopener" href="https://linux-tips.com/t/udp-packet-drops-and-packet-receive-error-difference/237#:~:text=There%20are%2038491,or%20kernel%20side">原因</a></p>
+<ul>
+<li>udp packet header corruption or checksum problems</li>
+<li>packet receive buffer problems in application or kernel side</li>
+</ul>
+<p>在看到<code>receive buffer errors</code>的数量和 <code>packet receive errors</code>一致可以确定丢包的原因就是 packet receive buffer problems in application or kernel side</p>
+<h2 id="性能不足导致丢包"><a href="#性能不足导致丢包" class="headerlink" title="性能不足导致丢包"></a>性能不足导致丢包</h2><p>在测试时执行<code>sar</code>命令查看cpu 和 内存使用情况</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">sar -u 1</span><br><span class="line">Linux 5.15.133.1-microsoft-standard-WSL2 (DESKTOP-4GO6ORF)      03/22/24        _x86_64_        (8 CPU)</span><br><span class="line"></span><br><span class="line">14:38:19        CPU     %user     %nice   %system   %iowait    %steal     %idle</span><br><span class="line">14:38:20        all      0.37      0.00      0.87      0.00      0.00     98.75</span><br><span class="line">14:38:21        all      0.25      0.00      0.25      0.00      0.00     99.50</span><br><span class="line">14:38:22        all      1.38      0.00      1.63      0.00      0.00     96.99</span><br><span class="line">14:38:23        all      0.25      0.00      0.87      0.12      0.00     98.75</span><br><span class="line">14:38:24        all      0.38      0.00      0.63      0.00      0.00     99.00</span><br><span class="line">14:38:25        all      0.25      0.00      0.50      0.00      0.00     99.25</span><br><span class="line">14:38:26        all      0.25      0.00      1.12      0.00      0.00     98.63</span><br><span class="line">14:38:27        all      0.25      0.00      0.25      0.00      0.00     99.50</span><br><span class="line">14:38:28        all      0.37      0.00      1.12      0.00      0.00     98.50</span><br><span class="line">14:38:29        all      0.25      0.00      0.25      0.00      0.00     99.50</span><br><span class="line">14:38:30        all      0.63      0.00      0.38      0.00      0.00     99.00</span><br><span class="line">14:38:31        all      0.13      0.00      0.13      0.00      0.00     99.75</span><br><span class="line">14:38:32        all      0.25      0.00      0.75      0.00      0.00     99.00</span><br><span class="line">14:38:33        all      0.12      0.00      0.25      0.00      0.00     99.62</span><br><span class="line">14:38:34        all      0.63      0.00      0.38      0.25      0.00     98.75</span><br><span class="line">14:38:35        all      0.13      0.00      0.25      0.00      0.00     99.62</span><br><span class="line">14:38:36        all      0.25      0.00      1.12      0.00      0.00     98.62</span><br><span class="line">14:38:37        all      0.25      0.00      0.00      0.00      0.00     99.75</span><br><span class="line">14:38:38        all      0.37      0.00      0.62      0.00      0.00     99.00</span><br><span class="line">14:38:39        all      0.00      0.00      0.13      0.88      0.00     99.00</span><br><span class="line">^C</span><br><span class="line">Average:        all      0.34      0.00      0.58      0.06      0.00     99.02</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">sar -r 1 -h</span><br><span class="line">Linux 5.15.133.1-microsoft-standard-WSL2 (DESKTOP-4GO6ORF)      03/22/24        _x86_64_        (8 CPU)</span><br><span class="line"></span><br><span class="line">14:38:20    kbmemfree   kbavail kbmemused  %memused kbbuffers  kbcached  kbcommit   %commit  kbactive   kbinact   kbdirty</span><br><span class="line">14:38:21         3.9G      4.4G      1.1G     19.4%     52.5M    688.2M      1.4G     21.0%    286.4M      1.3G      0.0k</span><br><span class="line">14:38:22         3.9G      4.4G      1.1G     19.4%     52.5M    688.2M      1.4G     21.0%    286.5M      1.3G      0.0k</span><br><span class="line">14:38:23         3.9G      4.4G      1.1G     19.4%     52.5M    688.2M      1.4G     21.0%    286.5M      1.3G      4.0k</span><br><span class="line">14:38:24         3.9G      4.4G      1.1G     19.5%     52.5M    688.2M      1.4G     21.0%    286.5M      1.3G     16.0k</span><br><span class="line">14:38:25         3.9G      4.4G      1.1G     19.5%     52.5M    688.2M      1.4G     21.0%    286.5M      1.3G    108.0k</span><br><span class="line">14:38:26         3.9G      4.4G      1.1G     19.4%     52.5M    688.2M      1.4G     21.0%    286.5M      1.3G      0.0k</span><br><span class="line">14:38:27         3.9G      4.4G      1.1G     19.5%     52.5M    688.2M      1.4G     21.0%    286.5M      1.3G      0.0k</span><br><span class="line">14:38:28         3.8G      4.4G      1.1G     19.5%     52.5M    688.2M      1.4G     21.0%    286.5M      1.3G      0.0k</span><br><span class="line">14:38:29         3.9G      4.4G      1.1G     19.5%     52.5M    688.2M      1.4G     21.0%    286.5M      1.3G     16.0k</span><br><span class="line">14:38:30         3.9G      4.4G      1.1G     19.4%     52.5M    688.2M      1.4G     21.0%    286.5M      1.3G     16.0k</span><br><span class="line">14:38:31         3.9G      4.4G      1.1G     19.4%     52.5M    688.2M      1.4G     21.0%    286.5M      1.3G     16.0k</span><br><span class="line">14:38:32         3.9G      4.4G      1.1G     19.4%     52.5M    688.2M      1.4G     21.0%    286.5M      1.3G     16.0k</span><br><span class="line">14:38:33         3.9G      4.4G      1.1G     19.4%     52.5M    688.2M      1.4G     21.0%    286.5M      1.3G     16.0k</span><br><span class="line">14:38:34         3.8G      4.4G      1.1G     19.6%     52.5M    688.2M      1.4G     21.0%    286.5M      1.3G     16.0k</span><br><span class="line">14:38:35         3.9G      4.4G      1.1G     19.4%     52.5M    688.2M      1.4G     21.0%    286.5M      1.3G     16.0k</span><br><span class="line">14:38:36         3.9G      4.4G      1.1G     19.5%     52.5M    688.2M      1.4G     21.0%    286.5M      1.3G     20.0k</span><br><span class="line">14:38:37         3.8G      4.4G      1.1G     19.5%     52.5M    688.2M      1.4G     20.8%    286.5M      1.3G     20.0k</span><br><span class="line">14:38:38         3.9G      4.4G      1.1G     19.5%     52.5M    688.2M      1.4G     20.7%    286.5M      1.3G     96.0k</span><br><span class="line">14:38:39         3.8G      4.4G      1.1G     19.5%     52.5M    688.2M      1.4G     20.7%    286.5M      1.3G     96.0k</span><br><span class="line">14:38:40         3.8G      4.4G      1.1G     19.5%     52.5M    688.2M      1.4G     20.7%    286.5M      1.3G     96.0k</span><br><span class="line">^C</span><br><span class="line"></span><br><span class="line">Average:         3.9G      4.4G      1.1G     19.5%     52.5M    688.2M      1.4G     21.0%    286.5M      1.3G     28.4k</span><br></pre></td></tr></table></figure>
+
+<p>通过上面查看并没有什么问题，因此性能问题被排除</p>
+<h1 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h1><h2 id="增加缓冲区"><a href="#增加缓冲区" class="headerlink" title="增加缓冲区"></a>增加缓冲区</h2><p>在查询<code>socket</code>时，发现它有一个option <a target="_blank" rel="noopener" href="https://www.man7.org/linux/man-pages/man7/socket.7.html#:~:text=SO_RCVBUF%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20Sets%20or,option%20is%20256.">SO_RCVBUF</a></p>
+<blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">SO_RCVBUF</span><br><span class="line">             Sets or gets the maximum socket receive buffer in bytes.</span><br><span class="line">             The kernel doubles this value (to allow space for</span><br><span class="line">             bookkeeping overhead) when it is set using setsockopt(2),</span><br><span class="line">             and this doubled value is returned by getsockopt(2).  The</span><br><span class="line">             default value is set by the</span><br><span class="line">             /proc/sys/net/core/rmem_default file, and the maximum</span><br><span class="line">             allowed value is set by the /proc/sys/net/core/rmem_max</span><br><span class="line">             file.  The minimum (doubled) value for this option is 256.</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>也就是说我们可以通过修改这个值去增大接收端的buff，但是最大值不能超过 <code>/proc/sys/net/core/rmem_max</code>，当然我们也是可以通过命令来修改<code>/proc/sys/net/core/rmem_max</code>的值</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sysctl -w net.core.rmem_max=26214400 <span class="comment"># 设置为 25M</span></span><br></pre></td></tr></table></figure>
+
+<p>若觉得要用命令修改太麻烦我们也可以使用 <a target="_blank" rel="noopener" href="https://www.man7.org/linux/man-pages/man7/socket.7.html#:~:text=SO_RCVBUFFORCE%20(since%20Linux%202.6.14)%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20Using%20this%20socket%20option%2C%20a%20privileged%20(CAP_NET_ADMIN)%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20process%20can%20perform%20the%20same%20task%20as%20SO_RCVBUF%2C%20but%20the%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20rmem_max%20limit%20can%20be%20overridden.">SO_RCVBUFFORCE</a> 需要root权限执行</p>
+<blockquote>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SO_RCVBUFFORCE (since Linux 2.6.14)</span><br><span class="line">       Using this socket option, a privileged (CAP_NET_ADMIN)</span><br><span class="line">       process can perform the same task as SO_RCVBUF, but the</span><br><span class="line">       rmem_max limit can be overridden.</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>我这里通过在代码中使用<code>setsockopt()</code>和<code>SO_RCVBUFFORCE</code>增加程序中socket的接收缓冲区大小 </p>
+<p><a target="_blank" rel="noopener" href="https://github.com/kehaha-5/kehaha-5.github.io/blob/main/source/_posts/2024-03-21-udp%E4%B8%A2%E5%8C%85%E6%8E%92%E6%9F%A5/udp_dorp_packets_test/udp/server_increase_recv_buff.cc">&#x2F;udp&#x2F;server_increase_recv_buff.cc</a></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> socket_opt_recv_buff = <span class="number">0</span>;</span><br><span class="line"><span class="type">socklen_t</span> socket_opt_recv_buff_len = <span class="built_in">sizeof</span>(socket_opt_recv_buff);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">getsockopt</span>(socketfd, SOL_SOCKET, SO_RCVBUF, &amp;socket_opt_recv_buff,</span><br><span class="line">               &amp;socket_opt_recv_buff_len) == <span class="number">-1</span>) &#123;</span><br><span class="line">  <span class="built_in">perror</span>(<span class="string">&quot;getsockopt&quot;</span>);</span><br><span class="line">  <span class="built_in">exit</span>(EXIT_FAILURE);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="再次测试"><a href="#再次测试" class="headerlink" title="再次测试"></a>再次测试</h1><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">kehaha@DESKTOP-4GO6ORF:~/projects/study/blogsDemos/epoll_read_even_and_sendto$ sudo ./build/SER_INC 134217728 #128M</span><br><span class="line">setsocket opt recvbuff :134217728</span><br><span class="line">socket recvbuff :268435456</span><br><span class="line">udp bind is listenning ... port 8888</span><br><span class="line">hasRevc:0</span><br><span class="line">hasRevc:0</span><br><span class="line">hasRevc:10000</span><br><span class="line">hasRevc:20000</span><br><span class="line">hasRevc:30000</span><br><span class="line">hasRevc:40000</span><br><span class="line">hasRevc:50000</span><br><span class="line">hasRevc:60000</span><br><span class="line">hasRevc:70000</span><br><span class="line">hasRevc:80000</span><br><span class="line">hasRevc:90000</span><br><span class="line">hasRevc:100000</span><br><span class="line">hasRevc:110000</span><br><span class="line">hasRevc:120000</span><br><span class="line">hasRevc:130000</span><br><span class="line">hasRevc:140000</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">kehaha@DESKTOP-4GO6ORF:~/projects/study/blogsDemos/epoll_read_even_and_sendto$ ./build/CLI 10000 # 1000*64kb ~ 62.5M</span><br><span class="line">hasSendPacketsNum:10000</span><br><span class="line">hasSendPacketsNum:20000</span><br><span class="line">hasSendPacketsNum:30000</span><br><span class="line">hasSendPacketsNum:40000</span><br><span class="line">hasSendPacketsNum:50000</span><br><span class="line">hasSendPacketsNum:60000</span><br><span class="line">hasSendPacketsNum:70000</span><br><span class="line">hasSendPacketsNum:80000</span><br><span class="line">hasSendPacketsNum:90000</span><br><span class="line">hasSendPacketsNum:100000</span><br><span class="line">hasSendPacketsNum:110000</span><br><span class="line">hasSendPacketsNum:120000</span><br><span class="line">hasSendPacketsNum:130000</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">kehaha@DESKTOP-4GO6ORF:~$ sudo sar -n UDP 1</span><br><span class="line">Linux 5.15.133.1-microsoft-standard-WSL2 (DESKTOP-4GO6ORF)      03/22/24        _x86_64_        (8 CPU)</span><br><span class="line"></span><br><span class="line">14:54:45       idgm/s    odgm/s  noport/s idgmerr/s</span><br><span class="line">14:54:46     10000.00  10000.00      0.00      0.00</span><br><span class="line">14:54:47     10000.00  10000.00      0.00      0.00</span><br><span class="line">14:54:48     10000.00  10000.00      0.00      0.00</span><br><span class="line">14:54:49     10000.00  10000.00      0.00      0.00</span><br><span class="line">14:54:50     10000.00  10000.00      0.00      0.00</span><br><span class="line">14:54:51     10000.00  10000.00      0.00      0.00</span><br><span class="line">14:54:52     10000.00  10000.00      0.00      0.00</span><br><span class="line">14:54:53     10000.00  10000.00      0.00      0.00</span><br><span class="line">14:54:54     10000.00  10000.00      0.00      0.00</span><br><span class="line">14:54:55     10000.00  10000.00      0.00      0.00</span><br><span class="line">14:54:56     10000.00  10000.00      0.00      0.00</span><br><span class="line">14:54:57     10000.00  10000.00      0.00      0.00</span><br><span class="line">14:54:58         0.00      0.00      0.00      0.00</span><br><span class="line">14:54:59         0.00      0.00      0.00      0.00</span><br><span class="line">^C</span><br><span class="line"></span><br><span class="line">Average:      8571.43   8571.43      0.00      0.00</span><br></pre></td></tr></table></figure>
+
+<p>通过上述观察，这个丢包问题就被解决了✌</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><h2 id="扩展"><a href="#扩展" class="headerlink" title="扩展"></a>扩展</h2><ul>
+<li><p>我这次主要问题是接收端的buff不足导致丢包，如果是发送端可以使用以下方法解决</p>
+<ul>
+<li><p>修改 <code>/proc/sys/net/core/wmem_max</code> 和 <code>/proc/sys/net/core/wmem_default</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sysctl -w net.core.wmem_max=26214400 <span class="comment"># 设置为 25M</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用<code>setsockopt()</code></p>
+<ul>
+<li><p><a target="_blank" rel="noopener" href="https://www.man7.org/linux/man-pages/man7/socket.7.html#:~:text=SO_SNDBUF%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20Sets%20or,option%20is%202048.">SO_SNDBUF </a></p>
+<blockquote>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">SO_SNDBUF</span><br><span class="line">              Sets or gets the maximum socket send buffer in bytes.  The</span><br><span class="line">              kernel doubles this value (to allow space for bookkeeping</span><br><span class="line">              overhead) when it is set using setsockopt(2), and this</span><br><span class="line">              doubled value is returned by getsockopt(2).  The default</span><br><span class="line">              value is set by the /proc/sys/net/core/wmem_default file</span><br><span class="line">              and the maximum allowed value is set by the</span><br><span class="line">              /proc/sys/net/core/wmem_max file.  The minimum (doubled)</span><br><span class="line">              value for this option is 2048.</span><br></pre></td></tr></table></figure>
+</blockquote>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://www.man7.org/linux/man-pages/man7/socket.7.html#:~:text=SO_SNDBUFFORCE%20(since%20Linux%202.6.14)%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20Using%20this%20socket%20option%2C%20a%20privileged%20(CAP_NET_ADMIN)%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20process%20can%20perform%20the%20same%20task%20as%20SO_SNDBUF%2C%20but%20the%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20wmem_max%20limit%20can%20be%20overridden.">SO_SNDBUFFORCE </a></p>
+<blockquote>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SO_SNDBUFFORCE (since Linux 2.6.14)</span><br><span class="line">       Using this socket option, a privileged (CAP_NET_ADMIN)</span><br><span class="line">       process can perform the same task as SO_SNDBUF, but the</span><br><span class="line">       wmem_max limit can be overridden.</span><br></pre></td></tr></table></figure></blockquote>
+</li>
+</ul>
+</li>
+<li><p>使用<code>epoll</code>函数去监听<a target="_blank" rel="noopener" href="https://www.man7.org/linux/man-pages/man7/socket.7.html#:~:text=The%20user%20can%20then%20wait%20for%20various%20events%20via%0A%20%20%20%20%20%20%20poll(2)%20or%20select(2).">POLLOUT</a>事件</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">The user can then wait for various events via poll(2) or select(2).</span><br><span class="line">       ┌───────────────────────────────────────────────────────────────┐</span><br><span class="line">       │                          I/O events                           │</span><br><span class="line">       ├────────────┬───────────┬──────────────────────────────────────┤</span><br><span class="line">		.....</span><br><span class="line">       ├────────────┼───────────┼──────────────────────────────────────┤</span><br><span class="line">       │ Write      │ POLLOUT   │ Socket has enough send buffer space  │</span><br><span class="line">       │            │           │ for writing new data.                │</span><br><span class="line">       ├────────────┼───────────┼──────────────────────────────────────┤</span><br><span class="line">		.....</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p>当然我在网上看其它文章里面也有写到可以通过增加 <code>net.core.netdev_max_backlog</code> 参数来解决，但是有些文章却不是这样认为 <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/617397417">日常排障：UDP 丢包问题 - 知乎 (zhihu.com)</a></p>
+</li>
+</ul>
+<h2 id="思考🤔"><a href="#思考🤔" class="headerlink" title="思考🤔"></a>思考🤔</h2><p>为什么tcp下的链接就不会在出现服务器丢包捏</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://linux-tips.com/t/udp-packet-drops-and-packet-receive-error-difference/237#:~:text=Unlike%20TCP%2C%20UDP%20protocol%20does%20not%20have%20built%2Din%20flow%2Dcontrol%20capabilities">Unlike TCP, UDP protocol does not have built-in flow-control capabilities</a></p>
+</blockquote>
+<p>为了验证这个说法，我写了两个文件来测试</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/kehaha-5/kehaha-5.github.io/blob/main/source/_posts/2024-03-21-udp%E4%B8%A2%E5%8C%85%E6%8E%92%E6%9F%A5/udp_dorp_packets_test/tcp/server.cc">&#x2F;tcp&#x2F;server.cc</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/kehaha-5/kehaha-5.github.io/blob/main/source/_posts/2024-03-21-udp%E4%B8%A2%E5%8C%85%E6%8E%92%E6%9F%A5/udp_dorp_packets_test/tcp/client.cc">&#x2F;tcp&#x2F;client.cc</a></p>
+<p>同样是客户端每秒发送指定包，最后客户端统计所有发送的数据大小，服务端统计接收到的数据大小</p>
+<ul>
+<li><p>测试前统计网卡信息</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">kehaha@DESKTOP-4GO6ORF:~$ netstat -i</span><br><span class="line">Kernel Interface table</span><br><span class="line">Iface      MTU    RX-OK RX-ERR RX-DRP RX-OVR    TX-OK TX-ERR TX-DRP TX-OVR Flg</span><br><span class="line">eth0      1432      686      0      0 0           682      0      0      0 BMRU</span><br><span class="line">lo       65536   914976      0      0 0        914976      0      0      0 LRU</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>开始测试</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">kehaha@DESKTOP-4GO6ORF:~/projects/study/blogsDemos/udp_dorp_packets_test$ ./build/TCP_SER</span><br><span class="line">tcp bind is listenning ... port 9999</span><br><span class="line">hasRevc:10016 hasRevcSize:655070000</span><br><span class="line">hasRevc:20075 hasRevcSize:1310140000</span><br><span class="line">hasRevc:30127 hasRevcSize:1965210000</span><br><span class="line">hasRevc:40184 hasRevcSize:2620280000</span><br><span class="line">hasRevc:50215 hasRevcSize:3275350000</span><br><span class="line">hasRevc:60246 hasRevcSize:3930420000</span><br><span class="line">hasRevc:70293 hasRevcSize:4585490000</span><br><span class="line">hasRevc:80335 hasRevcSize:5240560000</span><br><span class="line">hasRevc:90338 hasRevcSize:5895630000</span><br><span class="line">hasRevc:100351 hasRevcSize:6550700000</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">kehaha@DESKTOP-4GO6ORF:~/projects/study/blogsDemos/udp_dorp_packets_test$ ./build/TCP_CLI 10000</span><br><span class="line">hasSendPacketsNum:10000</span><br><span class="line">hasSendPacketsNum:20000</span><br><span class="line">hasSendPacketsNum:30000</span><br><span class="line">hasSendPacketsNum:40000</span><br><span class="line">hasSendPacketsNum:50000</span><br><span class="line">hasSendPacketsNum:60000</span><br><span class="line">hasSendPacketsNum:70000</span><br><span class="line">hasSendPacketsNum:80000</span><br><span class="line">hasSendPacketsNum:90000</span><br><span class="line">hasSendPacketsNum:100000</span><br><span class="line">total hasSendPacketsNum:100000 hasSendSize:6550700000</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看网卡信息</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">kehaha@DESKTOP-4GO6ORF:~$ netstat -i</span><br><span class="line">Kernel Interface table</span><br><span class="line">Iface      MTU    RX-OK RX-ERR RX-DRP RX-OVR    TX-OK TX-ERR TX-DRP TX-OVR Flg</span><br><span class="line">eth0      1432      696      0      0 0           695      0      0      0 BMRU</span><br><span class="line">lo       65536  1139780      0      0 0       1139780      0      0      0 LRU</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看<code>sar信息</code></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">kehaha@DESKTOP-4GO6ORF:~$ sar -n TCP 1</span><br><span class="line">Linux 5.15.133.1-microsoft-standard-WSL2 (DESKTOP-4GO6ORF)      03/22/24        _x86_64_        (8 CPU)</span><br><span class="line"></span><br><span class="line">17:11:11     active/s passive/s    iseg/s    oseg/s</span><br><span class="line">17:11:12         0.00      0.00     12.00     12.00</span><br><span class="line">17:11:13         0.00      0.00      6.00      6.00</span><br><span class="line">17:11:14         1.00      1.00  18462.00  18462.00 //开始传送数据</span><br><span class="line">17:11:15         0.00      0.00  17274.00  17274.00</span><br><span class="line">17:11:16         0.00      0.00  15761.00  15761.00</span><br><span class="line">17:11:17         0.00      0.00  24753.00  24753.00</span><br><span class="line">17:11:18         0.00      0.00  20243.00  20243.00</span><br><span class="line">17:11:19         0.00      0.00  15196.00  15196.00</span><br><span class="line">17:11:20         0.00      0.00  18340.00  18340.00</span><br><span class="line">17:11:21         0.00      0.00  19880.00  19880.00</span><br><span class="line">17:11:22         0.00      0.00  28062.00  28062.00</span><br><span class="line">17:11:23         0.00      0.00  18363.00  18363.00 //结束传送数据</span><br><span class="line">17:11:24         0.00      0.00     13.00     13.00</span><br><span class="line">17:11:25         0.00      0.00     10.00     10.00</span><br><span class="line">^C</span><br><span class="line"></span><br><span class="line">Average:         0.07      0.07  14026.79  14026.79</span><br></pre></td></tr></table></figure>
+
+<p>由此可知，即使client每秒发送10000个包，但是因为tcp拥有流控制和窗口滑动机制（根据可用的win size来调整每个包的大小），所以不像udp真就每秒发送10000个64k的包导致接收端的buff不足从而引起丢包</p>
+</li>
+</ul>
+
+        
+        <br />
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+        <div id="lv-container"></div>
+        <div class="giscus"></div>
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+        <li>
+            <a target="_blank"  href="https://github.com/kehaha-5">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-github"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+    </ul>
+    
+    <p>
+        <span id="busuanzi_container_site_pv">
+            <span id="busuanzi_value_site_pv"></span>PV
+        </span>
+        <span id="busuanzi_container_site_uv">
+            <span id="busuanzi_value_site_uv"></span>UV
+        </span>
+        Created By <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>  Theme <a target="_blank" rel="noopener" href="https://github.com/aircloud/hexo-theme-aircloud">AirCloud</a></p>
+</footer>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = "search.json"
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="/js/index.js"></script>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+</html>
+
+<!-- fancybox support -->
+
+    <!-- for theme: default is false -->
+    <!-- for page: default is true -->
+    
+<script src="/js/fancybox/jquery.fancybox.min.js" key="fancybox_js"></script>
+<script src="/js/fancybox/wrapImage.js" key="wrap_image_js"></script>
+
+        
+<link rel="stylesheet" href="/js/fancybox/jquery.fancybox.min.css" key="fancybox_css">
+
+            
