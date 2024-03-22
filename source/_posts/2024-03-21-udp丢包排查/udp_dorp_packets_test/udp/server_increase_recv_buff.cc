@@ -37,6 +37,7 @@ int main(int argc, const char **argv) {
 
   std::cout << "setsocket opt recvbuff :" << recv_buff << std::endl;
 
+  //修改recvbuff
   if (setsockopt(socketfd, SOL_SOCKET, SO_RCVBUFFORCE, (char *)&recv_buff,
                  sizeof(int)) == -1) {
     perror("setsockopt");
