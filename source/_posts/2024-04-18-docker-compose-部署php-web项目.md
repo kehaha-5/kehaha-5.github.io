@@ -1,5 +1,5 @@
 ---
-title: docker-compose 部署web项目
+title: docker-compose 部署php-web项目
 date: 2024-04-18 18:26:21
 tags: php thinkphp6 vue2 nvm docker docker-compose
 ---
