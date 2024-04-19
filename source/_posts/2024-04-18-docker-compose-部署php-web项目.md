@@ -169,7 +169,7 @@ server {
 
 ## php
 
-这里的php我使用的是 `php:7.3-fpm-alpine3.14` 为什么捏，在 `dockerhub` 的 `php voerview` 中有如下解释。[官方文档](https://hub.docker.com/_/php#:~:text=php%3A%3Cversion%3E%2Dfpm,this%20image%20variant.)
+这里的php我使用的是 `php:7.3-fpm-alpine3.14` 为什么捏，在 `dockerhub` 的 `php overview` 中有如下解释。[官方文档](https://hub.docker.com/_/php#:~:text=php%3A%3Cversion%3E%2Dfpm,this%20image%20variant.)
 ```text
 php:<version>-fpm
 This variant contains PHP-FPM, which is a FastCGI implementation for PHP. See the PHP-FPM website for more information about PHP-FPM.
