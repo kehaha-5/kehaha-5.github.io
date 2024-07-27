@@ -88,7 +88,7 @@ Use the `composer fund` command to find out more!
 
 # 编写部署文件
 
-因为整个项目要用到`mysql` `nginx` `php-fpm`因此利用docker-compose来进行项目部署。首先编写docker-compose.yaml，把要利用到的镜像和端口都进行配置，这里不用挂载是因为这个项目只是跑来测试，不是正式上线，所以就没有使用挂载了。
+因为整个项目要用到`mysql` `nginx` `php-fpm`因此利用docker-compose来进行项目部署。首先编写docker-compose.yaml，把要利用到的镜像和端口都进行配置，这里不用挂载是因为这个项目只是跑来测试，不是正式上线，所以就没有使用volume进行文件挂载了。
 
 ## docker-compose.yaml
 ```yaml
@@ -129,7 +129,6 @@ services:
 ```
 这里可能就有问题了，所有容器虽然再同一个compose中，但是容器自己是如何访问对方的捏。其实这里我定义了一个`web_network`那么它们都在这个网络里面的话，可以直接通过容器名来访问对方。
 [官方文档](https://docs.docker.com/compose/networking/#:~:text=For%20example%2C%20suppose,is%20running%20locally.)
-这里的话因为这个项目只是临时部署起来进行演示的，所以就没有使用**volume**对数据进行挂载
 
 ## nginx 
 这里单独编写nginx的Dockerfile是因为要进行一些配置
@@ -221,17 +220,10 @@ ENV MYSQL_USER="xxxx" #创建用户，一般我项目部署的话不会使用roo
 ENV MYSQL_PASSWORD="xxxxx" #创建用户的密码
 ENV MYSQL_ROOT_PASSWORD="xxxx" # root用户的密码
 
-
-#This variable is optional and allows you to specify the name of a database to be created on image startup. 
-#If a user/password was supplied (see below) then that user will be granted superuser access (corresponding to GRANT ALL⁠) to this database
-#Initializing a fresh instance
-
+# 官方文档
+# https://hubgw.docker.com/_/mysql#:~:text=Initializing%20a%20fresh,the%20MYSQL_DATABASE%20variable.
+# https://hubgw.docker.com/_/mysql#:~:text=MYSQL_DATABASE,to%20this%20database.
 # ENV MYSQL_DATABASE="xxxx" 可以创建指定名称的数据库，并且在执行时sql时会默认使用该数据库
-
-#When a container is started for the first time, a new database with the specified name will be created and initialized with the provided configuration variables.
-#Furthermore, it will execute files with extensions .sh, .sql and .sql.gz that are found in /docker-entrypoint-initdb.d. Files will be executed in alphabetical order. 
-#You can easily populate your mysql services by mounting a SQL dump into that directory⁠ and provide custom images⁠ with contributed data. SQL files will be imported 
-#by default to the database specified by the MYSQL_DATABASE variable.
 
 EXPOSE 3306
 ```
