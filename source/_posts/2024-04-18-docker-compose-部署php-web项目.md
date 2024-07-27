@@ -257,10 +257,6 @@ CREATE TABLE `xxx` (
 
 .........
 ```
-sh
-``` sh
-mysql -uroot -pxxxxx < /docker-entrypoint-initdb.d/xxxx.sql
-```
 ok，所有配置文件编写好了，可以进行部署了。
 
 ## 部署
