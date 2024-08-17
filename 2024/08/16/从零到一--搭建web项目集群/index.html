@@ -175,7 +175,7 @@
 </blockquote>
 <p>使用方法:</p>
 <blockquote>
-<p><code>git clone https://github.com/kehaha-5/k8s_demo</code><br><code>cd k8s_demo</code><br><code>git fetch --all</code><br><code>git checkout -b tag 1.0</code></p>
+<p><code>git clone https://github.com/kehaha-5/k8s_demo</code><br>  <code>cd k8s_demo</code><br>  <code>git fetch --all</code><br>  <code>git checkout -b tag 1.0</code></p>
 </blockquote>
 <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><ol>
 <li>部署mysql集群</li>
@@ -231,7 +231,7 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">root@node-m:~/k8s/dashoboard# kubectl create token -n kubernetes-dashboard xxxx</span><br></pre></td></tr></table></figure>
 <p><img src="/2024/08/16/%E4%BB%8E%E9%9B%B6%E5%88%B0%E4%B8%80--%E6%90%AD%E5%BB%BAweb%E9%A1%B9%E7%9B%AE%E9%9B%86%E7%BE%A4/1.png" alt="dashoard-web"></p>
 <h2 id="NFS存储挂载"><a href="#NFS存储挂载" class="headerlink" title="NFS存储挂载"></a>NFS存储挂载</h2><p>在所有应用部署前，先部署外部存储介质</p>
-<p>首先先要安装 [csi-driver-nfs](<a target="_blank" rel="noopener" href="https://github.com/kubernetes-csi/csi-driver-nfs">kubernetes-csi&#x2F;csi-driver-nfs: This driver allows Kubernetes to access NFS server on Linux node. (github.com)</a>) 这个是nfs的卷插件，不安装的话是无法使用nfs相关卷功能</p>
+<p>首先先要安装 <a target="_blank" rel="noopener" href="https://github.com/kubernetes-csi/csi-driver-nfs">csi-driver-nfs</a> 这个是nfs的卷插件，不安装的话是无法使用nfs相关卷功能</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">root@node-m:~/k8s# cat ./nfs/storageClass.yaml</span><br><span class="line">apiVersion: storage.k8s.io/v1</span><br><span class="line">kind: StorageClass</span><br><span class="line">metadata:</span><br><span class="line">  name: nfs</span><br><span class="line">provisioner: nfs.csi.k8s.io</span><br><span class="line">parameters:</span><br><span class="line">  server: 192.168.1.125</span><br><span class="line">  share: /mnt/nfs_share</span><br><span class="line"><span class="meta prompt_">  # </span><span class="language-bash">csi.storage.k8s.io/provisioner-secret is only needed <span class="keyword">for</span> providing mountOptions <span class="keyword">in</span> DeleteVolume</span></span><br><span class="line"><span class="meta prompt_">  # </span><span class="language-bash">csi.storage.k8s.io/provisioner-secret-name: <span class="string">&quot;mount-options&quot;</span></span></span><br><span class="line"><span class="meta prompt_">  # </span><span class="language-bash">csi.storage.k8s.io/provisioner-secret-namespace: <span class="string">&quot;default&quot;</span></span></span><br><span class="line">reclaimPolicy: Retain #因为要保存redis 和 mysql的数据 所以使用Retain 当pvc或pv被删除以后仍然可以保留数据</span><br><span class="line">volumeBindingMode: Immediate</span><br><span class="line">mountOptions:</span><br><span class="line">  - nfsvers=4</span><br></pre></td></tr></table></figure>
 
 <p>这里使用的是<code> Dynamic Volume Provisioning</code> 这样就不需要每个<code>pvc</code>都声名一个<code>pv</code>了</p>
@@ -247,7 +247,7 @@
 <p><code>StatefulSet</code>创建的pod名称是有顺序的，pod-index，index会从0开始，这里规定pod-0为主节点</p>
 </blockquote>
 </li>
-<li><p>mysql.yaml中的<code>serviceName</code>必须跟Service里面的<code>metadata.name</code>一致，不然dns只能解析<code>StatefulSetName</code>-<code>ServiceName</code>到任意一个pod上，不能通过<code>podsName</code>-<code>serviceName</code>解析到指定的pod上面 [详细]([StatefulSet | Kubernetes](<a target="_blank" rel="noopener" href="https://kubernetes.io/zh-cn/docs/reference/kubernetes-api/workload-resources/stateful-set-v1/#:~:text=serviceName">https://kubernetes.io/zh-cn/docs/reference/kubernetes-api/workload-resources/stateful-set-v1/#:~:text=serviceName</a> 是管理此 StatefulSet 服务的名称。 该服务必须在,StatefulSet 之前即已存在，并负责该集合的网络标识。 Pod 会获得符合以下模式的 DNS%2F主机名： pod-specific-string.serviceName.default.svc.cluster.local。))</p>
+<li><p>mysql.yaml中的<code>serviceName</code>必须跟Service里面的<code>metadata.name</code>一致，不然dns只能解析<code>StatefulSetName</code>-<code>ServiceName</code>到任意一个pod上，不能通过<code>podsName</code>-<code>serviceName</code>解析到指定的pod上面  <a target="_blank" rel="noopener" href="https://kubernetes.io/zh-cn/docs/reference/kubernetes-api/workload-resources/stateful-set-v1/#:~:text=serviceName">StatefulSet | Kubernetes</a></p>
 <blockquote>
 <p><strong>serviceName</strong> (string), 必需</p>
 <p>serviceName 是管理此 StatefulSet 服务的名称。 该服务必须在 StatefulSet 之前即已存在，并负责该集合的网络标识。 Pod 会获得符合以下模式的 DNS&#x2F;主机名： pod-specific-string.serviceName.default.svc.cluster.local。 其中 “pod-specific-string” 由 StatefulSet 控制器管理。</p>
@@ -293,11 +293,11 @@
 </ol>
 <h2 id="redis集群"><a href="#redis集群" class="headerlink" title="redis集群"></a>redis集群</h2><p>redis高可用服务一般有三种类型：</p>
 <ol>
-<li><p>Redis replication redis的主从复制 [详细](<a target="_blank" rel="noopener" href="https://redis.io/docs/latest/operate/oss_and_stack/management/replication/">Redis replication | Docs</a>)</p>
+<li><p>Redis replication redis的主从复制 <a target="_blank" rel="noopener" href="https://redis.io/docs/latest/operate/oss_and_stack/management/replication/">Redis replication | Docs</a></p>
 </li>
-<li><p>Redis Sentinel 在redis的主从复制基础上添加了哨兵，确保在redis-master下线了以后，重新从redis-slaver中选举一个新的master出来，保证服务可用，当旧的redis-master上线后就变成redis-slaver。[详细](<a target="_blank" rel="noopener" href="https://redis.io/docs/latest/operate/oss_and_stack/management/sentinel/">High availability with Redis Sentinel | Docs</a>)</p>
+<li><p>Redis Sentinel 在redis的主从复制基础上添加了哨兵，确保在redis-master下线了以后，重新从redis-slaver中选举一个新的master出来，保证服务可用，当旧的redis-master上线后就变成redis-slaver。<a target="_blank" rel="noopener" href="https://redis.io/docs/latest/operate/oss_and_stack/management/sentinel/">High availability with Redis Sentinel | Docs</a></p>
 </li>
-<li><p>Redis Cluster 这个是由多个redis主从一起组成的集群，数据会被分散到每个redis主从上面 [详细](<a target="_blank" rel="noopener" href="https://redis.io/docs/latest/operate/oss_and_stack/management/scaling/">Scale with Redis Cluster | Docs</a>)</p>
+<li><p>Redis Cluster 这个是由多个redis主从一起组成的集群，数据会被分散到每个redis主从上面 <a target="_blank" rel="noopener" href="https://redis.io/docs/latest/operate/oss_and_stack/management/scaling/">Scale with Redis Cluster | Docs</a></p>
 </li>
 </ol>
 <blockquote>
@@ -319,14 +319,14 @@
 <ol>
 <li>requirepass表示redis的密码</li>
 <li>masterauth 表示redis主从时候的密码 两者都要同时设置，不然会存在因密码错误无法同步数据</li>
-<li>如果想更加细致化的控制redis的权限可以新建用户并且使用<code>ACL</code>的功能 [详细](<a target="_blank" rel="noopener" href="https://redis.io/docs/latest/operate/oss_and_stack/management/security/acl/">ACL | Docs (redis.io)</a>)</li>
+<li>如果想更加细致化的控制redis的权限可以新建用户并且使用<code>ACL</code>的功能 <a target="_blank" rel="noopener" href="https://redis.io/docs/latest/operate/oss_and_stack/management/security/acl/">ACL | Docs (redis.io)</a></li>
 </ol>
 </li>
 <li><p>pod的ip问题，在第一次启动redis集群的时候，会把集群信息写入<code>/data/nodes.conf</code>类似</p>
 <blockquote>
 <p>127.0.0.1:6379&gt; CLUSTER NODES<br>171465406d506a29e3bfcd2cf62a578dfe048613 10.42.0.109:6379@16379 master - 0 1723877446841 3 connected 10923-16383<br>6ddad196c4998856d7587a2a31012bd3570342e8 10.42.0.111:6379@16379 myself,slave 50fc764dae51be95e3f24527b2458ceb44533a84 0 0 2 connected<br>e43744bd3bd58f04158ea90bc044b1b200e0b153 10.42.1.40:6379@16379 slave 171465406d506a29e3bfcd2cf62a578dfe048613 0 1723877446842 3 connected<br>2ca5a824b3edca3baaf8caacf6d036061c9cb647 10.42.0.110:6379@16379 slave 5947054d518ac8ed6b1aeb4b378ad50eedd3bcbb 0 1723877445837 1 connected<br>5947054d518ac8ed6b1aeb4b378ad50eedd3bcbb 10.42.0.108:6379@16379 master - 0 1723877445000 1 connected 0-5460<br>50fc764dae51be95e3f24527b2458ceb44533a84 10.42.1.39:6379@16379 master - 0 1723877446000 2 connected 5461-10922</p>
 </blockquote>
-<p>但是在重启redis集群后pod的ip会更改，导致集群状态为<code>failed </code>。解决可以(<a target="_blank" rel="noopener" href="https://github.com/redis/redis/issues/4289">参考</a>)</p>
+<p>但是在重启redis集群后pod的ip会更改，导致集群状态为<code>failed </code>。解决可以<a target="_blank" rel="noopener" href="https://github.com/redis/redis/issues/4289">参考</a></p>
 </li>
 </ol>
 <h2 id="Gin后端"><a href="#Gin后端" class="headerlink" title="Gin后端"></a>Gin后端</h2><blockquote>
