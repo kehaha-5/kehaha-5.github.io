@@ -1,7 +1,7 @@
 ---
 title: k8s中为Pod配置自签证书以访问HTTPS服务
 date: 2025-03-22 10:00:19
-tags:[k8s,https,certs,边做边学]
+tags: [k8s,https,certs,边做边学]
 ---
 
 # 概要
@@ -148,8 +148,6 @@ openssl rsa -noout -text -in server.key
 openssl verify server.crt
 ## 2. 使用指定的 CA 证书进行验证
 openssl verify -CAfile ca.crt server.crt
-
-
 ```
 
 ## 为系统安装自签证书
@@ -160,10 +158,12 @@ RockyLinux9.3
 
 - 为RockyLinux安装自签证书要有一个注意点，既要把证书中的 **CA** 设置为 **TRUE**
 - 复制证书到 `/etc/pki/ca-trust/source/anchors/` 执行 `update-ca-trust `
+- 就会生成包含私有证书的`ca-bundle.crt`到`/etc/pki/tls/certs/`中
 
 Debain12
 
-- 复制证书到 `/etc/ssl/certs/` 执行 `update-ca-certificates --fresh`
+- 复制证书到 `/usr/local/share/ca-certificates/` 执行 `update-ca-certificates --fresh`
+- 就会生包含私有证书的`ca-certificates.crt` 到 `/etc/ssl/certs/`中
 
 安装完成以后，就可以使用`curl`命令对证书进行验证
 
@@ -174,11 +174,236 @@ curl -v https://xxx.test.com --cacert /etc/ssl/certs/xxx.test.com.crt
 
 ## 为Pod配置证书
 
+应用部署环境：项目使用的是`Kustomize`来部署不同的环境。项目中的代码：[k8s_demo/certs/app at main · kehaha-5/k8s_demo](https://github.com/kehaha-5/k8s_demo/tree/main/certs/app)
+
+```shell
+[root@rocky-testing app]# tree -L 3
+.
+├── debianupcaDockerfile
+├── deploy
+│   ├── base
+│   │   ├── deployment.yaml
+│   │   └── kustomization.yaml
+│   └── overlays
+│       ├── prod # 生成环境用的是CA的证书
+│       ├── uat # 使用init-container安装证书
+│       └── uat-trust # 使用trust-manager
+├── Dockerfile
+├── go.mod
+├── go.sum
+├── main.go
+└── makefile
+
+6 directories, 8 files
+```
+
 ### 在镜像系统中安装证书
 
-根据上述的为系统安装证书的步骤，我们可以使用 `init-container` 把证书安装到应用的`pod`中
+根据上述的为系统安装证书的步骤，我们可以使用 `init-container` 把证书安装到应用的`pod`中。注意一些镜像是没有默认安装`ca-certificates ` 需要额外安装或者把物理机的证书`COPY`到镜像内
 
+1. 首先先把证书crt apply到k8s的secret中
 
+```shell
+kubectl create secret generic ssl-test-web-crt --from-file=./ssl.test.com.crt --dry-run=client  -o yaml  | kubectl apply -f -
+```
 
-### 使用certs-manger中的trust-manger
+2. 使用`init-container` 把证书生成到`ca-certificates.crt`中，同时把新的证书挂载到应用的`Pod`中
 
+```yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+....
+
+patchesJson6902:
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: https-client
+    patch: |-
+    .....
+      - op: add
+      # 把包含证书的secret挂载到volumes中
+        path: /spec/template/spec/volumes/-
+        value:
+          name: ssl-test-web-crt
+          secret:
+            secretName: ssl-test-web-crt
+      - op: add
+      # 把生成好的ca-certificates.crt挂载到应用上
+        path: /spec/template/spec/containers/0/volumeMounts/-
+        value:
+          name: ssl-certs
+          mountPath: /etc/ssl/certs/
+      - op: add
+      # 使用emptyDir来临时保存生成的ca-certificates.crt
+        path: /spec/template/spec/volumes/-
+        value:
+          name: ssl-certs
+          emptyDir: {}
+      - op: add
+        path: /spec/template/spec/initContainers
+        value:
+          - name: init-container
+            image: debian
+            command: ["/bin/sh", "-c", "update-ca-certificates --fresh && cp -r /etc/ssl/certs/* /mnt/ssl-certs/" ]
+            volumeMounts:
+              - name: ssl-test-web-crt
+                mountPath: /usr/local/share/ca-certificates/
+              - name: ssl-certs
+                mountPath: /mnt/ssl-certs
+```
+
+3. 使用 `kubectl apply -k ./deploy/overlays/uat/`部署该环境
+
+查看日志对应的日志，发现`init-container`生成新证书，并且应用https访问成功
+
+![log](.\uat-log.png)
+
+### 使用trust-manager
+
+在`certs-manager`的文档中有一个叫`trust-manager`的组件[trust-manager - cert-manager Documentation](https://cert-manager.io/docs/trust/trust-manager/)
+
+>trust-manager is the easiest way to manage trust bundles in Kubernetes and OpenShift clusters.
+>
+>It orchestrates bundles of trusted X.509 certificates which are primarily used for validating certificates during a TLS handshake but can be used in other situations, too.
+
+- 你可以单独安装`trust-manager`，使用里面的`bundles`来配置证书https://cert-manager.io/docs/trust/trust-manager/installation/#installing-trust-manager-without-cert-manager
+
+- 也可以安装`certs-manager`和`trust-manager`，使用`certs-manager`生成自签证书，然后配置到`trust-manager`中 https://cert-manager.io/docs/trust/trust-manager/#quick-start-example
+
+我这里直接只安装`trust-manager`使用`bundles`来配置证书
+
+- 先通过`helm`安装`trust-manager`
+  - 注意安装的时候有一个`app.trust.namespace`的配置(默认值为cert-manager)，这个配置定义了那些`namespace`下的`Secret`可以被读取，这样保证了应用的安全 https://cert-manager.io/docs/trust/trust-manager/installation/#trust-namespace
+
+> By default, the trust namespace is the only namespace where`Secret`s will be read. This restriction is in place for security reasons - we don't want to give trust-manager the permission to read all `Secret`s in all namespaces. With additional configuration, secrets may be read from or written to other namespaces.
+
+```yaml
+helm repo add jetstack https://charts.jetstack.io --force-update
+helm upgrade trust-manager jetstack/trust-manager \
+  --install \
+  --namespace cert-manager \
+  --wait
+# 可以利用 helm template 命令生成对应的helm value 
+helm template \
+  trust-manager jetstack/cert-manager \
+  --namespace cert-manager 
+  > cert-manager.custom.yaml
+```
+
+- 先把证书导入到`trust-namespace`的 
+
+```yaml
+kubectl create secret generic ssl-test-web-crt --from-file=./ssl.test.com.crt --dry-run=client -n cert-manager  -o yaml  | kubectl apply -f -   
+```
+
+- 编写对应的`Bundle`
+  - `Bundle`会自己在对应的`namespcae`下面生成一个 `public-bundle` 的 `configMap`
+
+```yaml
+apiVersion: trust.cert-manager.io/v1alpha1
+kind: Bundle
+metadata:
+  name: public-bundle
+spec:
+  sources:
+# 为true会帮你更新对应容器中的CA证书
+# https://cert-manager.io/docs/trust/trust-manager/#securely-maintaining-a-trust-manager-installation
+  - useDefaultCAs: true
+  - secret:
+      name: "ssl-test-web-crt"
+      key: "ssl.test.com.crt"
+  target:
+    configMap:
+      key: "ca-certificates.crt"
+# 这里要给对应要生成 public-bundle configMap 的namespace 打上label
+# kubectl label ns default trust=enabled
+    namespaceSelector:
+      matchLabels:
+        trust: enabled
+```
+
+- 我们只需要在对应的容器中挂载`public-bundle`到`/etc/ssl/certs`
+
+```yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- ../../base
+
+.....
+
+patchesJson6902:
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: https-client
+    patch: |-
+.....
+      - op: add
+        path: /spec/template/spec/volumes/-
+        value:
+        #声明Volumes
+          name: public-bundle
+          configMap:
+            name: public-bundle
+            defaultMode: 0644
+            optional: false
+      - op: add
+        path: /spec/template/spec/containers/0/volumeMounts/-
+        value:
+        # VolumeMounts 挂载到/etc/ssl/certs/
+          name: public-bundle
+          mountPath: /etc/ssl/certs/
+          readOnly: true
+
+images:
+  - name: https-client
+    newTag: v1.0
+    newName: https-client
+```
+
+- 如果成功了，在容器中就会如下显示
+
+```shell
+root@https-client-6b74cfbddd-2nw2r:/app# ls -ltr /etc/ssl/certs/ca-certificates.crt              
+lrwxrwxrwx. 1 root root 26 Mar 23 06:26 /etc/ssl/certs/ca-certificates.crt -> ..data/ca-certificates.crt
+```
+
+# 最后
+
+对比上述的两种方法
+
+第一种方法我觉得比较简单，无须额外安装其它组件，但是对配置的入侵性比较高，需要额外配置一个有`ca-certificates`的`init-container`
+
+第二种方法需要额外安装多一个`trust-manager`，但是落实到具体的`Pod`配置只需要额外挂载一个 `ConfigMap` 到对应的证书路径即可，同时对应的`bundle/public-bundle`也是支持自动更新的，即你的`secret`更新了，它也会自动同步。
+
+```shell
+[root@rocky-testing ~]# kubectl get events
+LAST SEEN   TYPE     REASON              OBJECT                               MESSAGE
+52m         Normal   Synced              bundle/public-bundle                 Successfully synced Bundle to namespaces that match this label selector: trust=enabled
+```
+
+当然除了上述两种方法，还有没有**更简单的方法，甚至不需要额外的配置**🤔
+
+有的！如果你公司有一份支持多域名的证书，就可以直接使用该 crt(一般叫做xxx_chain.crt或者.pem) 和 key
+
+如何查看？使用 `openssl x509 -noout -text -in server.crt` 查看证书信息 类似如下
+
+```text
+            ·······
+ # 如果 SAN (Subject Alternative Name) 中包含多个域名 或者 通配符 *.test.com 
+            X509v3 Subject Alternative Name: 
+                DNS:*.test.com, DNS:test.com, DNS:abc.test.com
+    Signature Algorithm: sha256WithRSAEncryption
+    Signature Value:
+    ······
+```
+
+这样你就可以用 `abc.test.com` 等类似的`xxx.test.com` 的二级域名 (注意三级不行 如 `xxx.adb.test.com`)
+
+再通过修改hosts或者k8s中的coredns，就可以使用不需要额外配置使用`Https`了 😊
