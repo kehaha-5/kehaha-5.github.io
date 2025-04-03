@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang=zh-CN>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="website">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        casdoor服务启动却无法访问排障 - kehaha-5
+        
+    </title>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/aircloud.css">
+
+    
+<link rel="stylesheet" href="/css/gitment.css">
+
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_28hi1hpxx24.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i> Just record it ! </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar radius">
+            <img src="/img/avatar.jpg" />
+        </div>
+        <div class="name">
+            <i>我要料多的</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li >
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li >
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li >
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li >
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+            <li>
+                <a id="search">
+                    <i class="iconfont icon-sousuo1"></i>
+                    <span>搜索</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83"><span class="toc-text">环境</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%8E%92%E6%9F%A5"><span class="toc-text">排查</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91"><span class="toc-text">端口转发</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#strace-pstack%E6%9F%A5%E7%9C%8B%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8"><span class="toc-text">strace\pstack查看系统调用</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%F0%9F%A4%94"><span class="toc-text">问题🤔</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%981"><span class="toc-text">问题1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%982"><span class="toc-text">问题2</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%983"><span class="toc-text">问题3</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-bg" id="search-bg"></div>
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input"/>
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+
+        <div class="index-about-mobile">
+            <i> Just record it ! </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        casdoor服务启动却无法访问排障
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2025-04-03 14:45:03</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#排障" title="排障">排障</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#casdoor" title="casdoor">casdoor</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#strace" title="strace">strace</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#pstack" title="pstack">pstack</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#session" title="session">session</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+</span>
+    </div>
+    <div class="post-content ">
+        <blockquote>
+<p>最近，我们团队在生产环境中遇到了一个问题，就是casdoor服务重启后，日志也显示出来了，但是就是无法访问，使用curl在本地访问也是不通。</p>
+</blockquote>
+<p>日志：</p>
+<p><img src="/2025/04/03/casdoor%E6%9C%8D%E5%8A%A1%E5%90%AF%E5%8A%A8%E5%8D%B4%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E6%8E%92%E9%9A%9C/casdoor-log.png" alt="log"></p>
+<p>首先先简绍一下casdoor是什么<a target="_blank" rel="noopener" href="https://casdoor.org/zh/docs/overview">概述 | Casdoor · An open-source UI-first Identity and Access Management (IAM) &#x2F; Single-Sign-On (SSO) platform with web UI supporting OAuth 2.0, OIDC, SAML, CAS, LDAP, SCIM, WebAuthn, TOTP, MFA, RADIUS, Google Workspace, Active Directory and Kerberos</a></p>
+<p>简单点理解就是它是一个实现了<code>OAuth 2.0</code>认证的一个服务，我们可以利用它来完成一个账号对多个应用进行无感登录，同时可以把用户数据放到<code>casdoor</code>中，其它应用的数据库可以只用来存放业务数据。</p>
+<h1 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h1><p>根据相关同学的描述，生产环境的<code>casdoor</code>环境如下。</p>
+<ol>
+<li>3台服务器使用<code>docker</code>或<code>podman</code>启动了一个<code>casdoor</code>服务，实现高可用</li>
+<li>3台服务器同时使用同一个数据库(<code>mysql</code>)</li>
+<li>使用nfs来同步<code>casdoor</code>中的<code>tmp</code>文件，该文件为<code>casdoor</code>的默认<code>session</code>保存位置<ol>
+<li><a target="_blank" rel="noopener" href="https://casdoor.org/zh/docs/basic/server-installation/#%E9%80%9A%E8%BF%87-ini-%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE:~:text=redisEndpoint%20%E5%90%8E%E5%A1%AB%E5%86%99,provider%2Dconfig%E3%80%82">session配置的相关文档</a></li>
+<li>当时该 tmp 文件大小至少有40G，但是我们环境当前的用户数量不至于会有这么多的<code>session</code>缓存</li>
+<li><code>nfs</code>对应挂载服务的进程占用过高的<code>cpu</code></li>
+</ol>
+</li>
+<li><code>casdoor</code>的版本为1.814，其中的<code>beego</code>版本为1.12.3</li>
+</ol>
+<h1 id="排查"><a href="#排查" class="headerlink" title="排查"></a>排查</h1><p>后续的排查环境是在测试环境中搭建的，并且复刻了对应的问题。环境如下</p>
+<ol>
+<li>使用<code>dcoker-compose</code>启动了3个<code>casdoor</code>和一个<code>mysql</code></li>
+<li>宿主机的<code>8001</code>,<code>8002</code>,<code>8003</code>分别映射3个<code>casdoor</code>的8000端口</li>
+<li>使用了 docker 的挂载把tmp文件同时挂载到了每个<code>casdoor</code>的目录（模拟<code>nfs</code>）</li>
+<li><code>tmp</code>的文件大小为<code>31G</code></li>
+</ol>
+<h2 id="端口转发"><a href="#端口转发" class="headerlink" title="端口转发"></a>端口转发</h2><p>因为服务是使用docker启动的，并且使用的网络模式为<code>Bridge</code>，所以我们先排查<code>docker</code>网络相关的问题。</p>
+<ol>
+<li><p>先 <code>curl</code> <code>docker</code>的网卡(<code>docker0</code>)的<code>ip</code>地址，但是还是 <code>curl</code> 不通相关服务。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[root@rocky-testing casdoor]# ss -anpl | grep 8001 # 查看端口监听情况</span><br><span class="line">tcp   LISTEN 0      4096  0.0.0.0:8001             0.0.0.0:*    users:((&quot;docker-proxy&quot;,pid=1456272,fd=7)) </span><br><span class="line">tcp   LISTEN 0      4096 [::]:8001                [::]:*    users:((&quot;docker-proxy&quot;,pid=1456280,fd=7))     </span><br><span class="line">[root@rocky-testing casdoor]# ifconfig docker0 #获取docker的网卡</span><br><span class="line">docker0: flags=4099&lt;UP,BROADCAST,MULTICAST&gt;  mtu 1500</span><br><span class="line">        inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255</span><br><span class="line">        inet6 fe80::1469:daff:febf:1315  prefixlen 64  scopeid 0x20&lt;link&gt;</span><br><span class="line">        ether 16:69:da:bf:13:15  txqueuelen 0  (Ethernet)</span><br><span class="line">        RX packets 32519  bytes 2160933 (2.0 MiB)</span><br><span class="line">        RX errors 0  dropped 0  overruns 0  frame 0</span><br><span class="line">        TX packets 37734  bytes 94754551 (90.3 MiB)</span><br><span class="line">        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0</span><br><span class="line"></span><br><span class="line">[root@rocky-testing casdoor]# curl 172.17.0.1:8001 # curl 对应的网卡ip 8001为casdoor启动的端口</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用<code>nsenter </code> 进入对应服务的<code>network ns</code>，并尝试<code>curl</code>访问服务，但还是无法访问</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[root@rocky-testing casdoor]# docker compose top casdoor-1 # 获取应用的pid</span><br><span class="line">WARN[0000] /root/test/casdoor/docker-compose.yaml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion </span><br><span class="line">casdoor-1</span><br><span class="line">UID    PID       PPID      C    STIME   TTY   TIME       CMD</span><br><span class="line">1000   1456231   1456210   4    14:58   ?     00:01:21   /server   </span><br><span class="line">[root@rocky-testing casdoor]# nsenter -n --target 1456231 # 进入对应的 ns</span><br><span class="line">[root@rocky-testing casdoor]# ip link # 查看网卡，跟宿主机的网卡不一致，只剩下lo和eth0网卡，说明进入了容器的ns中</span><br><span class="line">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000</span><br><span class="line">    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00</span><br><span class="line">2: eth0@if898: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP mode DEFAULT group default </span><br><span class="line">    link/ether 82:2e:b0:c9:cc:00 brd ff:ff:ff:ff:ff:ff link-netnsid 0</span><br><span class="line">[root@rocky-testing casdoor]# ss -anlp | grep 8000 # 查看端口占用，确实服务已经启动 </span><br><span class="line">tcp   LISTEN 0      4096               *:8000               *:*    users:((&quot;server&quot;,pid=1456231,fd=13))</span><br><span class="line">[root@rocky-testing casdoor]# curl 0.0.0.0:8000 # 无法curl通服务</span><br><span class="line">[root@rocky-testing casdoor]# exit # 退出对应ns</span><br><span class="line">logout</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="strace-pstack查看系统调用"><a href="#strace-pstack查看系统调用" class="headerlink" title="strace\pstack查看系统调用"></a>strace\pstack查看系统调用</h2><p>在上述的两步操作后，还是<code>curl</code>不通，说明服务虽然日志已经打印了，但是服务还未可用。</p>
+<p>使用<code>strace</code>和<code>pstack</code>命令查看对应应用的系统调用，查看casdoor的启动后的行为</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">strace -p 1456231 -f -o ./strace-casdoor-1.log </span><br><span class="line">pstack 1456231 &gt; ./pstack-casdoor-1.log</span><br></pre></td></tr></table></figure>
+
+<p>查看其日志，以下日志内容为生产环境中获取的<code>strace</code>和<code>pstack</code>日志</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"># 分析strace的日志，发现程序是有规律的执行以下系统调用</span><br><span class="line">... 都是nanosleep(&#123;tv_sec=0, tv_nsec=20000&#125;, NULL) = 0 的调用</span><br><span class="line">1146720 nanosleep(&#123;tv_sec=0, tv_nsec=20000&#125;, NULL) = 0</span><br><span class="line">1146720 futex(0x45252c0, FUTEX_WAIT_PRIVATE, 0, &#123;tv_sec=0, tv_nsec=103439635&#125; &lt;unfinished ...&gt;</span><br><span class="line">1146729 &lt;... newfstatat resumed&gt;&#123;st_mode=S_IFREG|0644, st_size=20, ...&#125;, AT_SYMLINK_NOFOLLOW) = 0</span><br><span class="line">1146729 --- SIGURG &#123;si_signo=SIGURG, si_code=SI_TKILL, si_pid=1, si_uid=1000&#125; ---</span><br><span class="line">1146729 rt_sigreturn(&#123;mask=[]&#125;)         = 0</span><br><span class="line">1146729 futex(0x45252c0, FUTEX_WAKE_PRIVATE, 1) = 1</span><br><span class="line">1146720 &lt;... futex resumed&gt;)            = 0</span><br><span class="line">1146729 newfstatat(AT_FDCWD, &quot;tmp/0/0/001575f66990e62d6ed701f24599e1ca&quot;,  &lt;unfinished ...&gt;</span><br><span class="line">1146720 nanosleep(&#123;tv_sec=0, tv_nsec=20000&#125;, NULL) = 0</span><br><span class="line">1146720 futex(0x45252c0, FUTEX_WAIT_PRIVATE, 0, &#123;tv_sec=0, tv_nsec=43396353&#125; &lt;unfinished ...&gt;</span><br><span class="line">1146704 &lt;... epoll_pwait resumed&gt;[], 128, 998, NULL, 0) = 0</span><br><span class="line">1146704 epoll_pwait(4, [], 128, 0, NULL, 0) = 0</span><br><span class="line">1146704 epoll_pwait(4,  &lt;unfinished ...&gt;</span><br><span class="line">1146720 &lt;... futex resumed&gt;)            = -1 ETIMEDOUT (Connection timed out)</span><br><span class="line">1146720 nanosleep(&#123;tv_sec=0, tv_nsec=20000&#125;, NULL) = 0</span><br><span class="line">... 都是nanosleep(&#123;tv_sec=0, tv_nsec=20000&#125;, NULL) = 0 的调用</span><br><span class="line"># 分析pstack日志，程序也是不停地执行以下方法</span><br><span class="line"> 37028.625 (47.259 ms): server/1146720  ... [continued]: futex())                                            = 0</span><br><span class="line"> 37075.871 (         ): server/1146729 newfstatat(dfd: CWD, filename: 0xb77bf0, statbuf: 0xc000adced8, flag: SYMLINK_NOFOLLOW) ...</span><br><span class="line"> 37075.900 ( 0.058 ms): server/1146720 nanosleep(rqtp: 0xc00008ff10)                                         = 0</span><br><span class="line"> 37075.871 (62.859 ms): server/1146729  ... [continued]: newfstatat())                                       = 0</span><br><span class="line"> 37075.965 (         ): server/1146720 futex(uaddr: 0x45252c0, op: WAIT|PRIVATE_FLAG, utime: 0xc00008feb0) ...</span><br><span class="line"> 37138.754 ( 0.012 ms): server/1146729 futex(uaddr: 0x45252c0, op: WAKE|PRIVATE_FLAG, val: 1)                = 1</span><br><span class="line"> 37075.965 (62.898 ms): server/1146720  ... [continued]: futex())                                            = 0</span><br><span class="line"> 37138.781 (         ): server/1146729 newfstatat(dfd: CWD, filename: 0xb77c50, statbuf: 0xc000adcfa8, flag: SYMLINK_NOFOLLOW) ...</span><br><span class="line"> 37138.881 ( 0.067 ms): server/1146720 nanosleep(rqtp: 0xc00008ff10)                                         = 0</span><br><span class="line"> 37138.954 (25.650 ms): server/1146720 futex(uaddr: 0x45252c0, op: WAIT|PRIVATE_FLAG, utime: 0xc00008feb0)   = -1 ETIMEDOUT (Connection timed out)</span><br><span class="line"> 37164.628 ( 0.088 ms): server/1146720 nanosleep(rqtp: 0xc00008ff10)                                         = 0</span><br><span class="line"> 37164.724 ( 0.110 ms): server/1146720 nanosleep(rqtp: 0xc00008ff10)                                         = 0</span><br><span class="line"> 37164.845 ( 0.085 ms): server/1146720 nanosleep(rqtp: 0xc00008ff10)                                         = 0</span><br></pre></td></tr></table></figure>
+
+<p>通过上述的分析，可以发现<code>casdoor</code>程序在启动后，一直读取<code>tmp</code>目录下的文件信息(并且其中还有一个锁)，结合前面的信息可以得出<code>casdoor</code>在启动的时候会一直读取<code>tmp</code>里面的<code>session</code>信息，导致<code>nfs</code>的进程的<code>cpu</code>使用率过高。</p>
+<p>所以后面在生产环境中把<code>nfs</code>的挂载给取消了(<code>tmp</code>中的<code>session</code>文件就会被清空，变成一个空文件夹)，后面再启动，就可以正常访问服务了，后续可能会考虑把<code>session</code>放到<code>redis</code>中进行处理。</p>
+<h1 id="问题🤔"><a href="#问题🤔" class="headerlink" title="问题🤔"></a>问题🤔</h1><p>虽然服务可以启动了但是留下了3个问题：</p>
+<ol>
+<li><strong>为什么casdoor启动的时候要去访问session文件(tmp目录下的文件)</strong></li>
+<li><strong>为什么casdoor的日志都显示服务的端口已经监听了，为什么curl该服务还是不能马上返回请求</strong></li>
+<li><strong>同学反映该tmp文件之前已经清理过一次了，但是一天左右磁盘占用率又上来了这是为什么</strong></li>
+</ol>
+<p>针对上面的3个问题，我选择 <code>源码</code> 启动👀</p>
+<h2 id="问题1"><a href="#问题1" class="headerlink" title="问题1"></a>问题1</h2><p>为什么casdoor启动要去访问session文件</p>
+<p>首先找到对应的<a target="_blank" rel="noopener" href="https://github.dev/casdoor/casdoor/tree/v1.814.0">github.dev&#x2F;casdoor&#x2F;casdoor&#x2F;tree&#x2F;v1.814.0</a>版本，查看其<code>main.go</code></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">https:<span class="comment">//github.dev/casdoor/casdoor/blob/a5a627f92efd3cc3f3613ca119b340b66258ce64/main.go#L65-L95</span></span><br><span class="line">	....</span><br><span class="line">	beego.BConfig.WebConfig.Session.SessionOn = <span class="literal">true</span></span><br><span class="line">	beego.BConfig.WebConfig.Session.SessionName = <span class="string">&quot;casdoor_session_id&quot;</span></span><br><span class="line">	<span class="keyword">if</span> conf.GetConfigString(<span class="string">&quot;redisEndpoint&quot;</span>) == <span class="string">&quot;&quot;</span> &#123;</span><br><span class="line">		beego.BConfig.WebConfig.Session.SessionProvider = <span class="string">&quot;file&quot;</span></span><br><span class="line">		beego.BConfig.WebConfig.Session.SessionProviderConfig = <span class="string">&quot;./tmp&quot;</span></span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		beego.BConfig.WebConfig.Session.SessionProvider = <span class="string">&quot;redis&quot;</span></span><br><span class="line">		beego.BConfig.WebConfig.Session.SessionProviderConfig = conf.GetConfigString(<span class="string">&quot;redisEndpoint&quot;</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	beego.BConfig.WebConfig.Session.SessionCookieLifeTime = <span class="number">3600</span> * <span class="number">24</span> * <span class="number">30</span> <span class="comment">//30天的缓存时间</span></span><br><span class="line">	beego.BConfig.WebConfig.Session.SessionGCMaxLifetime = <span class="number">3600</span> * <span class="number">24</span> * <span class="number">30</span> <span class="comment">//30天的缓存时间</span></span><br><span class="line">	<span class="comment">// beego.BConfig.WebConfig.Session.SessionCookieSameSite = http.SameSiteNoneMode</span></span><br><span class="line"></span><br><span class="line">	err := logs.SetLogger(logs.AdapterFile, conf.GetConfigString(<span class="string">&quot;logConfig&quot;</span>))</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="built_in">panic</span>(err)</span><br><span class="line">	&#125;</span><br><span class="line">	port := beego.AppConfig.DefaultInt(<span class="string">&quot;httpport&quot;</span>, <span class="number">8000</span>)</span><br><span class="line">	<span class="comment">// logs.SetLevel(logs.LevelInformational)</span></span><br><span class="line">	logs.SetLogFuncCall(<span class="literal">false</span>)</span><br><span class="line"></span><br><span class="line">	err = util.StopOldInstance(port)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="built_in">panic</span>(err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">go</span> ldap.StartLdapServer()</span><br><span class="line">	<span class="keyword">go</span> radius.StartRadiusServer()</span><br><span class="line">	<span class="keyword">go</span> object.ClearThroughputPerSecond()</span><br><span class="line"></span><br><span class="line">	beego.Run(fmt.Sprintf(<span class="string">&quot;:%v&quot;</span>, port))</span><br></pre></td></tr></table></figure>
+
+<p>在上面的代码里面，我们可以看到默认情况下<code>casdoor</code>使用了<code>SessionProvider</code>为<code>file</code>，并且目录配置到了<code>./tmp</code>下面，后面启动的就是<code>beego</code>的服务了，所以后面查看的是对应版本<a target="_blank" rel="noopener" href="https://github.dev/beego/beego/tree/v1.12.11">beego</a>的源码。</p>
+<p>首先从<code>beego.go</code>开始启动服务</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">https:<span class="comment">//github.com/beego/beego/blob/c280209bf5b94cf31094a200b166c97eb3898851/beego.go#L51-L73</span></span><br><span class="line"><span class="comment">// Run beego application.</span></span><br><span class="line"><span class="comment">// beego.Run() default run on HttpPort</span></span><br><span class="line"><span class="comment">// beego.Run(&quot;localhost&quot;)</span></span><br><span class="line"><span class="comment">// beego.Run(&quot;:8089&quot;)</span></span><br><span class="line"><span class="comment">// beego.Run(&quot;127.0.0.1:8089&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Run</span><span class="params">(params ...<span class="type">string</span>)</span></span> &#123;</span><br><span class="line">	initBeforeHTTPRun() <span class="comment">//这里再程序启动前，调用了initBeforeHTTPRun这个方法</span></span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(params) &gt; <span class="number">0</span> &amp;&amp; params[<span class="number">0</span>] != <span class="string">&quot;&quot;</span> &#123;</span><br><span class="line">		strs := strings.Split(params[<span class="number">0</span>], <span class="string">&quot;:&quot;</span>)</span><br><span class="line">		<span class="keyword">if</span> <span class="built_in">len</span>(strs) &gt; <span class="number">0</span> &amp;&amp; strs[<span class="number">0</span>] != <span class="string">&quot;&quot;</span> &#123;</span><br><span class="line">			BConfig.Listen.HTTPAddr = strs[<span class="number">0</span>]</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> <span class="built_in">len</span>(strs) &gt; <span class="number">1</span> &amp;&amp; strs[<span class="number">1</span>] != <span class="string">&quot;&quot;</span> &#123;</span><br><span class="line">			BConfig.Listen.HTTPPort, _ = strconv.Atoi(strs[<span class="number">1</span>])</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		BConfig.Listen.Domains = params</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	BeeApp.Run()</span><br><span class="line">&#125;</span><br><span class="line">....</span><br><span class="line">https:<span class="comment">//github.com/beego/beego/blob/c280209bf5b94cf31094a200b166c97eb3898851/beego.go#L91-L107</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">initBeforeHTTPRun</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">//init hooks 在这个方法中注册了Session服务</span></span><br><span class="line">	AddAPPStartHook(</span><br><span class="line">		registerMime,</span><br><span class="line">		registerDefaultErrorHandler,</span><br><span class="line">		registerSession,</span><br><span class="line">		registerTemplate,</span><br><span class="line">		registerAdmin,</span><br><span class="line">		registerGzip,</span><br><span class="line">	)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> _, hk := <span class="keyword">range</span> hooks &#123;</span><br><span class="line">		<span class="keyword">if</span> err := hk(); err != <span class="literal">nil</span> &#123; <span class="comment">//在这里执行了注册的session服务</span></span><br><span class="line">			<span class="built_in">panic</span>(err)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>查看对应的<code>registerSession</code>的代码实现，在<code>hook.go</code>中</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">https:<span class="comment">//github.com/beego/beego/blob/c280209bf5b94cf31094a200b166c97eb3898851/hooks.go#L47-L76</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">registerSession</span><span class="params">()</span></span> <span class="type">error</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> BConfig.WebConfig.Session.SessionOn &#123;</span><br><span class="line">		<span class="keyword">var</span> err <span class="type">error</span></span><br><span class="line">		sessionConfig := AppConfig.String(<span class="string">&quot;sessionConfig&quot;</span>)</span><br><span class="line">		conf := <span class="built_in">new</span>(session.ManagerConfig)</span><br><span class="line">		<span class="keyword">if</span> sessionConfig == <span class="string">&quot;&quot;</span> &#123;</span><br><span class="line">			....</span><br><span class="line">            conf.Gclifetime = BConfig.WebConfig.Session.SessionGCMaxLifetime <span class="comment">//定义了session的存活时间</span></span><br><span class="line">			conf.ProviderConfig = filepath.ToSlash(BConfig.WebConfig.Session.SessionProviderConfig) <span class="comment">//在这里tmp的配置变成了文件路径配置</span></span><br><span class="line">			....</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">if</span> err = json.Unmarshal([]<span class="type">byte</span>(sessionConfig), conf); err != <span class="literal">nil</span> &#123;</span><br><span class="line">				<span class="keyword">return</span> err</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> GlobalSessions, err = session.NewManager(BConfig.WebConfig.Session.SessionProvider, conf); err != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="keyword">return</span> err</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">go</span> GlobalSessions.GC() <span class="comment">//这里使用了GO协程启动了一个CG服务，该操作不会阻塞主协程</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>进入<code>GlobalSessions.GC() </code>函数查看对应实现，在<code>session.go</code>中</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">https:<span class="comment">//github.com/beego/beego/blob/c280209bf5b94cf31094a200b166c97eb3898851/session/session.go#L290-L295</span></span><br><span class="line"><span class="comment">// GC Start session gc process.</span></span><br><span class="line"><span class="comment">// it can do gc in times after gc lifetime.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(manager *Manager)</span></span> GC() &#123;</span><br><span class="line">	manager.provider.SessionGC() <span class="comment">//启动时先执行一次SessionCG 然后再使用time.AfterFunc来定时执行</span></span><br><span class="line">	time.AfterFunc(time.Duration(manager.config.Gclifetime)*time.Second, <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123; manager.GC() &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>进入<code>manager.provider.SessionGC() </code>函数查看其实现，因为我们使用的<code>sessionProvider</code>为<code>file</code>，所以要在<code>session/sess_file.go</code>中查看其实现</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// filepder的定义</span></span><br><span class="line">https:<span class="comment">//github.com/beego/beego/blob/c280209bf5b94cf31094a200b166c97eb3898851/session/sess_file.go#L30-L33</span></span><br><span class="line"><span class="keyword">var</span> (</span><br><span class="line">	filepder      = &amp;FileProvider&#123;&#125;</span><br><span class="line">	gcmaxlifetime <span class="type">int64</span></span><br><span class="line">)</span><br><span class="line">https:<span class="comment">//github.com/beego/beego/blob/c280209bf5b94cf31094a200b166c97eb3898851/session/sess_file.go#L113-L118</span></span><br><span class="line"><span class="comment">// FileProvider File session provider</span></span><br><span class="line"><span class="keyword">type</span> FileProvider <span class="keyword">struct</span> &#123;</span><br><span class="line">	lock        sync.RWMutex</span><br><span class="line">	maxlifetime <span class="type">int64</span></span><br><span class="line">	savePath    <span class="type">string</span></span><br><span class="line">&#125;</span><br><span class="line">https:<span class="comment">//github.com/beego/beego/blob/c280209bf5b94cf31094a200b166c97eb3898851/session/sess_file.go#L200-L207</span></span><br><span class="line"><span class="comment">// SessionGC Recycle files in save path</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(fp *FileProvider)</span></span> SessionGC() &#123;</span><br><span class="line">	filepder.lock.Lock() <span class="comment">//这里先锁住了filepder 这个锁很关键</span></span><br><span class="line">	<span class="keyword">defer</span> filepder.lock.Unlock()</span><br><span class="line"></span><br><span class="line">	gcmaxlifetime = fp.maxlifetime <span class="comment">//获取gc超时时间</span></span><br><span class="line">	filepath.Walk(fp.savePath, gcpath) <span class="comment">//这里使用walk来浏览session文件目录下的文件，并且执行gcpath的回调</span></span><br><span class="line">&#125;</span><br><span class="line">....</span><br><span class="line">https:<span class="comment">//github.com/beego/beego/blob/c280209bf5b94cf31094a200b166c97eb3898851/session/sess_file.go#L284-L296</span></span><br><span class="line"><span class="comment">// remove file in save path if expired</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">gcpath</span><span class="params">(path <span class="type">string</span>, info os.FileInfo, err <span class="type">error</span>)</span></span> <span class="type">error</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> err</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> info.IsDir() &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (info.ModTime().Unix() + gcmaxlifetime) &lt; time.Now().Unix() &#123;</span><br><span class="line">		os.Remove(path) <span class="comment">//如果该文件的修改时间加上超时时间大于当前时间则进行删除</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>到此第一个问题已经解决了，就是因为<code>beego.go</code>启动的时候会执行session的GC，而程序配置为利用<code>file</code>保存<code>session</code>，所以就解释了为什么查看<code>strace</code>和<code>pstack</code>的日志时会有锁<code>futex</code> 和文件读取的<code>newfstatat</code>的系统调用</p>
+<h2 id="问题2"><a href="#问题2" class="headerlink" title="问题2"></a>问题2</h2><p>为什么日志已经显示了端口绑定了，但是<code>curl</code>对应服务还是不通</p>
+<p>在上面我们得知我们的服务是在<code>beego.go</code>中启动的，所以先查看其源码</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">https:<span class="comment">//github.com/beego/beego/blob/c280209bf5b94cf31094a200b166c97eb3898851/beego.go#L51-L73</span></span><br><span class="line"><span class="comment">// Run beego application.</span></span><br><span class="line"><span class="comment">// beego.Run() default run on HttpPort</span></span><br><span class="line"><span class="comment">// beego.Run(&quot;localhost&quot;)</span></span><br><span class="line"><span class="comment">// beego.Run(&quot;:8089&quot;)</span></span><br><span class="line"><span class="comment">// beego.Run(&quot;127.0.0.1:8089&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Run</span><span class="params">(params ...<span class="type">string</span>)</span></span> &#123;</span><br><span class="line">	initBeforeHTTPRun() <span class="comment">//这里再程序启动前，调用了initBeforeHTTPRun这个方法</span></span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(params) &gt; <span class="number">0</span> &amp;&amp; params[<span class="number">0</span>] != <span class="string">&quot;&quot;</span> &#123;</span><br><span class="line">		strs := strings.Split(params[<span class="number">0</span>], <span class="string">&quot;:&quot;</span>)</span><br><span class="line">		<span class="keyword">if</span> <span class="built_in">len</span>(strs) &gt; <span class="number">0</span> &amp;&amp; strs[<span class="number">0</span>] != <span class="string">&quot;&quot;</span> &#123;</span><br><span class="line">			BConfig.Listen.HTTPAddr = strs[<span class="number">0</span>]</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> <span class="built_in">len</span>(strs) &gt; <span class="number">1</span> &amp;&amp; strs[<span class="number">1</span>] != <span class="string">&quot;&quot;</span> &#123;</span><br><span class="line">			BConfig.Listen.HTTPPort, _ = strconv.Atoi(strs[<span class="number">1</span>])</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		BConfig.Listen.Domains = params</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	BeeApp.Run() <span class="comment">//正式启动服务</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们这里直接查看<code>BeeApp.Run()</code>的实现</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">https:<span class="comment">//github.com/beego/beego/blob/c280209bf5b94cf31094a200b166c97eb3898851/app.go#L62-L239</span></span><br><span class="line"><span class="comment">// Run beego application.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(app *App)</span></span> Run(mws ...MiddleWare) &#123;</span><br><span class="line">	addr := BConfig.Listen.HTTPAddr</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> BConfig.Listen.HTTPPort != <span class="number">0</span> &#123;</span><br><span class="line">		addr = fmt.Sprintf(<span class="string">&quot;%s:%d&quot;</span>, BConfig.Listen.HTTPAddr, BConfig.Listen.HTTPPort)</span><br><span class="line">	&#125;</span><br><span class="line">	app.Server.Handler = app.Handlers <span class="comment">//这里的app.Handlers就是定义好的路由和服务，把它注册到http服务的回调里面</span></span><br><span class="line">	<span class="comment">// run cgi server</span></span><br><span class="line">	<span class="keyword">if</span> BConfig.Listen.EnableFcgi &#123;</span><br><span class="line">		....</span><br><span class="line">	&#125;</span><br><span class="line">	....</span><br><span class="line">	<span class="comment">// run graceful mode</span></span><br><span class="line">	<span class="keyword">if</span> BConfig.Listen.Graceful &#123;</span><br><span class="line">        ...</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// run normal mode</span></span><br><span class="line">	<span class="keyword">if</span> BConfig.Listen.EnableHTTPS || BConfig.Listen.EnableMutualHTTPS &#123;</span><br><span class="line">		...</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> BConfig.Listen.EnableHTTP &#123;</span><br><span class="line">		<span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">			app.Server.Addr = addr</span><br><span class="line">			logs.Info(<span class="string">&quot;http server Running on http://%s&quot;</span>, app.Server.Addr) <span class="comment">//对应的casdoor日志打印的地方</span></span><br><span class="line">			<span class="keyword">if</span> BConfig.Listen.ListenTCP4 &#123;</span><br><span class="line">                ...</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				<span class="keyword">if</span> err := app.Server.ListenAndServe(); err != <span class="literal">nil</span> &#123; <span class="comment">//服务启动了</span></span><br><span class="line">					logs.Critical(<span class="string">&quot;ListenAndServe: &quot;</span>, err)</span><br><span class="line">					time.Sleep(<span class="number">100</span> * time.Microsecond)</span><br><span class="line">					endRunning &lt;- <span class="literal">true</span></span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;()</span><br><span class="line">	&#125;</span><br><span class="line">	&lt;-endRunning</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>那么当有请求过来的时候，就会调用<code>app.Handlers</code>中的<code>ServeHTTP</code>来处理(必须实现<a target="_blank" rel="noopener" href="https://cs.opensource.google/go/go/+/go1.24.2:src/net/http/server.go;l=2290">HandlerFunc</a> )，<code>app.Handlers</code>就在<code>route.go</code>里面</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">https:<span class="comment">//github.com/beego/beego/blob/c280209bf5b94cf31094a200b166c97eb3898851/router.go#L693-L975</span></span><br><span class="line"><span class="comment">// Implement http.Handler interface.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(p *ControllerRegister)</span></span> ServeHTTP(rw http.ResponseWriter, r *http.Request) &#123;</span><br><span class="line">	startTime := time.Now()</span><br><span class="line">	....</span><br><span class="line">    https:<span class="comment">//github.com/beego/beego/blob/c280209bf5b94cf31094a200b166c97eb3898851/router.go#L756-L770</span></span><br><span class="line">	<span class="comment">// session init 在这里将会处理请求中的session</span></span><br><span class="line">	<span class="keyword">if</span> BConfig.WebConfig.Session.SessionOn &#123;</span><br><span class="line">		<span class="keyword">var</span> err <span class="type">error</span></span><br><span class="line">		context.Input.CruSession, err = GlobalSessions.SessionStart(rw, r) <span class="comment">//通过rw和r获取对应的session信息</span></span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			logs.Error(err)</span><br><span class="line">			exception(<span class="string">&quot;503&quot;</span>, context)</span><br><span class="line">			<span class="keyword">goto</span> Admin</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">defer</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">			<span class="keyword">if</span> context.Input.CruSession != <span class="literal">nil</span> &#123;</span><br><span class="line">				context.Input.CruSession.SessionRelease(rw)</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;()</span><br><span class="line">	&#125;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>GlobalSessions.SessionStart</code>其实现的方法在<code>session/session.go</code>中</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">https:<span class="comment">//github.com/beego/beego/blob/c280209bf5b94cf31094a200b166c97eb3898851/session/session.go#L207-L253</span></span><br><span class="line"><span class="comment">// SessionStart generate or read the session id from http request.</span></span><br><span class="line"><span class="comment">// if session id exists, return SessionStore with this id.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(manager *Manager)</span></span> SessionStart(w http.ResponseWriter, r *http.Request) (session Store, err <span class="type">error</span>) &#123;</span><br><span class="line">    sid, errs := manager.getSid(r) <span class="comment">// 在请求中获取sid (sessionId)</span></span><br><span class="line">	<span class="keyword">if</span> errs != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, errs</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> sid != <span class="string">&quot;&quot;</span> &amp;&amp; manager.provider.SessionExist(sid) &#123; <span class="comment">// 如果获取到就用id来查看对应的sessionStore，可以通过sessionStore来管理sessoin</span></span><br><span class="line">		<span class="keyword">return</span> manager.provider.SessionRead(sid)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Generate a new session 如果获取不到session就重新生成session</span></span><br><span class="line">	sid, errs = manager.sessionID()</span><br><span class="line">	<span class="keyword">if</span> errs != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, errs</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	session, err = manager.provider.SessionRead(sid)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="comment">// 设置一个cookie，把sid放到cookie中，下次即可在请求中获取对应的sid，从而获取session</span></span><br><span class="line">	cookie := &amp;http.Cookie&#123;</span><br><span class="line">		Name:     manager.config.CookieName,</span><br><span class="line">		Value:    url.QueryEscape(sid),</span><br><span class="line">		Path:     <span class="string">&quot;/&quot;</span>,</span><br><span class="line">		HttpOnly: !manager.config.DisableHTTPOnly,</span><br><span class="line">		Secure:   manager.isSecure(r),</span><br><span class="line">		Domain:   manager.config.Domain,</span><br><span class="line">		SameSite: manager.config.CookieSameSite,</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> manager.config.CookieLifeTime &gt; <span class="number">0</span> &#123;</span><br><span class="line">		cookie.MaxAge = manager.config.CookieLifeTime</span><br><span class="line">		cookie.Expires = time.Now().Add(time.Duration(manager.config.CookieLifeTime) * time.Second)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> manager.config.EnableSetCookie &#123;</span><br><span class="line">		http.SetCookie(w, cookie)</span><br><span class="line">	&#125;</span><br><span class="line">	r.AddCookie(cookie)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> manager.config.EnableSidInHTTPHeader &#123;</span><br><span class="line">		r.Header.Set(manager.config.SessionNameInHTTPHeader, sid)</span><br><span class="line">		w.Header().Set(manager.config.SessionNameInHTTPHeader, sid)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在上述的源码中，我们应该要关注里面的<code>SessionExist</code>、<code>SessionRead</code> 的实现，所以我们查看对应的源码，在<code>session/sess_file.go</code>中</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">https:<span class="comment">//github.com/beego/beego/blob/c280209bf5b94cf31094a200b166c97eb3898851/session/sess_file.go#L176-L190</span></span><br><span class="line"><span class="comment">// SessionExist Check file session exist.</span></span><br><span class="line"><span class="comment">// it checks the file named from sid exist or not.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(fp *FileProvider)</span></span> SessionExist(sid <span class="type">string</span>) <span class="type">bool</span> &#123;</span><br><span class="line">	filepder.lock.Lock() <span class="comment">// 这里跟上面的sessionCG一样，上锁了</span></span><br><span class="line">	<span class="keyword">defer</span> filepder.lock.Unlock()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(sid) &lt; <span class="number">2</span> &#123;</span><br><span class="line">		SLogger.Println(<span class="string">&quot;min length of session id is 2&quot;</span>, sid)</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	_, err := os.Stat(path.Join(fp.savePath, <span class="type">string</span>(sid[<span class="number">0</span>]), <span class="type">string</span>(sid[<span class="number">1</span>]), sid))</span><br><span class="line">	<span class="keyword">return</span> err == <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">https:<span class="comment">//github.com/beego/beego/blob/c280209bf5b94cf31094a200b166c97eb3898851/session/sess_file.go#L128-L176</span></span><br><span class="line"><span class="comment">// SessionRead Read file session by sid.</span></span><br><span class="line"><span class="comment">// if file is not exist, create it.</span></span><br><span class="line"><span class="comment">// the file path is generated from sid string.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(fp *FileProvider)</span></span> SessionRead(sid <span class="type">string</span>) (Store, <span class="type">error</span>) &#123;</span><br><span class="line">	invalidChars := <span class="string">&quot;./&quot;</span></span><br><span class="line">	...</span><br><span class="line">	filepder.lock.Lock() <span class="comment">// 这里跟上面的sessionCG一样，上锁了</span></span><br><span class="line">	<span class="keyword">defer</span> filepder.lock.Unlock()</span><br><span class="line"></span><br><span class="line">	err := os.MkdirAll(path.Join(fp.savePath, <span class="type">string</span>(sid[<span class="number">0</span>]), <span class="type">string</span>(sid[<span class="number">1</span>])), <span class="number">0755</span>) <span class="comment">//创建对应的文件夹</span></span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		SLogger.Println(err.Error())</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="comment">// 获取文件并写入session信息或者创建对应的文件并写入session信息</span></span><br><span class="line">	_, err = os.Stat(path.Join(fp.savePath, <span class="type">string</span>(sid[<span class="number">0</span>]), <span class="type">string</span>(sid[<span class="number">1</span>]), sid)) </span><br><span class="line">	<span class="keyword">var</span> f *os.File</span><br><span class="line">	<span class="keyword">if</span> err == <span class="literal">nil</span> &#123;</span><br><span class="line">		f, err = os.OpenFile(path.Join(fp.savePath, <span class="type">string</span>(sid[<span class="number">0</span>]), <span class="type">string</span>(sid[<span class="number">1</span>]), sid), os.O_RDWR, <span class="number">0777</span>)</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> os.IsNotExist(err) &#123;</span><br><span class="line">		f, err = os.Create(path.Join(fp.savePath, <span class="type">string</span>(sid[<span class="number">0</span>]), <span class="type">string</span>(sid[<span class="number">1</span>]), sid))</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">defer</span> f.Close()</span><br><span class="line">	<span class="comment">// 修改文件Modify时间，在CG中也是通过该属性判断文件是否要被CG</span></span><br><span class="line">	os.Chtimes(path.Join(fp.savePath, <span class="type">string</span>(sid[<span class="number">0</span>]), <span class="type">string</span>(sid[<span class="number">1</span>]), sid), time.Now(), time.Now())</span><br><span class="line">	<span class="keyword">var</span> kv <span class="keyword">map</span>[<span class="keyword">interface</span>&#123;&#125;]<span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">    <span class="comment">// 读取session信息</span></span><br><span class="line">	b, err := ioutil.ReadAll(f)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(b) == <span class="number">0</span> &#123;</span><br><span class="line">		kv = <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">interface</span>&#123;&#125;]<span class="keyword">interface</span>&#123;&#125;)</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		kv, err = DecodeGob(b)</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	ss := &amp;FileSessionStore&#123;sid: sid, values: kv&#125;</span><br><span class="line">	<span class="keyword">return</span> ss, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>所以我们这里就可以解释，为什么日志显示服务启动了，但是请求就是不行</p>
+<p>因为在一开始启动的时候，<code>beego</code>就会自己对<code>session</code>文件进行CG同时<code>lock</code>了一个<code>RWMutex</code></p>
+<p>后面请求过来的时候，<code>beego</code>又会读取为了读<code>session</code>而上锁，但是如果前面的<code>CG</code>还未执行完成，那么这个就会被阻塞，直到可以上锁为止</p>
+<p>所以当<code>tmp</code>的<code>session</code>文件过多，那么启动的时候就要花大量时间进行<code>CG</code>导致请求被卡住，也说明为什么在生产环境中<code>nfs</code>的挂载进程会<code>cpu</code>过高，然后把<code>nfs</code>取消挂载后(<code>tmp</code>中的<code>session</code>被清空后)，启动后马上就可以正常访问了</p>
+<p>以下是在测试环境的模拟</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@rocky-testing casdoor]# du -h --max-depth=1 ./shared-tmp/ </span><br><span class="line">....</span><br><span class="line">31G     ./shared-tmp/ # 这里弄了一个31G的session请求</span><br></pre></td></tr></table></figure>
+
+<p>重启一个<code>casdoor</code>服务后，<code>curl</code>该服务</p>
+<p><img src="/2025/04/03/casdoor%E6%9C%8D%E5%8A%A1%E5%90%AF%E5%8A%A8%E5%8D%B4%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E6%8E%92%E9%9A%9C/curl-8001.png" alt="log"></p>
+<p>在第一个curl通了以后，后面的curl服务响应时间才会正常</p>
+<p><img src="/2025/04/03/casdoor%E6%9C%8D%E5%8A%A1%E5%90%AF%E5%8A%A8%E5%8D%B4%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E6%8E%92%E9%9A%9C/curl-8001-normal.png" alt="log"></p>
+<h2 id="问题3"><a href="#问题3" class="headerlink" title="问题3"></a>问题3</h2><p>为什么一天多的时间，<code>tmp</code>文件会产生很多的文件，占用比较大的存储？</p>
+<p>这就不得不提这个<code>casdoor</code>了，从上面我们知道<code>casdoor</code>可以让是用来解决用户在多个应用中的登录问题的，那么应用在用户登录的时候就要访问<code>casdoor</code>获取用户的信息，而刚好，我们在生产的环境中，有一个服务大概会每秒请求<code>casdoor</code>服务3次左右(后面改成利用缓存机制了)，同时<code>casdoor</code>内部的缓存超时时间配置设置成了30天🙁，而<code>beego</code>自己默认是1小时。</p>
+<p>这里又有一个问题，<code>beego</code>里面的<code>session/session.go</code>中不是有<code>manager.provider.SessionExist</code>来查看<code>sid</code>是否存在，不存在的话才创建新的。对的，这个对一般网页上使用的用户来说是没有问题的，因为浏览器会帮你把<code>cookie</code>放到每次的请求中，所以一个用户只用创建一个<code>sid</code>即可，但是这个是应用的请求，取决于编写应用的人有没有把<code>cookie</code>或者<code>sid</code>给你传递过来，如果没有传递就会出现每次请求都有重新创建一个<code>sid</code>和对应的<code>session</code>信息</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>在上面分析下来好像是<code>beego</code>框架的问题，但是<code>casdoor</code>也是存在这一些问题的<del>（感觉像是最佳实践）</del></p>
+<p>首先<code>casdoor</code>的缓存设置成立30天，如果用的是<code>file</code>作为<code>sessionProvider</code>，当用户数量多的时候还是会有问题，或者使用<code>redis</code>来做<code>session</code>缓存，至少<code>io</code>性能比磁盘要快，<code>sessionCG</code>时间也快</p>
+<p>除了上面的问题，我们在其它地方也发现了一些问题</p>
+<p>比如在访问<code>/api/get-groups</code>时，对应的接口在调用的时候没有传分页参数，所以会全查数据表，刚好里面有个获取多条数据，然后循环多条数据并协程查询数据库，那个时候刚好我们弄了很多测试数据，导致该环境下调用该接口就会把数据库连接打满了。后面处理方案应该是更换了其它版本的<code>casdoor</code>，在目前环境的那个版本找不到对应的接口信息了。</p>
+
+        
+        <br />
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+        <div id="lv-container"></div>
+        <div class="giscus"></div>
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+        <li>
+            <a target="_blank"  href="https://github.com/kehaha-5">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-github"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+    </ul>
+    
+    <p>
+        <span id="busuanzi_container_site_pv">
+            <span id="busuanzi_value_site_pv"></span>PV
+        </span>
+        <span id="busuanzi_container_site_uv">
+            <span id="busuanzi_value_site_uv"></span>UV
+        </span>
+        Created By <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>  Theme <a target="_blank" rel="noopener" href="https://github.com/aircloud/hexo-theme-aircloud">AirCloud</a></p>
+</footer>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = "search.json"
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="/js/index.js"></script>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+</html>
+
+<!-- fancybox support -->
+
+    <!-- for theme: default is false -->
+    <!-- for page: default is true -->
+    
+<script src="/js/fancybox/jquery.fancybox.min.js" key="fancybox_js"></script>
+<script src="/js/fancybox/wrapImage.js" key="wrap_image_js"></script>
+
+        
+<link rel="stylesheet" href="/js/fancybox/jquery.fancybox.min.css" key="fancybox_css">
+
+            
