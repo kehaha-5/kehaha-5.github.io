@@ -7,12 +7,16 @@ title: kehaha-5 日常&&随手写
 subtitle: 'Just record it !'
 description: ''
 keywords:
-author: 我要料多的
+author: kehaha-5
+since: 2024
 language: zh
-timezone: ''
+timezone: 'Asia/Shanghai'
 sidebar-avatar: img/avatar.jpg   
 avatar_style:
   radius: true
+post_style:
+    indent: 0
+
 
 # SNS settings
 github_username: kehaha-5
@@ -23,11 +27,10 @@ search:
   path: search.json
   field: post
 
-
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-#  url: 'http://localhost:4000/'
-url: 'https://kehaha-5.github.io/'
+url: 'http://localhost:4000/'
+# url: 'https://kehaha-5.github.io/'
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
@@ -42,7 +45,7 @@ archive_dir: archives
 category_dir: categories
 code_dir: downloads/code
 i18n_dir: :lang
-skip_render:
+skip_render: "_posts/2024-03-21-udp丢包排查.md"
 
 # Writing
 new_post_name: :year-:month-:day-:title.md # File name of new posts
@@ -62,11 +65,10 @@ relative_link: false
 future: true
 syntax_highlighter: highlight.js
 highlight:
-  line_number: true
-  auto_detect: false
-  tab_replace: ''
-  wrap: true
-  hljs: false
+  line_number: false
+  auto_detect: true
+  wrap: false
+  hljs: true # 是否使用 highlight.js 语法高亮
 prismjs:
   preprocess: true
   line_number: true

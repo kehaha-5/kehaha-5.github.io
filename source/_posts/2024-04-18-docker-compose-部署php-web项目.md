@@ -1,7 +1,7 @@
 ---
 title: docker-compose 部署php-web项目
 date: 2024-04-18 18:26:21
-tags: [php,web,nginx,docker-compose]
+tags: [web,docker-compose]
 ---
 
 > 最近有一个朋友他想让我帮他部署一个几年前的php项目，既然是几年前的就项目了，为什么还要重新部署捏？那肯定是还有剩余价值啊
