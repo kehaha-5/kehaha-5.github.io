@@ -7,28 +7,30 @@
     <meta property="og:description" content="">
     <meta property="og:type" content="website">
     <meta name="description" content="">
-    <meta name="keyword"  content="">
+    <meta name="keyword" content="">
     <link rel="shortcut icon" href="/img/favicon.ico">
 
     <title>
         
-        k8s中为Pod配置自签证书以访问HTTPS服务 - kehaha-5
-        
+            k8s中为Pod配置自签证书以访问HTTPS服务 - kehaha-5
+                
     </title>
 
     <!-- Custom CSS -->
     
 <link rel="stylesheet" href="/css/aircloud.css">
 
-    
+        
 <link rel="stylesheet" href="/css/gitment.css">
 
-    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
-    <link href="//at.alicdn.com/t/font_620856_28hi1hpxx24.css" rel="stylesheet" type="text/css">
-    <!-- ga & ba script hoook -->
-    <script></script>
+            <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+            <link rel="stylesheet" href="/css/default.css">
+            <link href="//at.alicdn.com/t/font_620856_28hi1hpxx24.css" rel="stylesheet" type="text/css">
+            <!-- ga & ba script hoook -->
+            <script>
+            </script>
 
-    
+            
 
 
 
@@ -39,7 +41,6 @@
 
 
 <meta name="generator" content="Hexo 7.1.1"></head>
-
 <body>
 
 <div class="site-nav-toggle" id="site-nav-toggle">
@@ -64,7 +65,7 @@
             <img src="/img/avatar.jpg" />
         </div>
         <div class="name">
-            <i>我要料多的</i>
+            <i>kehaha-5</i>
         </div>
     </div>
     <div class="contents" id="nav-content">
@@ -105,7 +106,7 @@
     </div>
     
         <div id="toc" class="toc-article">
-    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%A6%82%E8%A6%81"><span class="toc-text">概要</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%A6%82%E5%BF%B5"><span class="toc-text">概念</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Https%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5"><span class="toc-text">Https相关概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%9E%E8%B7%B5"><span class="toc-text">实践</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%9F%E6%88%90%E8%87%AA%E7%AD%BE%E8%AF%81%E4%B9%A6"><span class="toc-text">生成自签证书</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E7%B3%BB%E7%BB%9F%E5%AE%89%E8%A3%85%E8%87%AA%E7%AD%BE%E8%AF%81%E4%B9%A6"><span class="toc-text">为系统安装自签证书</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BAPod%E9%85%8D%E7%BD%AE%E8%AF%81%E4%B9%A6"><span class="toc-text">为Pod配置证书</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8%E9%95%9C%E5%83%8F%E7%B3%BB%E7%BB%9F%E4%B8%AD%E5%AE%89%E8%A3%85%E8%AF%81%E4%B9%A6"><span class="toc-text">在镜像系统中安装证书</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8trust-manager"><span class="toc-text">使用trust-manager</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-text">最后</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%A6%82%E5%BF%B5"><span class="toc-text">概念</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Https%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5"><span class="toc-text">Https相关概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%9E%E8%B7%B5"><span class="toc-text">实践</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%9F%E6%88%90%E8%87%AA%E7%AD%BE%E8%AF%81%E4%B9%A6"><span class="toc-text">生成自签证书</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E7%B3%BB%E7%BB%9F%E5%AE%89%E8%A3%85%E8%87%AA%E7%AD%BE%E8%AF%81%E4%B9%A6"><span class="toc-text">为系统安装自签证书</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BAPod%E9%85%8D%E7%BD%AE%E8%AF%81%E4%B9%A6"><span class="toc-text">为Pod配置证书</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8%E9%95%9C%E5%83%8F%E7%B3%BB%E7%BB%9F%E4%B8%AD%E5%AE%89%E8%A3%85%E8%AF%81%E4%B9%A6"><span class="toc-text">在镜像系统中安装证书</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8trust-manager"><span class="toc-text">使用trust-manager</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-text">最后</span></a></li></ol>
 </div>
     
 </div>
@@ -148,9 +149,6 @@
         <a class="tag" href="/tags/#k8s" title="k8s">k8s</a>
         <span>/</span>
         
-        <a class="tag" href="/tags/#https" title="https">https</a>
-        <span>/</span>
-        
         <a class="tag" href="/tags/#certs" title="certs">certs</a>
         <span>/</span>
         
@@ -163,8 +161,8 @@
 </span>
 </span>
     </div>
-    <div class="post-content ">
-        <h1 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h1><blockquote>
+    <div class="post-content no-indent">
+        <blockquote>
 <p>最近在部署一套系统的其它环境时，遇到了自签https证书和应用自签证书到k8s中的问题，故此记录一下。</p>
 <p>在部署的应用中，有一个需要使用Standard OIDC Client所有必须要https，而且要认证的服务不是部署在本集群中</p>
 </blockquote>
@@ -232,10 +230,83 @@
 <li>通过<code>key+csr</code>生成对应的<code>crt</code>证书</li>
 </ul>
 <p>本文通过<code>openssl</code>来生成自签证书，以下是生成证书的脚本</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/bash</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Check <span class="keyword">if</span> domain name is provided</span></span><br><span class="line">if [ -z &quot;$1&quot; ]; then</span><br><span class="line">    echo &quot;Usage: $0 &lt;domain&gt;&quot;</span><br><span class="line">    exit 1</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">DOMAIN=$1</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">证书过期日期</span></span><br><span class="line">DAYS=3650</span><br><span class="line">COUNTRY=&quot;CN&quot;</span><br><span class="line">STATE=&quot;GZ&quot;</span><br><span class="line">CERT_DIR=&quot;./certs&quot;</span><br><span class="line">CONFIG_FILE=&quot;$CERT_DIR/openssl.cnf&quot;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Create directory <span class="keyword">for</span> certificates <span class="keyword">if</span> it doesn<span class="string">&#x27;t exist</span></span></span><br><span class="line">mkdir -p $CERT_DIR</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">生成 private key</span></span></span><br><span class="line">openssl genrsa -out $CERT_DIR/$&#123;DOMAIN&#125;.key 2048</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">Create OpenSSL configuration file 通过该配置文件生成对应的csr</span></span></span><br><span class="line">cat &gt; $CONFIG_FILE &lt;&lt;EOL</span><br><span class="line">[ req ]</span><br><span class="line">distinguished_name = req_distinguished_name</span><br><span class="line">prompt = no</span><br><span class="line">default_bits = 2048</span><br><span class="line">req_extensions = cert_ext</span><br><span class="line"></span><br><span class="line">[ req_distinguished_name ]</span><br><span class="line">countryName         = $COUNTRY</span><br><span class="line">stateOrProvinceName = $STATE</span><br><span class="line">localityName        = $STATE</span><br><span class="line">organizationName    = $STATE</span><br><span class="line">commonName          = $DOMAIN</span><br><span class="line"></span><br><span class="line">[ cert_ext ]</span><br><span class="line">basicConstraints = CA:TRUE # CA配置 </span><br><span class="line">keyUsage = digitalSignature, keyEncipherment</span><br><span class="line">extendedKeyUsage = serverAuth, clientAuth</span><br><span class="line">subjectAltName = @alt_names</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">SAN配置</span></span></span><br><span class="line">[ alt_names ]</span><br><span class="line">DNS.1 = $DOMAIN</span><br><span class="line">DNS.2 = *.$DOMAIN</span><br><span class="line"></span><br><span class="line">EOL</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">Generate CSR with extensions 生成csr</span></span></span><br><span class="line">openssl req -new -key $CERT_DIR/$&#123;DOMAIN&#125;.key -out $CERT_DIR/$&#123;DOMAIN&#125;.csr -config $CONFIG_FILE</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">Generate self-signed certificate with both extensions 生成crt</span></span></span><br><span class="line">openssl x509 -req -days $DAYS \</span><br><span class="line">    -in $CERT_DIR/$&#123;DOMAIN&#125;.csr \</span><br><span class="line">    -signkey $CERT_DIR/$&#123;DOMAIN&#125;.key \</span><br><span class="line">    -out $CERT_DIR/$&#123;DOMAIN&#125;.crt \</span><br><span class="line">    -extensions cert_ext \</span><br><span class="line">    -extfile $CONFIG_FILE</span><br><span class="line"></span><br><span class="line">echo &quot;Certificate and key have been generated in the $CERT_DIR directory.&quot;</span><br></pre></td></tr></table></figure>
+<pre><code class="hljs shell"><span class="hljs-meta prompt_">#</span><span class="language-bash">!/bin/bash</span>
+<span class="hljs-meta prompt_"></span>
+<span class="hljs-meta prompt_"># </span><span class="language-bash">Check <span class="hljs-keyword">if</span> domain name is provided</span>
+if [ -z &quot;$1&quot; ]; then
+    echo &quot;Usage: $0 &lt;domain&gt;&quot;
+    exit 1
+fi
+
+DOMAIN=$1
+<span class="hljs-meta prompt_"># </span><span class="language-bash">证书过期日期</span>
+DAYS=3650
+COUNTRY=&quot;CN&quot;
+STATE=&quot;GZ&quot;
+CERT_DIR=&quot;./certs&quot;
+CONFIG_FILE=&quot;$CERT_DIR/openssl.cnf&quot;
+<span class="hljs-meta prompt_"></span>
+<span class="hljs-meta prompt_"># </span><span class="language-bash">Create directory <span class="hljs-keyword">for</span> certificates <span class="hljs-keyword">if</span> it doesn<span class="hljs-string">&#x27;t exist</span></span>
+mkdir -p $CERT_DIR
+<span class="hljs-meta prompt_"></span>
+<span class="hljs-meta prompt_"># </span><span class="language-bash"><span class="hljs-string">生成 private key</span></span>
+openssl genrsa -out $CERT_DIR/$&#123;DOMAIN&#125;.key 2048
+<span class="hljs-meta prompt_"></span>
+<span class="hljs-meta prompt_"># </span><span class="language-bash"><span class="hljs-string">Create OpenSSL configuration file 通过该配置文件生成对应的csr</span></span>
+cat &gt; $CONFIG_FILE &lt;&lt;EOL
+[ req ]
+distinguished_name = req_distinguished_name
+prompt = no
+default_bits = 2048
+req_extensions = cert_ext
+
+[ req_distinguished_name ]
+countryName         = $COUNTRY
+stateOrProvinceName = $STATE
+localityName        = $STATE
+organizationName    = $STATE
+commonName          = $DOMAIN
+
+[ cert_ext ]
+basicConstraints = CA:TRUE # CA配置 
+keyUsage = digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth, clientAuth
+subjectAltName = @alt_names
+<span class="hljs-meta prompt_"># </span><span class="language-bash"><span class="hljs-string">SAN配置</span></span>
+[ alt_names ]
+DNS.1 = $DOMAIN
+DNS.2 = *.$DOMAIN
+
+EOL
+<span class="hljs-meta prompt_"></span>
+<span class="hljs-meta prompt_"># </span><span class="language-bash"><span class="hljs-string">Generate CSR with extensions 生成csr</span></span>
+openssl req -new -key $CERT_DIR/$&#123;DOMAIN&#125;.key -out $CERT_DIR/$&#123;DOMAIN&#125;.csr -config $CONFIG_FILE
+<span class="hljs-meta prompt_"></span>
+<span class="hljs-meta prompt_"># </span><span class="language-bash"><span class="hljs-string">Generate self-signed certificate with both extensions 生成crt</span></span>
+openssl x509 -req -days $DAYS \
+    -in $CERT_DIR/$&#123;DOMAIN&#125;.csr \
+    -signkey $CERT_DIR/$&#123;DOMAIN&#125;.key \
+    -out $CERT_DIR/$&#123;DOMAIN&#125;.crt \
+    -extensions cert_ext \
+    -extfile $CONFIG_FILE
+
+echo &quot;Certificate and key have been generated in the $CERT_DIR directory.&quot;</code></pre>
 
 <p>对应生成出来的证书，可以使用以下命令来进行查看</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看证书(crt)信息</span></span><br><span class="line">openssl x509 -noout -text -in server.crt</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看证书请求(csr)信息</span></span><br><span class="line">openssl req -noout -text -in server.csr</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看 RSA 私钥(key)信息</span></span><br><span class="line">openssl rsa -noout -text -in server.key</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">验证证书是否可信</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment"># 1. 使用系统的证书链进行验证</span></span></span><br><span class="line">openssl verify server.crt</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment"># 2. 使用指定的 CA 证书进行验证</span></span></span><br><span class="line">openssl verify -CAfile ca.crt server.crt</span><br></pre></td></tr></table></figure>
+<pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">查看证书(crt)信息</span>
+openssl x509 -noout -text -in server.crt
+<span class="hljs-meta prompt_"></span>
+<span class="hljs-meta prompt_"># </span><span class="language-bash">查看证书请求(csr)信息</span>
+openssl req -noout -text -in server.csr
+<span class="hljs-meta prompt_"></span>
+<span class="hljs-meta prompt_"># </span><span class="language-bash">查看 RSA 私钥(key)信息</span>
+openssl rsa -noout -text -in server.key
+<span class="hljs-meta prompt_"></span>
+<span class="hljs-meta prompt_"># </span><span class="language-bash">验证证书是否可信</span>
+<span class="hljs-meta prompt_">#</span><span class="language-bash"><span class="hljs-comment"># 1. 使用系统的证书链进行验证</span></span>
+openssl verify server.crt
+<span class="hljs-meta prompt_">#</span><span class="language-bash"><span class="hljs-comment"># 2. 使用指定的 CA 证书进行验证</span></span>
+openssl verify -CAfile ca.crt server.crt</code></pre>
 
 <h2 id="为系统安装自签证书"><a href="#为系统安装自签证书" class="headerlink" title="为系统安装自签证书"></a>为系统安装自签证书</h2><p>这里只介绍 RockyLinux9.3 和 Debain12 。因为我的系统是<code>RockyLinux9.3</code>，pod的镜像是 <code>Debain12</code>其它的大差不差。</p>
 <p>RockyLinux9.3</p>
@@ -250,21 +321,81 @@
 <li>就会生包含私有证书的<code>ca-certificates.crt</code> 到 <code>/etc/ssl/certs/</code>中</li>
 </ul>
 <p>安装完成以后，就可以使用<code>curl</code>命令对证书进行验证</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在把证书配置到web服务后，可以使用curl命令来查看证书是否匹配</span></span><br><span class="line">curl -v https://xxx.test.com --cacert /etc/ssl/certs/xxx.test.com.crt </span><br></pre></td></tr></table></figure>
+<pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">在把证书配置到web服务后，可以使用curl命令来查看证书是否匹配</span>
+curl -v https://xxx.test.com --cacert /etc/ssl/certs/xxx.test.com.crt</code></pre>
 
 <h2 id="为Pod配置证书"><a href="#为Pod配置证书" class="headerlink" title="为Pod配置证书"></a>为Pod配置证书</h2><p>应用部署环境：项目使用的是<code>Kustomize</code>来部署不同的环境。项目中的代码：<a target="_blank" rel="noopener" href="https://github.com/kehaha-5/k8s_demo/tree/main/certs/app">k8s_demo&#x2F;certs&#x2F;app at main · kehaha-5&#x2F;k8s_demo</a></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[root@rocky-testing app]# tree -L 3</span><br><span class="line">.</span><br><span class="line">├── debianupcaDockerfile</span><br><span class="line">├── deploy</span><br><span class="line">│   ├── base</span><br><span class="line">│   │   ├── deployment.yaml</span><br><span class="line">│   │   └── kustomization.yaml</span><br><span class="line">│   └── overlays</span><br><span class="line">│       ├── prod # 生成环境用的是CA的证书</span><br><span class="line">│       ├── uat # 使用init-container安装证书</span><br><span class="line">│       └── uat-trust # 使用trust-manager</span><br><span class="line">├── Dockerfile</span><br><span class="line">├── go.mod</span><br><span class="line">├── go.sum</span><br><span class="line">├── main.go</span><br><span class="line">└── makefile</span><br><span class="line"></span><br><span class="line">6 directories, 8 files</span><br></pre></td></tr></table></figure>
+<pre><code class="hljs shell">[root@rocky-testing app]# tree -L 3
+.
+├── debianupcaDockerfile
+├── deploy
+│   ├── base
+│   │   ├── deployment.yaml
+│   │   └── kustomization.yaml
+│   └── overlays
+│       ├── prod # 生成环境用的是CA的证书
+│       ├── uat # 使用init-container安装证书
+│       └── uat-trust # 使用trust-manager
+├── Dockerfile
+├── go.mod
+├── go.sum
+├── main.go
+└── makefile
+
+6 directories, 8 files</code></pre>
 
 <h3 id="在镜像系统中安装证书"><a href="#在镜像系统中安装证书" class="headerlink" title="在镜像系统中安装证书"></a>在镜像系统中安装证书</h3><p>根据上述的为系统安装证书的步骤，我们可以使用 <code>init-container</code> 把证书安装到应用的<code>pod</code>中。注意一些镜像是没有默认安装<code>ca-certificates </code> 需要额外安装或者把物理机的证书<code>COPY</code>到镜像内</p>
 <ol>
 <li>首先先把证书crt apply到k8s的secret中</li>
 </ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl create secret generic ssl-test-web-crt --from-file=./ssl.test.com.crt --dry-run=client  -o yaml  | kubectl apply -f -</span><br></pre></td></tr></table></figure>
+<pre><code class="hljs shell">kubectl create secret generic ssl-test-web-crt --from-file=./ssl.test.com.crt --dry-run=client  -o yaml  | kubectl apply -f -</code></pre>
 
 <ol start="2">
 <li>使用<code>init-container</code> 把证书生成到<code>ca-certificates.crt</code>中，同时把新的证书挂载到应用的<code>Pod</code>中</li>
 </ol>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">kustomize.config.k8s.io/v1beta1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Kustomization</span></span><br><span class="line"></span><br><span class="line"><span class="string">....</span></span><br><span class="line"></span><br><span class="line"><span class="attr">patchesJson6902:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">target:</span></span><br><span class="line">      <span class="attr">group:</span> <span class="string">apps</span></span><br><span class="line">      <span class="attr">version:</span> <span class="string">v1</span></span><br><span class="line">      <span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line">      <span class="attr">name:</span> <span class="string">https-client</span></span><br><span class="line">    <span class="attr">patch:</span> <span class="string">|-</span></span><br><span class="line"><span class="string">    .....</span></span><br><span class="line"><span class="string">      - op: add</span></span><br><span class="line"><span class="string">      # 把包含证书的secret挂载到volumes中</span></span><br><span class="line"><span class="string">        path: /spec/template/spec/volumes/-</span></span><br><span class="line"><span class="string">        value:</span></span><br><span class="line"><span class="string">          name: ssl-test-web-crt</span></span><br><span class="line"><span class="string">          secret:</span></span><br><span class="line"><span class="string">            secretName: ssl-test-web-crt</span></span><br><span class="line"><span class="string">      - op: add</span></span><br><span class="line"><span class="string">      # 把生成好的ca-certificates.crt挂载到应用上</span></span><br><span class="line"><span class="string">        path: /spec/template/spec/containers/0/volumeMounts/-</span></span><br><span class="line"><span class="string">        value:</span></span><br><span class="line"><span class="string">          name: ssl-certs</span></span><br><span class="line"><span class="string">          mountPath: /etc/ssl/certs/</span></span><br><span class="line"><span class="string">      - op: add</span></span><br><span class="line"><span class="string">      # 使用emptyDir来临时保存生成的ca-certificates.crt</span></span><br><span class="line"><span class="string">        path: /spec/template/spec/volumes/-</span></span><br><span class="line"><span class="string">        value:</span></span><br><span class="line"><span class="string">          name: ssl-certs</span></span><br><span class="line"><span class="string">          emptyDir: &#123;&#125;</span></span><br><span class="line"><span class="string">      - op: add</span></span><br><span class="line"><span class="string">        path: /spec/template/spec/initContainers</span></span><br><span class="line"><span class="string">        value:</span></span><br><span class="line"><span class="string">          - name: init-container</span></span><br><span class="line"><span class="string">            image: debian</span></span><br><span class="line"><span class="string">            command: [&quot;/bin/sh&quot;, &quot;-c&quot;, &quot;update-ca-certificates --fresh &amp;&amp; cp -r /etc/ssl/certs/* /mnt/ssl-certs/&quot; ]</span></span><br><span class="line"><span class="string">            volumeMounts:</span></span><br><span class="line"><span class="string">              - name: ssl-test-web-crt</span></span><br><span class="line"><span class="string">                mountPath: /usr/local/share/ca-certificates/</span></span><br><span class="line"><span class="string">              - name: ssl-certs</span></span><br><span class="line"><span class="string">                mountPath: /mnt/ssl-certs</span></span><br></pre></td></tr></table></figure>
+<pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">kustomize.config.k8s.io/v1beta1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Kustomization</span>
+
+<span class="hljs-string">....</span>
+
+<span class="hljs-attr">patchesJson6902:</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-attr">target:</span>
+      <span class="hljs-attr">group:</span> <span class="hljs-string">apps</span>
+      <span class="hljs-attr">version:</span> <span class="hljs-string">v1</span>
+      <span class="hljs-attr">kind:</span> <span class="hljs-string">Deployment</span>
+      <span class="hljs-attr">name:</span> <span class="hljs-string">https-client</span>
+    <span class="hljs-attr">patch:</span> <span class="hljs-string">|-</span>
+<span class="hljs-string">    .....</span>
+<span class="hljs-string">      - op: add</span>
+<span class="hljs-string">      # 把包含证书的secret挂载到volumes中</span>
+<span class="hljs-string">        path: /spec/template/spec/volumes/-</span>
+<span class="hljs-string">        value:</span>
+<span class="hljs-string">          name: ssl-test-web-crt</span>
+<span class="hljs-string">          secret:</span>
+<span class="hljs-string">            secretName: ssl-test-web-crt</span>
+<span class="hljs-string">      - op: add</span>
+<span class="hljs-string">      # 把生成好的ca-certificates.crt挂载到应用上</span>
+<span class="hljs-string">        path: /spec/template/spec/containers/0/volumeMounts/-</span>
+<span class="hljs-string">        value:</span>
+<span class="hljs-string">          name: ssl-certs</span>
+<span class="hljs-string">          mountPath: /etc/ssl/certs/</span>
+<span class="hljs-string">      - op: add</span>
+<span class="hljs-string">      # 使用emptyDir来临时保存生成的ca-certificates.crt</span>
+<span class="hljs-string">        path: /spec/template/spec/volumes/-</span>
+<span class="hljs-string">        value:</span>
+<span class="hljs-string">          name: ssl-certs</span>
+<span class="hljs-string">          emptyDir: &#123;&#125;</span>
+<span class="hljs-string">      - op: add</span>
+<span class="hljs-string">        path: /spec/template/spec/initContainers</span>
+<span class="hljs-string">        value:</span>
+<span class="hljs-string">          - name: init-container</span>
+<span class="hljs-string">            image: debian</span>
+<span class="hljs-string">            command: [&quot;/bin/sh&quot;, &quot;-c&quot;, &quot;update-ca-certificates --fresh &amp;&amp; cp -r /etc/ssl/certs/* /mnt/ssl-certs/&quot; ]</span>
+<span class="hljs-string">            volumeMounts:</span>
+<span class="hljs-string">              - name: ssl-test-web-crt</span>
+<span class="hljs-string">                mountPath: /usr/local/share/ca-certificates/</span>
+<span class="hljs-string">              - name: ssl-certs</span>
+<span class="hljs-string">                mountPath: /mnt/ssl-certs</span></code></pre>
 
 <ol start="3">
 <li>使用 <code>kubectl apply -k ./deploy/overlays/uat/</code>部署该环境</li>
@@ -292,12 +423,21 @@
 <blockquote>
 <p>By default, the trust namespace is the only namespace where<code>Secret</code>s will be read. This restriction is in place for security reasons - we don’t want to give trust-manager the permission to read all <code>Secret</code>s in all namespaces. With additional configuration, secrets may be read from or written to other namespaces.</p>
 </blockquote>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">helm</span> <span class="string">repo</span> <span class="string">add</span> <span class="string">jetstack</span> <span class="string">https://charts.jetstack.io</span> <span class="string">--force-update</span></span><br><span class="line"><span class="string">helm</span> <span class="string">upgrade</span> <span class="string">trust-manager</span> <span class="string">jetstack/trust-manager</span> <span class="string">\</span></span><br><span class="line">  <span class="string">--install</span> <span class="string">\</span></span><br><span class="line">  <span class="string">--namespace</span> <span class="string">cert-manager</span> <span class="string">\</span></span><br><span class="line">  <span class="string">--wait</span></span><br><span class="line"><span class="comment"># 可以利用 helm template 命令生成对应的helm value </span></span><br><span class="line"><span class="string">helm</span> <span class="string">template</span> <span class="string">\</span></span><br><span class="line">  <span class="string">trust-manager</span> <span class="string">jetstack/cert-manager</span> <span class="string">\</span></span><br><span class="line">  <span class="string">--namespace</span> <span class="string">cert-manager</span> </span><br><span class="line">  <span class="string">&gt;</span> <span class="string">cert-manager.custom.yaml</span></span><br></pre></td></tr></table></figure>
+<pre><code class="hljs yaml"><span class="hljs-string">helm</span> <span class="hljs-string">repo</span> <span class="hljs-string">add</span> <span class="hljs-string">jetstack</span> <span class="hljs-string">https://charts.jetstack.io</span> <span class="hljs-string">--force-update</span>
+<span class="hljs-string">helm</span> <span class="hljs-string">upgrade</span> <span class="hljs-string">trust-manager</span> <span class="hljs-string">jetstack/trust-manager</span> <span class="hljs-string">\</span>
+  <span class="hljs-string">--install</span> <span class="hljs-string">\</span>
+  <span class="hljs-string">--namespace</span> <span class="hljs-string">cert-manager</span> <span class="hljs-string">\</span>
+  <span class="hljs-string">--wait</span>
+<span class="hljs-comment"># 可以利用 helm template 命令生成对应的helm value </span>
+<span class="hljs-string">helm</span> <span class="hljs-string">template</span> <span class="hljs-string">\</span>
+  <span class="hljs-string">trust-manager</span> <span class="hljs-string">jetstack/cert-manager</span> <span class="hljs-string">\</span>
+  <span class="hljs-string">--namespace</span> <span class="hljs-string">cert-manager</span> 
+  <span class="hljs-string">&gt;</span> <span class="hljs-string">cert-manager.custom.yaml</span></code></pre>
 
 <ul>
 <li>先把证书导入到<code>trust-namespace</code>的</li>
 </ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">kubectl</span> <span class="string">create</span> <span class="string">secret</span> <span class="string">generic</span> <span class="string">ssl-test-web-crt</span> <span class="string">--from-file=./ssl.test.com.crt</span> <span class="string">--dry-run=client</span> <span class="string">-n</span> <span class="string">cert-manager</span>  <span class="string">-o</span> <span class="string">yaml</span>  <span class="string">|</span> <span class="string">kubectl</span> <span class="string">apply</span> <span class="string">-f</span> <span class="bullet">-</span>   </span><br></pre></td></tr></table></figure>
+<pre><code class="hljs yaml"><span class="hljs-string">kubectl</span> <span class="hljs-string">create</span> <span class="hljs-string">secret</span> <span class="hljs-string">generic</span> <span class="hljs-string">ssl-test-web-crt</span> <span class="hljs-string">--from-file=./ssl.test.com.crt</span> <span class="hljs-string">--dry-run=client</span> <span class="hljs-string">-n</span> <span class="hljs-string">cert-manager</span>  <span class="hljs-string">-o</span> <span class="hljs-string">yaml</span>  <span class="hljs-string">|</span> <span class="hljs-string">kubectl</span> <span class="hljs-string">apply</span> <span class="hljs-string">-f</span> <span class="hljs-bullet">-</span></code></pre>
 
 <ul>
 <li>编写对应的<code>Bundle</code><ul>
@@ -305,27 +445,91 @@
 </ul>
 </li>
 </ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">trust.cert-manager.io/v1alpha1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Bundle</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">public-bundle</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">sources:</span></span><br><span class="line"><span class="comment"># 为true会帮你更新对应容器中的CA证书</span></span><br><span class="line"><span class="comment"># https://cert-manager.io/docs/trust/trust-manager/#securely-maintaining-a-trust-manager-installation</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">useDefaultCAs:</span> <span class="literal">true</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">secret:</span></span><br><span class="line">      <span class="attr">name:</span> <span class="string">&quot;ssl-test-web-crt&quot;</span></span><br><span class="line">      <span class="attr">key:</span> <span class="string">&quot;ssl.test.com.crt&quot;</span></span><br><span class="line">  <span class="attr">target:</span></span><br><span class="line">    <span class="attr">configMap:</span></span><br><span class="line">      <span class="attr">key:</span> <span class="string">&quot;ca-certificates.crt&quot;</span></span><br><span class="line"><span class="comment"># 这里要给对应要生成 public-bundle configMap 的namespace 打上label</span></span><br><span class="line"><span class="comment"># kubectl label ns default trust=enabled</span></span><br><span class="line">    <span class="attr">namespaceSelector:</span></span><br><span class="line">      <span class="attr">matchLabels:</span></span><br><span class="line">        <span class="attr">trust:</span> <span class="string">enabled</span></span><br></pre></td></tr></table></figure>
+<pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">trust.cert-manager.io/v1alpha1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Bundle</span>
+<span class="hljs-attr">metadata:</span>
+  <span class="hljs-attr">name:</span> <span class="hljs-string">public-bundle</span>
+<span class="hljs-attr">spec:</span>
+  <span class="hljs-attr">sources:</span>
+<span class="hljs-comment"># 为true会帮你更新对应容器中的CA证书</span>
+<span class="hljs-comment"># https://cert-manager.io/docs/trust/trust-manager/#securely-maintaining-a-trust-manager-installation</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-attr">useDefaultCAs:</span> <span class="hljs-literal">true</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-attr">secret:</span>
+      <span class="hljs-attr">name:</span> <span class="hljs-string">&quot;ssl-test-web-crt&quot;</span>
+      <span class="hljs-attr">key:</span> <span class="hljs-string">&quot;ssl.test.com.crt&quot;</span>
+  <span class="hljs-attr">target:</span>
+    <span class="hljs-attr">configMap:</span>
+      <span class="hljs-attr">key:</span> <span class="hljs-string">&quot;ca-certificates.crt&quot;</span>
+<span class="hljs-comment"># 这里要给对应要生成 public-bundle configMap 的namespace 打上label</span>
+<span class="hljs-comment"># kubectl label ns default trust=enabled</span>
+    <span class="hljs-attr">namespaceSelector:</span>
+      <span class="hljs-attr">matchLabels:</span>
+        <span class="hljs-attr">trust:</span> <span class="hljs-string">enabled</span></code></pre>
 
 <ul>
 <li>我们只需要在对应的容器中挂载<code>public-bundle</code>到<code>/etc/ssl/certs</code></li>
 </ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">kustomize.config.k8s.io/v1beta1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Kustomization</span></span><br><span class="line"></span><br><span class="line"><span class="attr">resources:</span></span><br><span class="line"><span class="bullet">-</span> <span class="string">../../base</span></span><br><span class="line"></span><br><span class="line"><span class="string">.....</span></span><br><span class="line"></span><br><span class="line"><span class="attr">patchesJson6902:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">target:</span></span><br><span class="line">      <span class="attr">group:</span> <span class="string">apps</span></span><br><span class="line">      <span class="attr">version:</span> <span class="string">v1</span></span><br><span class="line">      <span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line">      <span class="attr">name:</span> <span class="string">https-client</span></span><br><span class="line">    <span class="attr">patch:</span> <span class="string">|-</span></span><br><span class="line"><span class="string">.....</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">op:</span> <span class="string">add</span></span><br><span class="line">        <span class="attr">path:</span> <span class="string">/spec/template/spec/volumes/-</span></span><br><span class="line">        <span class="attr">value:</span></span><br><span class="line">        <span class="comment">#声明Volumes</span></span><br><span class="line">          <span class="attr">name:</span> <span class="string">public-bundle</span></span><br><span class="line">          <span class="attr">configMap:</span></span><br><span class="line">            <span class="attr">name:</span> <span class="string">public-bundle</span></span><br><span class="line">            <span class="attr">defaultMode:</span> <span class="number">0644</span></span><br><span class="line">            <span class="attr">optional:</span> <span class="literal">false</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">op:</span> <span class="string">add</span></span><br><span class="line">        <span class="attr">path:</span> <span class="string">/spec/template/spec/containers/0/volumeMounts/-</span></span><br><span class="line">        <span class="attr">value:</span></span><br><span class="line">        <span class="comment"># VolumeMounts 挂载到/etc/ssl/certs/</span></span><br><span class="line">          <span class="attr">name:</span> <span class="string">public-bundle</span></span><br><span class="line">          <span class="attr">mountPath:</span> <span class="string">/etc/ssl/certs/</span></span><br><span class="line">          <span class="attr">readOnly:</span> <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="attr">images:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">https-client</span></span><br><span class="line">    <span class="attr">newTag:</span> <span class="string">v1.0</span></span><br><span class="line">    <span class="attr">newName:</span> <span class="string">https-client</span></span><br></pre></td></tr></table></figure>
+<pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">kustomize.config.k8s.io/v1beta1</span>
+<span class="hljs-attr">kind:</span> <span class="hljs-string">Kustomization</span>
+
+<span class="hljs-attr">resources:</span>
+<span class="hljs-bullet">-</span> <span class="hljs-string">../../base</span>
+
+<span class="hljs-string">.....</span>
+
+<span class="hljs-attr">patchesJson6902:</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-attr">target:</span>
+      <span class="hljs-attr">group:</span> <span class="hljs-string">apps</span>
+      <span class="hljs-attr">version:</span> <span class="hljs-string">v1</span>
+      <span class="hljs-attr">kind:</span> <span class="hljs-string">Deployment</span>
+      <span class="hljs-attr">name:</span> <span class="hljs-string">https-client</span>
+    <span class="hljs-attr">patch:</span> <span class="hljs-string">|-</span>
+<span class="hljs-string">.....</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">op:</span> <span class="hljs-string">add</span>
+        <span class="hljs-attr">path:</span> <span class="hljs-string">/spec/template/spec/volumes/-</span>
+        <span class="hljs-attr">value:</span>
+        <span class="hljs-comment">#声明Volumes</span>
+          <span class="hljs-attr">name:</span> <span class="hljs-string">public-bundle</span>
+          <span class="hljs-attr">configMap:</span>
+            <span class="hljs-attr">name:</span> <span class="hljs-string">public-bundle</span>
+            <span class="hljs-attr">defaultMode:</span> <span class="hljs-number">0644</span>
+            <span class="hljs-attr">optional:</span> <span class="hljs-literal">false</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">op:</span> <span class="hljs-string">add</span>
+        <span class="hljs-attr">path:</span> <span class="hljs-string">/spec/template/spec/containers/0/volumeMounts/-</span>
+        <span class="hljs-attr">value:</span>
+        <span class="hljs-comment"># VolumeMounts 挂载到/etc/ssl/certs/</span>
+          <span class="hljs-attr">name:</span> <span class="hljs-string">public-bundle</span>
+          <span class="hljs-attr">mountPath:</span> <span class="hljs-string">/etc/ssl/certs/</span>
+          <span class="hljs-attr">readOnly:</span> <span class="hljs-literal">true</span>
+
+<span class="hljs-attr">images:</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">https-client</span>
+    <span class="hljs-attr">newTag:</span> <span class="hljs-string">v1.0</span>
+    <span class="hljs-attr">newName:</span> <span class="hljs-string">https-client</span></code></pre>
 
 <ul>
 <li>如果成功了，在容器中就会如下显示</li>
 </ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@https-client-6b74cfbddd-2nw2r:/app# ls -ltr /etc/ssl/certs/ca-certificates.crt              </span><br><span class="line">lrwxrwxrwx. 1 root root 26 Mar 23 06:26 /etc/ssl/certs/ca-certificates.crt -&gt; ..data/ca-certificates.crt</span><br></pre></td></tr></table></figure>
+<pre><code class="hljs shell">root@https-client-6b74cfbddd-2nw2r:/app# ls -ltr /etc/ssl/certs/ca-certificates.crt              
+lrwxrwxrwx. 1 root root 26 Mar 23 06:26 /etc/ssl/certs/ca-certificates.crt -&gt; ..data/ca-certificates.crt</code></pre>
 
 <h1 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h1><p>对比上述的两种方法</p>
 <p>第一种方法我觉得比较简单，无须额外安装其它组件，但是对配置的入侵性比较高，需要额外配置一个有<code>ca-certificates</code>的<code>init-container</code></p>
 <p>第二种方法需要额外安装多一个<code>trust-manager</code>，但是落实到具体的<code>Pod</code>配置只需要额外挂载一个 <code>ConfigMap</code> 到对应的证书路径即可，同时对应的<code>bundle/public-bundle</code>也是支持自动更新的，即你的<code>secret</code>更新了，它也会自动同步。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@rocky-testing ~]# kubectl get events</span><br><span class="line">LAST SEEN   TYPE     REASON              OBJECT                               MESSAGE</span><br><span class="line">52m         Normal   Synced              bundle/public-bundle                 Successfully synced Bundle to namespaces that match this label selector: trust=enabled</span><br></pre></td></tr></table></figure>
+<pre><code class="hljs shell">[root@rocky-testing ~]# kubectl get events
+LAST SEEN   TYPE     REASON              OBJECT                               MESSAGE
+52m         Normal   Synced              bundle/public-bundle                 Successfully synced Bundle to namespaces that match this label selector: trust=enabled</code></pre>
 
 <p>当然除了上述两种方法，还有没有<strong>更简单的方法，甚至不需要额外的配置</strong>🤔</p>
 <p>有的！如果你公司有一份支持多域名的证书，就可以直接使用该 crt(一般叫做xxx_chain.crt或者.pem) 和 key</p>
 <p>如何查看？使用 <code>openssl x509 -noout -text -in server.crt</code> 查看证书信息 类似如下</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">           ·······</span><br><span class="line"># 如果 SAN (Subject Alternative Name) 中包含多个域名 或者 通配符 *.test.com </span><br><span class="line">           X509v3 Subject Alternative Name: </span><br><span class="line">               DNS:*.test.com, DNS:test.com, DNS:abc.test.com</span><br><span class="line">   Signature Algorithm: sha256WithRSAEncryption</span><br><span class="line">   Signature Value:</span><br><span class="line">   ······</span><br></pre></td></tr></table></figure>
+<pre><code class="hljs text">           ·······
+# 如果 SAN (Subject Alternative Name) 中包含多个域名 或者 通配符 *.test.com 
+           X509v3 Subject Alternative Name: 
+               DNS:*.test.com, DNS:test.com, DNS:abc.test.com
+   Signature Algorithm: sha256WithRSAEncryption
+   Signature Value:
+   ······</code></pre>
 
 <p>这样你就可以用 <code>abc.test.com</code> 等类似的<code>xxx.test.com</code> 的二级域名 (注意三级不行 如 <code>xxx.adb.test.com</code>)</p>
 <p>再通过修改hosts或者k8s中的coredns，就可以使用不需要额外配置使用<code>Https</code>了 😊</p>
@@ -388,11 +592,12 @@
     window.hexo_root = "/"
     window.isPost = true
 </script>
-<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
 
 <script src="/js/index.js"></script>
 
 <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="/js/jquery.min.js"></script>
+<script src="/js/highlight.min.js"></script>
 
 
 

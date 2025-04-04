@@ -83,8 +83,8 @@ function toggleSeachField(){
 }
 
 function showSearchField() {
-    searchInput.focus()
-    searchField.classList.add('show-flex-fade');
+    searchInput.focus();
+    searchField.classList.add('show-flex-fade', 'search-animation');
     searchField.classList.remove('hide-flex-fade');
 }
 
