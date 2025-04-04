@@ -644,7 +644,9 @@ https:<span class="hljs-comment">//github.com/beego/beego/blob/c280209bf5b94cf31
 <h2 id="问题3"><a href="#问题3" class="headerlink" title="问题3"></a>问题3</h2><p>为什么一天多的时间，<code>tmp</code>文件会产生很多的文件，占用比较大的存储？</p>
 <p>这就不得不提这个<code>casdoor</code>了，从上面我们知道<code>casdoor</code>可以让是用来解决用户在多个应用中的登录问题的，那么应用在用户登录的时候就要访问<code>casdoor</code>获取用户的信息，而刚好，我们在生产的环境中，有一个服务大概会每秒请求<code>casdoor</code>服务3次左右(后面改成利用缓存机制了)，同时<code>casdoor</code>内部的缓存超时时间配置设置成了30天🙁，而<code>beego</code>自己默认是1小时。</p>
 <p>这里又有一个问题，<code>beego</code>里面的<code>session/session.go</code>中不是有<code>manager.provider.SessionExist</code>来查看<code>sid</code>是否存在，不存在的话才创建新的。对的，这个对一般网页上使用的用户来说是没有问题的，因为浏览器会帮你把<code>cookie</code>放到每次的请求中，所以一个用户只用创建一个<code>sid</code>即可，但是这个是应用的请求，取决于编写应用的人有没有把<code>cookie</code>或者<code>sid</code>给你传递过来，如果没有传递就会出现每次请求都有重新创建一个<code>sid</code>和对应的<code>session</code>信息</p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>在上面分析下来好像是<code>beego</code>框架的问题，但是<code>casdoor</code>也是存在这一些问题的<del>（感觉像是最佳实践）</del></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>根据上述的分析，我画出来了整个请求流程图</p>
+<p><img src="/2025/04/03/casdoor%E6%9C%8D%E5%8A%A1%E5%90%AF%E5%8A%A8%E5%8D%B4%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E6%8E%92%E9%9A%9C/%E6%B5%81%E7%A8%8B%E5%9B%BE.png" alt="log"></p>
+<p>同时得出这次的问题<strong>应该是</strong><code>beego</code>框架的问题🤥，但是<code>casdoor</code>也是存在这一些问题的<del>（感觉像是最佳实践）</del></p>
 <p>首先<code>casdoor</code>的缓存设置成立30天，如果用的是<code>file</code>作为<code>sessionProvider</code>，当用户数量多的时候还是会有问题，或者使用<code>redis</code>来做<code>session</code>缓存，至少<code>io</code>性能比磁盘要快，<code>sessionCG</code>时间也快</p>
 <p>除了上面的问题，我们在其它地方也发现了一些问题</p>
 <p>比如在访问<code>/api/get-groups</code>时，对应的接口在调用的时候没有传分页参数，所以会全查数据表，刚好里面有个获取多条数据，然后循环多条数据并协程查询数据库，那个时候刚好我们弄了很多测试数据，导致该环境下调用该接口就会把数据库连接打满了。后面处理方案应该是更换了其它版本的<code>casdoor</code>，在目前环境的那个版本找不到对应的接口信息了。</p>
