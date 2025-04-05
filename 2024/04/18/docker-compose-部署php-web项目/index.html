@@ -24,7 +24,7 @@
 <link rel="stylesheet" href="/css/gitment.css">
 
             <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
-            <link rel="stylesheet" href="/css/default.css">
+            <link rel="stylesheet" href="/css/prism.css">
             <link href="//at.alicdn.com/t/font_620856_28hi1hpxx24.css" rel="stylesheet" type="text/css">
             <!-- ga & ba script hoook -->
             <script>
@@ -165,130 +165,130 @@
 <h1 id="框架升级"><a href="#框架升级" class="headerlink" title="框架升级"></a>框架升级</h1><p>在部署项目之前，先看一下这个项目有什么安全问题，发现在github的Dependabot alerts给我报告了10个左右的安全问题，看了一下，除了老生常谈的php序列化漏洞以外，剩下的都可以通过升级依赖来进行解决，所以第一件事就是先把项目的依赖进行升级</p>
 <p><img src="/2024/04/18/docker-compose-%E9%83%A8%E7%BD%B2php-web%E9%A1%B9%E7%9B%AE/1.png" alt="alerts"></p>
 <h1 id="项目结构-依赖安装"><a href="#项目结构-依赖安装" class="headerlink" title="项目结构 &amp;&amp; 依赖安装"></a>项目结构 &amp;&amp; 依赖安装</h1><p>ok，依赖升级好了，就先clone下来看一下目录结构先。利用tree命令查看项目结构</p>
-<pre><code class="hljs sh">kehaha@DESKTOP-4GO6ORF:~/docker/xxxxx$ tree -L 2 
-.
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kehaha@DESKTOP-4GO6ORF:~/docker/xxxxx$ tree <span class="token parameter variable">-L</span> <span class="token number">2</span> 
+<span class="token builtin class-name">.</span>
 └── xxxxx
     ├── README.md
     ├── back_end
     └── font_end
 
-3 directories, 1 file</code></pre>
+<span class="token number">3</span> directories, <span class="token number">1</span> <span class="token function">file</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>不难发现，这个项目是一个前后端分离的项目.</p>
 <h2 id="back-end"><a href="#back-end" class="headerlink" title="back_end"></a>back_end</h2><p>先看一下后端的文件，点开来看bank_end进行查看，先看一下php用来管理依赖的<code>composer.json</code></p>
-<pre><code class="hljs json"><span class="hljs-attr">&quot;require&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span>
-    <span class="hljs-attr">&quot;php&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&gt;=7.1.0&quot;</span><span class="hljs-punctuation">,</span>
-    <span class="hljs-attr">&quot;topthink/framework&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;^6.0.0&quot;</span><span class="hljs-punctuation">,</span>
-    <span class="hljs-attr">&quot;topthink/think-orm&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;^2.0&quot;</span><span class="hljs-punctuation">,</span>
-    <span class="hljs-attr">&quot;topthink/think-multi-app&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;^1.0&quot;</span><span class="hljs-punctuation">,</span>
-    <span class="hljs-attr">&quot;topthink/think-captcha&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;^3.0&quot;</span><span class="hljs-punctuation">,</span>
-    <span class="hljs-attr">&quot;thans/tp-jwt-auth&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;^1.1&quot;</span><span class="hljs-punctuation">,</span>
-    <span class="hljs-attr">&quot;phpoffice/phpspreadsheet&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;^1.17&quot;</span>
-<span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span></code></pre>
+<pre class="line-numbers language-json" data-language="json"><code class="language-json"><span class="token property">"require"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token property">"php"</span><span class="token operator">:</span> <span class="token string">">=7.1.0"</span><span class="token punctuation">,</span>
+    <span class="token property">"topthink/framework"</span><span class="token operator">:</span> <span class="token string">"^6.0.0"</span><span class="token punctuation">,</span>
+    <span class="token property">"topthink/think-orm"</span><span class="token operator">:</span> <span class="token string">"^2.0"</span><span class="token punctuation">,</span>
+    <span class="token property">"topthink/think-multi-app"</span><span class="token operator">:</span> <span class="token string">"^1.0"</span><span class="token punctuation">,</span>
+    <span class="token property">"topthink/think-captcha"</span><span class="token operator">:</span> <span class="token string">"^3.0"</span><span class="token punctuation">,</span>
+    <span class="token property">"thans/tp-jwt-auth"</span><span class="token operator">:</span> <span class="token string">"^1.1"</span><span class="token punctuation">,</span>
+    <span class="token property">"phpoffice/phpspreadsheet"</span><span class="token operator">:</span> <span class="token string">"^1.17"</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">,</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>好的这个项目用到了thinkphp6，要求的php版本要大于 7.1。既然这样先利用<a target="_blank" rel="noopener" href="https://www.phpcomposer.com/">composer</a>来安装后端的依赖。</p>
 <p>因为我的电脑里面没有安装php和composer 所以这次就利用docker来安装依赖，这里选择的是composer:1.8.2的镜像</p>
-<pre><code class="hljs sh">kehaha@DESKTOP-4GO6ORF:~/docker/xxxx/xxxx/back_end$ docker run --<span class="hljs-built_in">rm</span> --interactive --<span class="hljs-built_in">tty</span>   --volume <span class="hljs-variable">$PWD</span>:/app composer:1.8.2 composer i
-Loading composer repositories with package information
-Installing dependencies (including require-dev) from lock file
-Your requirements could not be resolved to an installable <span class="hljs-built_in">set</span> of packages.
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kehaha@DESKTOP-4GO6ORF:~/docker/xxxx/xxxx/back_end$ <span class="token function">docker</span> run <span class="token parameter variable">--rm</span> <span class="token parameter variable">--interactive</span> <span class="token parameter variable">--tty</span>   <span class="token parameter variable">--volume</span> <span class="token environment constant">$PWD</span>:/app composer:1.8.2 <span class="token function">composer</span> i
+Loading <span class="token function">composer</span> repositories with package information
+Installing dependencies <span class="token punctuation">(</span>including require-dev<span class="token punctuation">)</span> from lock <span class="token function">file</span>
+Your requirements could not be resolved to an installable <span class="token builtin class-name">set</span> of packages.
 
-  Problem 1
-    - Installation request <span class="hljs-keyword">for</span> phpoffice/phpspreadsheet 1.17.1 -&gt; satisfiable by phpoffice/phpspreadsheet[1.17.1].
-    - phpoffice/phpspreadsheet 1.17.1 requires ext-gd * -&gt; the requested PHP extension gd is missing from your system.
+  Problem <span class="token number">1</span>
+    - Installation request <span class="token keyword">for</span> phpoffice/phpspreadsheet <span class="token number">1.17</span>.1 -<span class="token operator">></span> satisfiable by phpoffice/phpspreadsheet<span class="token punctuation">[</span><span class="token number">1.17</span>.1<span class="token punctuation">]</span>.
+    - phpoffice/phpspreadsheet <span class="token number">1.17</span>.1 requires ext-gd * -<span class="token operator">></span> the requested PHP extension gd is missing from your system.
 
-  To <span class="hljs-built_in">enable</span> extensions, verify that they are enabled <span class="hljs-keyword">in</span> your .ini files:
+  To <span class="token builtin class-name">enable</span> extensions, verify that they are enabled <span class="token keyword">in</span> your .ini files:
     -
     - /usr/local/etc/php/conf.d/date_timezone.ini
     - /usr/local/etc/php/conf.d/docker-php-ext-sodium.ini
     - /usr/local/etc/php/conf.d/docker-php-ext-zip.ini
     - /usr/local/etc/php/conf.d/memory-limit.ini
-  You can also run `php --ini` inside terminal to see <span class="hljs-built_in">which</span> files are used by PHP <span class="hljs-keyword">in</span> CLI mode.</code></pre>
+  You can also run <span class="token variable"><span class="token variable">`</span>php <span class="token parameter variable">--ini</span><span class="token variable">`</span></span> inside terminal to see <span class="token function">which</span> files are used by PHP <span class="token keyword">in</span> CLI mode.<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>依赖安装失败了因为需要安装gd扩展，看来不如直接安装php然后安装完所需要的扩展最后再安装composer来下载依赖。所以这次直接利用docker的php来安装的框架依赖和扩展依赖，这里我选择的php:7.3.33-zts-alpine3.14。</p>
 <p>那么php如何快速安装扩展，可以参考<a target="_blank" rel="noopener" href="https://hub.docker.com/_/php#:~:text=How%20to%20install%20more%20PHP%20extensions">hub.dockerphp的overview</a>。这里我选择的使用<a target="_blank" rel="noopener" href="https://github.com/mlocati/docker-php-extension-installer">docker-php-extension-installer</a>来安装扩展。</p>
 <p>首先先启动php:7.3.33的容器并把项目挂载到容器内，然后进入容器，安装脚本，安装依赖</p>
-<pre><code class="hljs sh">install-php-extensions gd zip @composer <span class="hljs-comment">#后面发现还要安装zip</span></code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">install-php-extensions gd <span class="token function">zip</span> @composer <span class="token comment">#后面发现还要安装zip</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>安装完成后，利用<code>composer i</code>安装框架依赖</p>
-<pre><code class="hljs sh">Generating <span class="hljs-built_in">autoload</span> files
-&gt; @php think service:discover
-Succeed!
-&gt; @php think vendor:publish
-File /app/config/jwt.php exist!
-File /app/config/captcha.php exist!
-File /app/config/trace.php exist!
-Succeed!
-9 packages you are using are looking <span class="hljs-keyword">for</span> funding.
-Use the `composer fund` <span class="hljs-built_in">command</span> to find out more!</code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">Generating autoload files
+<span class="token operator">></span> @php think service:discover
+Succeed<span class="token operator">!</span>
+<span class="token operator">></span> @php think vendor:publish
+File /app/config/jwt.php exist<span class="token operator">!</span>
+File /app/config/captcha.php exist<span class="token operator">!</span>
+File /app/config/trace.php exist<span class="token operator">!</span>
+Succeed<span class="token operator">!</span>
+<span class="token number">9</span> packages you are using are looking <span class="token keyword">for</span> funding.
+Use the <span class="token variable"><span class="token variable">`</span><span class="token function">composer</span> fund<span class="token variable">`</span></span> <span class="token builtin class-name">command</span> to <span class="token function">find</span> out more<span class="token operator">!</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>那么后端框架依赖就安装完成了。</p>
 <h2 id="front-end"><a href="#front-end" class="headerlink" title="front_end"></a>front_end</h2><p>进到前端的文件，看了一下是一个vue2的项目，我的电脑是安装了nvm的，因此可以不用docker来安装依赖和打包项目。先用 <code>nvm use 14</code> 切换到 node14 的版本，然后用 <code>npm i</code> 和 <code>npm run build:prod</code> 来进行依赖和项目的安装</p>
 <h1 id="编写部署文件"><a href="#编写部署文件" class="headerlink" title="编写部署文件"></a>编写部署文件</h1><p>因为整个项目要用到<code>mysql</code> <code>nginx</code> <code>php-fpm</code>因此利用docker-compose来进行项目部署。首先编写docker-compose.yaml，把要利用到的镜像和端口都进行配置，这里不用挂载是因为这个项目只是跑来测试，不是正式上线，所以就没有使用volume进行文件挂载了。</p>
-<h2 id="docker-compose-yaml"><a href="#docker-compose-yaml" class="headerlink" title="docker-compose.yaml"></a>docker-compose.yaml</h2><pre><code class="hljs yaml"><span class="hljs-attr">version:</span> <span class="hljs-string">&quot;3.8&quot;</span>
+<h2 id="docker-compose-yaml"><a href="#docker-compose-yaml" class="headerlink" title="docker-compose.yaml"></a>docker-compose.yaml</h2><pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">version</span><span class="token punctuation">:</span> <span class="token string">"3.8"</span>
 
-<span class="hljs-attr">networks:</span>
-  <span class="hljs-attr">web_network:</span>
+<span class="token key atrule">networks</span><span class="token punctuation">:</span>
+  <span class="token key atrule">web_network</span><span class="token punctuation">:</span>
 
-<span class="hljs-attr">services:</span>
-  <span class="hljs-attr">back:</span>
-    <span class="hljs-attr">container_name:</span> <span class="hljs-string">php_back</span>
-    <span class="hljs-attr">build:</span> <span class="hljs-string">./php/</span>
-    <span class="hljs-attr">networks:</span>
-      <span class="hljs-bullet">-</span> <span class="hljs-string">web_network</span>
-    <span class="hljs-attr">depends_on:</span>
-      <span class="hljs-bullet">-</span> <span class="hljs-string">_front</span>
-      <span class="hljs-bullet">-</span> <span class="hljs-string">_mysql</span>
-    <span class="hljs-attr">restart:</span> <span class="hljs-string">always</span>
-    <span class="hljs-attr">tty:</span> <span class="hljs-literal">true</span>
+<span class="token key atrule">services</span><span class="token punctuation">:</span>
+  <span class="token key atrule">back</span><span class="token punctuation">:</span>
+    <span class="token key atrule">container_name</span><span class="token punctuation">:</span> php_back
+    <span class="token key atrule">build</span><span class="token punctuation">:</span> ./php/
+    <span class="token key atrule">networks</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> web_network
+    <span class="token key atrule">depends_on</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> _front
+      <span class="token punctuation">-</span> _mysql
+    <span class="token key atrule">restart</span><span class="token punctuation">:</span> always
+    <span class="token key atrule">tty</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
 
-  <span class="hljs-attr">front:</span>
-    <span class="hljs-attr">build:</span> <span class="hljs-string">./nginx/</span>
-    <span class="hljs-attr">container_name:</span> <span class="hljs-string">_front</span>
-    <span class="hljs-attr">networks:</span>
-      <span class="hljs-bullet">-</span> <span class="hljs-string">web_network</span>
-    <span class="hljs-attr">ports:</span>
-      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;4416:80&quot;</span>
-    <span class="hljs-attr">restart:</span> <span class="hljs-string">always</span>
+  <span class="token key atrule">front</span><span class="token punctuation">:</span>
+    <span class="token key atrule">build</span><span class="token punctuation">:</span> ./nginx/
+    <span class="token key atrule">container_name</span><span class="token punctuation">:</span> _front
+    <span class="token key atrule">networks</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> web_network
+    <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token string">"4416:80"</span>
+    <span class="token key atrule">restart</span><span class="token punctuation">:</span> always
 
-  <span class="hljs-attr">mysql:</span>
-    <span class="hljs-attr">build:</span> <span class="hljs-string">./mysql/</span>
-    <span class="hljs-attr">container_name:</span> <span class="hljs-string">_mysql</span>
-    <span class="hljs-attr">networks:</span>
-      <span class="hljs-bullet">-</span> <span class="hljs-string">web_network</span>
-    <span class="hljs-attr">ports:</span>
-      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;44166:3306&quot;</span>
-    <span class="hljs-attr">restart:</span> <span class="hljs-string">always</span></code></pre>
+  <span class="token key atrule">mysql</span><span class="token punctuation">:</span>
+    <span class="token key atrule">build</span><span class="token punctuation">:</span> ./mysql/
+    <span class="token key atrule">container_name</span><span class="token punctuation">:</span> _mysql
+    <span class="token key atrule">networks</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> web_network
+    <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token string">"44166:3306"</span>
+    <span class="token key atrule">restart</span><span class="token punctuation">:</span> always<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>这里可能就有问题了，所有容器虽然再同一个compose中，但是容器自己是如何访问对方的捏。其实这里我定义了一个<code>web_network</code>那么它们都在这个网络里面的话，可以直接通过容器名来访问对方。<br><a target="_blank" rel="noopener" href="https://docs.docker.com/compose/networking/#:~:text=For%20example%2C%20suppose,is%20running%20locally.">官方文档</a></p>
 <h2 id="nginx"><a href="#nginx" class="headerlink" title="nginx"></a>nginx</h2><p>这里单独编写nginx的Dockerfile是因为要进行一些配置</p>
-<pre><code class="hljs yaml"><span class="hljs-string">FROM</span> <span class="hljs-string">nginx:stable</span>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml">FROM nginx<span class="token punctuation">:</span>stable
 
-<span class="hljs-string">COPY</span> <span class="hljs-string">./dist/</span> <span class="hljs-string">/usr/share/nginx/html/</span> <span class="hljs-comment">#复制前端打包好的文件进入</span>
+COPY ./dist/ /usr/share/nginx/html/ <span class="token comment">#复制前端打包好的文件进入</span>
 
-<span class="hljs-string">COPY</span> <span class="hljs-string">./default.conf</span> <span class="hljs-string">/etc/nginx/conf.d/</span>
+COPY ./default.conf /etc/nginx/conf.d/
 
-<span class="hljs-string">EXPOSE</span> <span class="hljs-number">80</span>
-</code></pre>
-<pre><code class="hljs conf">server &#123;
+EXPOSE 80
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-conf" data-language="conf"><code class="language-conf">server &#123;
     listen       80;
     listen  [::]:80;
     server_name  localhost;
 
-    location / &#123;
-        root   /usr/share/nginx/html;
+    location &#x2F; &#123;
+        root   &#x2F;usr&#x2F;share&#x2F;nginx&#x2F;html;
         index  index.html index.htm;
     &#125;
-    error_page   500 502 503 504  /50x.html;
-    location = /50x.html &#123;
-        root   /usr/share/nginx/html;
+    error_page   500 502 503 504  &#x2F;50x.html;
+    location &#x3D; &#x2F;50x.html &#123;
+        root   &#x2F;usr&#x2F;share&#x2F;nginx&#x2F;html;
     &#125;
 
     location ~ \.php$ &#123;
         root           html;
         fastcgi_pass   php_back:9000; #php的容器名称
         fastcgi_index  index.php;
-        fastcgi_param  SCRIPT_FILENAME  /var/www/html/$fastcgi_script_name; #这个/var/www/html/是php容器中项目存放的位置，就是通过获取要执行的php文件位置来调用cgi来执行对应的php文件
+        fastcgi_param  SCRIPT_FILENAME  &#x2F;var&#x2F;www&#x2F;html&#x2F;$fastcgi_script_name; #这个&#x2F;var&#x2F;www&#x2F;html&#x2F;是php容器中项目存放的位置，就是通过获取要执行的php文件位置来调用cgi来执行对应的php文件
         include        fastcgi_params;
     &#125;
-&#125;</code></pre>
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <h2 id="php"><a href="#php" class="headerlink" title="php"></a>php</h2><p>这里的php我使用的是 <code>php:7.3-fpm-alpine3.14</code> 为什么捏，在 <code>dockerhub</code> 的 <code>php overview</code> 中有如下解释。<a target="_blank" rel="noopener" href="https://hub.docker.com/_/php#:~:text=php%3A%3Cversion%3E%2Dfpm,this%20image%20variant.">官方文档</a></p>
-<pre><code class="hljs text">php:&lt;version&gt;-fpm
+<pre class="line-numbers language-text" data-language="text"><code class="language-text">php:&lt;version>-fpm
 This variant contains PHP-FPM, which is a FastCGI implementation for PHP. See the PHP-FPM website for more information about PHP-FPM.
 
 In order to use this image variant, some kind of reverse proxy (such as NGINX, Apache, or other tool which speaks the FastCGI protocol) will be required.
@@ -300,66 +300,66 @@ simplified example by @md5
 very detailed article by Pascal Landau
 Stack Overflow discussion
 Apache httpd Wiki example
-WARNING: the FastCGI protocol is inherently trusting, and thus extremely insecure to expose outside of a private container network -- unless you know exactly what you are doing (and are willing to accept the extreme risk), do not use Docker&#x27;s --publish (-p) flag with this image variant.</code></pre>
+WARNING: the FastCGI protocol is inherently trusting, and thus extremely insecure to expose outside of a private container network -- unless you know exactly what you are doing (and are willing to accept the extreme risk), do not use Docker's --publish (-p) flag with this image variant.<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>我们是利用nginx来访问cgi来调用php的，因此我们要使用fpm的版本。</p>
 <p>如下是php的Dokerfile</p>
-<pre><code class="hljs yaml"><span class="hljs-string">FROM</span> <span class="hljs-string">php:7.3-fpm-alpine3.14</span>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml">FROM php<span class="token punctuation">:</span>7.3<span class="token punctuation">-</span>fpm<span class="token punctuation">-</span>alpine3.14
 
-<span class="hljs-string">RUN</span> <span class="hljs-string">curl</span> <span class="hljs-string">-sSLf</span> <span class="hljs-string">\</span>
-        <span class="hljs-string">-o</span> <span class="hljs-string">/usr/local/bin/install-php-extensions</span> <span class="hljs-string">\</span>
-        <span class="hljs-string">https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions</span> <span class="hljs-string">&amp;&amp;</span> <span class="hljs-string">\</span>
-    <span class="hljs-string">chmod</span> <span class="hljs-string">+x</span> <span class="hljs-string">/usr/local/bin/install-php-extensions</span> <span class="hljs-string">&amp;&amp;</span> <span class="hljs-string">\</span>
-    <span class="hljs-string">install-php-extensions</span> <span class="hljs-string">gd</span> <span class="hljs-string">zip</span> <span class="hljs-comment">#安装依赖 gd zip</span>
+RUN curl <span class="token punctuation">-</span>sSLf \
+        <span class="token punctuation">-</span>o /usr/local/bin/install<span class="token punctuation">-</span>php<span class="token punctuation">-</span>extensions \
+        https<span class="token punctuation">:</span>//github.com/mlocati/docker<span class="token punctuation">-</span>php<span class="token punctuation">-</span>extension<span class="token punctuation">-</span>installer/releases/latest/download/install<span class="token punctuation">-</span>php<span class="token punctuation">-</span>extensions <span class="token important">&amp;&amp;</span> \
+    chmod +x /usr/local/bin/install<span class="token punctuation">-</span>php<span class="token punctuation">-</span>extensions <span class="token important">&amp;&amp;</span> \
+    install<span class="token punctuation">-</span>php<span class="token punctuation">-</span>extensions gd zip <span class="token comment">#安装依赖 gd zip</span>
     
-<span class="hljs-string">COPY</span> <span class="hljs-string">./back_end</span> <span class="hljs-string">/var/www/html/</span>
+COPY ./back_end /var/www/html/
 
-<span class="hljs-string">RUN</span> <span class="hljs-string">mv</span> <span class="hljs-string">&quot;$PHP_INI_DIR/php.ini-production&quot;</span> <span class="hljs-string">&quot;$PHP_INI_DIR/php.ini&quot;</span> 
+RUN mv "$PHP_INI_DIR/php.ini<span class="token punctuation">-</span>production" "$PHP_INI_DIR/php.ini" 
 
-<span class="hljs-string">EXPOSE</span> <span class="hljs-number">9000</span></code></pre>
+EXPOSE 9000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <h2 id="mysql"><a href="#mysql" class="headerlink" title="mysql"></a>mysql</h2><p>mysql的Dockerfile文件：<br>这里我的mysql用的版本是5.7.36</p>
-<pre><code class="hljs yaml"><span class="hljs-string">FROM</span> <span class="hljs-string">mysql:5.7.36</span>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml">FROM mysql<span class="token punctuation">:</span>5.7.36
 
-<span class="hljs-string">COPY</span> <span class="hljs-string">./my.cnf</span> <span class="hljs-string">/etc/mysql/conf.d/</span> <span class="hljs-comment">#mysql的配置文件</span>
-<span class="hljs-string">COPY</span> <span class="hljs-string">./xxxx.sql</span> <span class="hljs-string">/docker-entrypoint-initdb.d/xxxx.sql</span> <span class="hljs-comment">#复制提前准备好的sql文件进入容器，容器在初始化的时候会执行对应的sql</span>
+COPY ./my.cnf /etc/mysql/conf.d/ <span class="token comment">#mysql的配置文件</span>
+COPY ./xxxx.sql /docker<span class="token punctuation">-</span>entrypoint<span class="token punctuation">-</span>initdb.d/xxxx.sql <span class="token comment">#复制提前准备好的sql文件进入容器，容器在初始化的时候会执行对应的sql</span>
 
-<span class="hljs-comment"># 定义环境变量</span>
-<span class="hljs-string">ENV</span> <span class="hljs-string">MYSQL_USER=&quot;xxxx&quot;</span> <span class="hljs-comment">#创建用户，一般我项目部署的话不会使用root用户，会单独创建一个用户，该用户只有该库的所有权限</span>
-<span class="hljs-string">ENV</span> <span class="hljs-string">MYSQL_PASSWORD=&quot;xxxxx&quot;</span> <span class="hljs-comment">#创建用户的密码</span>
-<span class="hljs-string">ENV</span> <span class="hljs-string">MYSQL_ROOT_PASSWORD=&quot;xxxx&quot;</span> <span class="hljs-comment"># root用户的密码</span>
+<span class="token comment"># 定义环境变量</span>
+ENV MYSQL_USER="xxxx" <span class="token comment">#创建用户，一般我项目部署的话不会使用root用户，会单独创建一个用户，该用户只有该库的所有权限</span>
+ENV MYSQL_PASSWORD="xxxxx" <span class="token comment">#创建用户的密码</span>
+ENV MYSQL_ROOT_PASSWORD="xxxx" <span class="token comment"># root用户的密码</span>
 
-<span class="hljs-comment"># 官方文档</span>
-<span class="hljs-comment"># https://hubgw.docker.com/_/mysql#:~:text=Initializing%20a%20fresh,the%20MYSQL_DATABASE%20variable.</span>
-<span class="hljs-comment"># https://hubgw.docker.com/_/mysql#:~:text=MYSQL_DATABASE,to%20this%20database.</span>
-<span class="hljs-comment"># ENV MYSQL_DATABASE=&quot;xxxx&quot; 可以创建指定名称的数据库，并且在执行时sql时会默认使用该数据库</span>
+<span class="token comment"># 官方文档</span>
+<span class="token comment"># https://hubgw.docker.com/_/mysql#:~:text=Initializing%20a%20fresh,the%20MYSQL_DATABASE%20variable.</span>
+<span class="token comment"># https://hubgw.docker.com/_/mysql#:~:text=MYSQL_DATABASE,to%20this%20database.</span>
+<span class="token comment"># ENV MYSQL_DATABASE="xxxx" 可以创建指定名称的数据库，并且在执行时sql时会默认使用该数据库</span>
 
-<span class="hljs-string">EXPOSE</span> <span class="hljs-number">3306</span></code></pre>
+EXPOSE 3306<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>my.cnf文件</p>
-<pre><code class="hljs conf">[mysqld]
-default-time_zone = &#x27;+8:00&#x27;
-character-set-server=utf8mb4
-collation-server=utf8mb4_general_ci
+<pre class="line-numbers language-conf" data-language="conf"><code class="language-conf">[mysqld]
+default-time_zone &#x3D; &#39;+8:00&#39;
+character-set-server&#x3D;utf8mb4
+collation-server&#x3D;utf8mb4_general_ci
 
 [client]
-default-character-set=utf8mb4</code></pre>
+default-character-set&#x3D;utf8mb4<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>sql文件</p>
-<pre><code class="hljs sql"><span class="hljs-keyword">CREATE</span> DATABASE IF <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">EXISTS</span> xxxx  <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">CHARACTER SET</span> utf8mb4  <span class="hljs-keyword">COLLATE</span> utf8mb4_unicode_ci; <span class="hljs-operator">/</span><span class="hljs-operator">/</span>创建数据库
-FLUSH PRIVILEGES; 
-use xxxx;
-<span class="hljs-keyword">SET</span> FOREIGN_KEY_CHECKS<span class="hljs-operator">=</span><span class="hljs-number">0</span>;
-<span class="hljs-comment">-- ----------------------------</span>
-<span class="hljs-comment">-- Table structure for xxx</span>
-<span class="hljs-comment">-- ----------------------------</span>
-<span class="hljs-keyword">DROP</span> <span class="hljs-keyword">TABLE</span> IF <span class="hljs-keyword">EXISTS</span> `xxx`;
-<span class="hljs-keyword">CREATE TABLE</span> `xxx` (
-  `xxxx` <span class="hljs-type">int</span>(<span class="hljs-number">11</span>) <span class="hljs-keyword">NOT NULL</span> AUTO_INCREMENT,
-  `xx` <span class="hljs-type">int</span>(<span class="hljs-number">11</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span> COMMENT <span class="hljs-string">&#x27;中文&#x27;</span>,
-  `xxx` <span class="hljs-type">varchar</span>(<span class="hljs-number">11</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span> COMMENT <span class="hljs-string">&#x27;中文&#x27;</span>,
-  `xxx` <span class="hljs-type">decimal</span>(<span class="hljs-number">10</span>,<span class="hljs-number">0</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span> COMMENT <span class="hljs-string">&#x27;中文&#x27;</span>,
-  <span class="hljs-keyword">PRIMARY KEY</span> (`xxxx`)
-) ENGINE<span class="hljs-operator">=</span>InnoDB <span class="hljs-keyword">DEFAULT</span> CHARSET<span class="hljs-operator">=</span>utf8mb4;
+<pre class="line-numbers language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">CREATE</span> <span class="token keyword">DATABASE</span> <span class="token keyword">IF</span> <span class="token operator">NOT</span> <span class="token keyword">EXISTS</span> xxxx  <span class="token keyword">DEFAULT</span> <span class="token keyword">CHARACTER</span> <span class="token keyword">SET</span> utf8mb4  <span class="token keyword">COLLATE</span> utf8mb4_unicode_ci<span class="token punctuation">;</span> <span class="token comment">//创建数据库</span>
+FLUSH <span class="token keyword">PRIVILEGES</span><span class="token punctuation">;</span> 
+<span class="token keyword">use</span> xxxx<span class="token punctuation">;</span>
+<span class="token keyword">SET</span> FOREIGN_KEY_CHECKS<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token comment">-- ----------------------------</span>
+<span class="token comment">-- Table structure for xxx</span>
+<span class="token comment">-- ----------------------------</span>
+<span class="token keyword">DROP</span> <span class="token keyword">TABLE</span> <span class="token keyword">IF</span> <span class="token keyword">EXISTS</span> <span class="token identifier"><span class="token punctuation">`</span>xxx<span class="token punctuation">`</span></span><span class="token punctuation">;</span>
+<span class="token keyword">CREATE</span> <span class="token keyword">TABLE</span> <span class="token identifier"><span class="token punctuation">`</span>xxx<span class="token punctuation">`</span></span> <span class="token punctuation">(</span>
+  <span class="token identifier"><span class="token punctuation">`</span>xxxx<span class="token punctuation">`</span></span> <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword">AUTO_INCREMENT</span><span class="token punctuation">,</span>
+  <span class="token identifier"><span class="token punctuation">`</span>xx<span class="token punctuation">`</span></span> <span class="token keyword">int</span><span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'中文'</span><span class="token punctuation">,</span>
+  <span class="token identifier"><span class="token punctuation">`</span>xxx<span class="token punctuation">`</span></span> <span class="token keyword">varchar</span><span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'中文'</span><span class="token punctuation">,</span>
+  <span class="token identifier"><span class="token punctuation">`</span>xxx<span class="token punctuation">`</span></span> <span class="token keyword">decimal</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token keyword">DEFAULT</span> <span class="token boolean">NULL</span> <span class="token keyword">COMMENT</span> <span class="token string">'中文'</span><span class="token punctuation">,</span>
+  <span class="token keyword">PRIMARY</span> <span class="token keyword">KEY</span> <span class="token punctuation">(</span><span class="token identifier"><span class="token punctuation">`</span>xxxx<span class="token punctuation">`</span></span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span> <span class="token keyword">ENGINE</span><span class="token operator">=</span><span class="token keyword">InnoDB</span> <span class="token keyword">DEFAULT</span> <span class="token keyword">CHARSET</span><span class="token operator">=</span>utf8mb4<span class="token punctuation">;</span>
 
-.........</code></pre>
+<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>ok，所有配置文件编写好了，可以进行部署了。</p>
 <h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p>使用 <code>docker composer up -d --build</code> 来构建和部署项目，部署完成访问<code>127.0.0.1:4416</code>，ok访问成功，查看容器的数据库也看到有对应的表了</p>
 <h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1><p>虽然部署成功，但是还存在着一些问题 </p>
@@ -368,23 +368,23 @@ use xxxx;
 <ol>
 <li>首先，先在前端的 <code>.env.production</code> 文件中修改 <code>API</code> 参数 并且进行打包</li>
 </ol>
-<pre><code class="hljs js"># just a flag
-<span class="hljs-variable constant_">ENV</span> = <span class="hljs-string">&#x27;production&#x27;</span>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"># just a flag
+<span class="token constant">ENV</span> <span class="token operator">=</span> <span class="token string">'production'</span>
 
 # base api
-<span class="hljs-variable constant_">VUE_APP_BASE_API</span> = <span class="hljs-string">&#x27;/public/index.php&#x27;</span> -&gt; <span class="hljs-string">&#x27;/api&#x27;</span>
-<span class="hljs-variable constant_">VUE_APP_UPLOAD_API</span> = <span class="hljs-string">&#x27;/public/index.php/admin/user/Upload&#x27;</span> -&gt; <span class="hljs-string">&#x27;/api/admin/user/Upload&#x27;</span>
-<span class="hljs-variable constant_">VUE_APP_DOWNLOAD_API</span> = <span class="hljs-string">&#x27;/public/index.php/admin/user/download&#x27;</span> -&gt; <span class="hljs-string">&#x27;/api/admin/user/download&#x27;</span>
-</code></pre>
+<span class="token constant">VUE_APP_BASE_API</span> <span class="token operator">=</span> <span class="token string">'/public/index.php'</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token string">'/api'</span>
+<span class="token constant">VUE_APP_UPLOAD_API</span> <span class="token operator">=</span> <span class="token string">'/public/index.php/admin/user/Upload'</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token string">'/api/admin/user/Upload'</span>
+<span class="token constant">VUE_APP_DOWNLOAD_API</span> <span class="token operator">=</span> <span class="token string">'/public/index.php/admin/user/download'</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token string">'/api/admin/user/download'</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <ol start="2">
-<li>修改<code>nginx</code>配置文件中处理php请求的部分<pre><code class="hljs conf">location ~ ^/api/(.*)$ &#123; # (.*)$ 把 /api/abc/xxx 中的/abc/xxx变成 $1
+<li>修改<code>nginx</code>配置文件中处理php请求的部分<pre class="line-numbers language-conf" data-language="conf"><code class="language-conf">location ~ ^&#x2F;api&#x2F;(.*)$ &#123; # (.*)$ 把 &#x2F;api&#x2F;abc&#x2F;xxx 中的&#x2F;abc&#x2F;xxx变成 $1
     root           root;
     fastcgi_pass   php_back:9000; 
     fastcgi_index  index.php;
-    fastcgi_param  SCRIPT_FILENAME  /var/www/html/public/index.php;
-    fastcgi_param  PATH_INFO /$1; #设置 PATH_INFO 定义thinkphp6的路由
+    fastcgi_param  SCRIPT_FILENAME  &#x2F;var&#x2F;www&#x2F;html&#x2F;public&#x2F;index.php;
+    fastcgi_param  PATH_INFO &#x2F;$1; #设置 PATH_INFO 定义thinkphp6的路由
     include        fastcgi_params;
-&#125;</code></pre></li>
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></li>
 <li>就可以成功访问了</li>
 </ol>
 <p><img src="/2024/04/18/docker-compose-%E9%83%A8%E7%BD%B2php-web%E9%A1%B9%E7%9B%AE/3.png" alt="api"></p>
@@ -394,34 +394,34 @@ use xxxx;
 <p>通过查询pdo发现还需要安装驱动 <code>PDO_MYSQL</code> </p>
 <p><img src="/2024/04/18/docker-compose-%E9%83%A8%E7%BD%B2php-web%E9%A1%B9%E7%9B%AE/5.png" alt="PDO_MYSQL"></p>
 <p>在php的Dockefile修改为</p>
-<pre><code class="hljs yaml"><span class="hljs-string">......</span>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token punctuation">...</span><span class="token punctuation">...</span>
 
-<span class="hljs-string">RUN</span> <span class="hljs-string">curl</span> <span class="hljs-string">-sSLf</span> <span class="hljs-string">\</span>
-        <span class="hljs-string">-o</span> <span class="hljs-string">/usr/local/bin/install-php-extensions</span> <span class="hljs-string">\</span>
-        <span class="hljs-string">https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions</span> <span class="hljs-string">&amp;&amp;</span> <span class="hljs-string">\</span>
-    <span class="hljs-string">chmod</span> <span class="hljs-string">+x</span> <span class="hljs-string">/usr/local/bin/install-php-extensions</span> <span class="hljs-string">&amp;&amp;</span> <span class="hljs-string">\</span>
-    <span class="hljs-string">install-php-extensions</span> <span class="hljs-string">gd</span> <span class="hljs-string">zip</span> <span class="hljs-string">PDO_MYSQL</span> <span class="hljs-comment">#</span>
+RUN curl <span class="token punctuation">-</span>sSLf \
+        <span class="token punctuation">-</span>o /usr/local/bin/install<span class="token punctuation">-</span>php<span class="token punctuation">-</span>extensions \
+        https<span class="token punctuation">:</span>//github.com/mlocati/docker<span class="token punctuation">-</span>php<span class="token punctuation">-</span>extension<span class="token punctuation">-</span>installer/releases/latest/download/install<span class="token punctuation">-</span>php<span class="token punctuation">-</span>extensions <span class="token important">&amp;&amp;</span> \
+    chmod +x /usr/local/bin/install<span class="token punctuation">-</span>php<span class="token punctuation">-</span>extensions <span class="token important">&amp;&amp;</span> \
+    install<span class="token punctuation">-</span>php<span class="token punctuation">-</span>extensions gd zip PDO_MYSQL <span class="token comment">#</span>
     
-<span class="hljs-string">......</span></code></pre>
+<span class="token punctuation">...</span><span class="token punctuation">...</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="session"><a href="#session" class="headerlink" title="session"></a>session</h2><p>当所有都安装好了，但是当要用到验证码进行登陆的时候，却一直显示验证码错误？由于那个验证码使用<code>topthink/think-captcha</code>来生成的，所有直接点开对应的源码看看是如何生成验证码的</p>
 <p>首先是验证码的生成，我发现里面调用了<code>session</code>方法把验证码的值放到了<code>session</code>里面</p>
 <p><img src="/2024/04/18/docker-compose-%E9%83%A8%E7%BD%B2php-web%E9%A1%B9%E7%9B%AE/6.png" alt="session1"></p>
 <p>在验证验证码的时候，就是从<code>session</code>里面获取key来进行验证的</p>
 <p><img src="/2024/04/18/docker-compose-%E9%83%A8%E7%BD%B2php-web%E9%A1%B9%E7%9B%AE/7.png" alt="session2"></p>
 <p>而<code>session</code>在这个项目中是以文件的形式保存在 <code>runtime</code> 目录里面的，所以我进入了php的容器，查看<code>runtime</code>目录发现什么文件都没有生成，甚至log文件都没有生成</p>
-<pre><code class="hljs sh">/var/www/html <span class="hljs-comment"># ls ./runtime/</span>
-/var/www/html <span class="hljs-comment">#</span></code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">/var/www/html <span class="token comment"># ls ./runtime/</span>
+/var/www/html <span class="token comment">#</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>所以很有可能就是权限有问题，所以在php的Dockerfile中，把<code>runtime</code>目录的权限改成<code>777</code> </p>
-<pre><code class="hljs yaml"><span class="hljs-string">......</span>
-<span class="hljs-string">RUN</span> <span class="hljs-string">mv</span> <span class="hljs-string">&quot;$PHP_INI_DIR/php.ini-production&quot;</span> <span class="hljs-string">&quot;$PHP_INI_DIR/php.ini&quot;</span> <span class="hljs-string">&amp;&amp;</span> <span class="hljs-string">chmod</span> <span class="hljs-number">777</span> <span class="hljs-string">/var/www/html/runtime</span>    
-<span class="hljs-string">......</span></code></pre>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token punctuation">...</span><span class="token punctuation">...</span>
+RUN mv "$PHP_INI_DIR/php.ini<span class="token punctuation">-</span>production" "$PHP_INI_DIR/php.ini" <span class="token important">&amp;&amp;</span> chmod 777 /var/www/html/runtime    
+<span class="token punctuation">...</span><span class="token punctuation">...</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>改了以后问题就顺利解决了，对应的访问log也有了</p>
-<pre><code class="hljs sh">/var/www/html <span class="hljs-comment"># ls ./runtime/*</span>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">/var/www/html <span class="token comment"># ls ./runtime/*</span>
 ./runtime/log:
-202404
+<span class="token number">202404</span>
 
 ./runtime/session:
-sess_3d7d70488b437c484f150d574558688f</code></pre>
+sess_3d7d70488b437c484f150d574558688f<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>至此，顺利通过 <code>docker-compose</code> 部署了一个php的web项目 </p>
 
@@ -488,7 +488,7 @@ sess_3d7d70488b437c484f150d574558688f</code></pre>
 
 <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 <script src="/js/jquery.min.js"></script>
-<script src="/js/highlight.min.js"></script>
+<script src="/js/prism.js"></script>
 
 
 

@@ -24,7 +24,7 @@
 <link rel="stylesheet" href="/css/gitment.css">
 
             <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
-            <link rel="stylesheet" href="/css/default.css">
+            <link rel="stylesheet" href="/css/prism.css">
             <link href="//at.alicdn.com/t/font_620856_28hi1hpxx24.css" rel="stylesheet" type="text/css">
             <!-- ga & ba script hoook -->
             <script>
@@ -202,36 +202,36 @@
 <li>在k3s中如果需要配置镜像源可以参考 <a target="_blank" rel="noopener" href="https://docs.k3s.io/zh/installation/private-registry">k3s-Private Registry Configuration</a>，同时最好启用<code>Embedded Registry Mirror</code>功能，这个可以使节点通过集群里面的其他节点获取已有的镜像 <a target="_blank" rel="noopener" href="https://docs.k3s.io/zh/installation/registry-mirror">k3s-Embedded Registry Mirror</a></li>
 </ol>
 <h2 id="额外配置"><a href="#额外配置" class="headerlink" title="额外配置"></a>额外配置</h2><p>因为在上述中提到需要一台服务器专门做web资源服务器，所以在部署完集群后，需要把对应服务node打上污点，防止其他pod被调度到该节点上面</p>
-<pre><code class="hljs shell">root@node-m:~/k8s# kubectl taint nodes node-res type=res:NoSchedule 
-<span class="hljs-meta prompt_"># </span><span class="language-bash">其中NoSchedule的含有如下和其他污点类型：</span>
-<span class="hljs-meta prompt_"># </span><span class="language-bash">NoSchedule ：表示k8s将不会将Pod调度到具有该污点的Node上</span>
-<span class="hljs-meta prompt_"># </span><span class="language-bash">PreferNoSchedule ：表示k8s将尽量避免将Pod调度到具有该污点的Node上</span>
-<span class="hljs-meta prompt_"># </span><span class="language-bash">NoExecute ：表示k8s将不会将Pod调度到具有该污点的Node上，同时会将Node上已经存在的Pod驱逐出去</span>
-root@node-m:~/k8s# kubectl describe nodes node-res
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">root@node-m:~/k8s<span class="token comment"># kubectl taint nodes node-res type=res:NoSchedule </span>
+<span class="token comment"># 其中NoSchedule的含有如下和其他污点类型：</span>
+<span class="token comment"># NoSchedule ：表示k8s将不会将Pod调度到具有该污点的Node上</span>
+<span class="token comment"># PreferNoSchedule ：表示k8s将尽量避免将Pod调度到具有该污点的Node上</span>
+<span class="token comment"># NoExecute ：表示k8s将不会将Pod调度到具有该污点的Node上，同时会将Node上已经存在的Pod驱逐出去</span>
+root@node-m:~/k8s<span class="token comment"># kubectl describe nodes node-res</span>
 Name:               node-res
-...
-Taints:             type=res:NoSchedule
-Unschedulable:      false
-...</code></pre>
+<span class="token punctuation">..</span>.
+Taints:             <span class="token assign-left variable">type</span><span class="token operator">=</span>res:NoSchedule
+Unschedulable:      <span class="token boolean">false</span>
+<span class="token punctuation">..</span>.<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>或者使用k3s中的<code>agent</code>配置文件给节点进行污点配置 <a target="_blank" rel="noopener" href="https://docs.k3s.io/zh/cli/agent">k3s-agent</a></p>
 <p>同时创建一个<code>prod</code>的namespace，我的所有应用都将会部署到该<code>namespace</code>上面</p>
-<pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
-<span class="hljs-attr">kind:</span> <span class="hljs-string">Namespace</span>
-<span class="hljs-attr">metadata:</span>
-  <span class="hljs-attr">name:</span> <span class="hljs-string">prod</span>
-  <span class="hljs-attr">labels:</span>
-    <span class="hljs-attr">name:</span> <span class="hljs-string">prod</span></code></pre>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Namespace
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> prod
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> prod<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 
 
 <h1 id="开始部署"><a href="#开始部署" class="headerlink" title="开始部署"></a>开始部署</h1><h2 id="kubernetes-dashboard"><a href="#kubernetes-dashboard" class="headerlink" title="kubernetes dashboard"></a>kubernetes dashboard</h2><p>根据<a target="_blank" rel="noopener" href="https://github.com/kubernetes/dashboard">文档</a>命令部署 <code>dashboard</code></p>
-<pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">Add kubernetes-dashboard repository</span>
-helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
-<span class="hljs-meta prompt_"># </span><span class="language-bash">Deploy a Helm Release named <span class="hljs-string">&quot;kubernetes-dashboard&quot;</span> using the kubernetes-dashboard chart</span>
-helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --create-namespace --namespace kubernetes-dashboard</code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># Add kubernetes-dashboard repository</span>
+helm repo <span class="token function">add</span> kubernetes-dashboard https://kubernetes.github.io/dashboard/
+<span class="token comment"># Deploy a Helm Release named "kubernetes-dashboard" using the kubernetes-dashboard chart</span>
+helm upgrade <span class="token parameter variable">--install</span> kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --create-namespace <span class="token parameter variable">--namespace</span> kubernetes-dashboard<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>部署完后我们还要创建一个用户用于管理k8s <a target="_blank" rel="noopener" href="https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md">Creating sample user</a></p>
 <p>完成上述部署以后，我们就要访问对应的<code>dashboard</code>，然后我是要用ip+端口的访问方式，所以还要创建一个<code>service</code>把流量代理到对应的pod上</p>
-<pre><code class="hljs shell">cat node-web.yaml
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">cat</span> node-web.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -240,234 +240,234 @@ metadata:
   labels:
     k8s-app: kubernetes-dashboard
 spec:
-  type: NodePort #这里使用NodePort 因为我想要从集群外部访问
+  type: NodePort <span class="token comment">#这里使用NodePort 因为我想要从集群外部访问</span>
   selector:
     app.kubernetes.io/name: kong
   ports:
     - protocol: TCP
-      port: 8000
-      targetPort: 8443</code></pre>
+      port: <span class="token number">8000</span>
+      targetPort: <span class="token number">8443</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>注意这里要代理的是<code>kubernetes-dashboard-kong</code>不是<code>kubernetes-dashboard-web</code></p>
-<pre><code class="hljs shell">root@node-m:~/k8s/dashoboard# kubectl get endpoints -n kubernetes-dashboard
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">root@node-m:~/k8s/dashoboard<span class="token comment"># kubectl get endpoints -n kubernetes-dashboard</span>
 NAME                               ENDPOINTS              AGE
-dashoard-web                       10.42.1.242:8443       12d
-...
-kubernetes-dashboard-kong-proxy    10.42.1.242:8443       34h
-...
-<span class="hljs-meta prompt_">#</span><span class="language-bash">这里可以看到我的dashoard-web已经绑定到kubernetes-dashboard-kong-proxy上了</span>
- kubectl get svc -n kubernetes-dashboard
-NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
-dashoard-web  NodePort    10.43.234.91    &lt;none&gt;        8000:30756/TCP   12d
-...
-<span class="hljs-meta prompt_">#</span><span class="language-bash">查看service信息可以得知 dashoard-web 的外部访问端口为 30756</span></code></pre>
+dashoard-web                       <span class="token number">10.42</span>.1.242:8443       12d
+<span class="token punctuation">..</span>.
+kubernetes-dashboard-kong-proxy    <span class="token number">10.42</span>.1.242:8443       34h
+<span class="token punctuation">..</span>.
+<span class="token comment">#这里可以看到我的dashoard-web已经绑定到kubernetes-dashboard-kong-proxy上了</span>
+ kubectl get svc <span class="token parameter variable">-n</span> kubernetes-dashboard
+NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT<span class="token punctuation">(</span>S<span class="token punctuation">)</span>          AGE
+dashoard-web  NodePort    <span class="token number">10.43</span>.234.91    <span class="token operator">&lt;</span>none<span class="token operator">></span>        <span class="token number">8000</span>:30756/TCP   12d
+<span class="token punctuation">..</span>.
+<span class="token comment">#查看service信息可以得知 dashoard-web 的外部访问端口为 30756</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>然后ip+30756 即可访问 <code>dashboard</code> 同时还要创建对应用户的token</p>
-<pre><code class="hljs shell">root@node-m:~/k8s/dashoboard# kubectl create token -n kubernetes-dashboard xxxx</code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">root@node-m:~/k8s/dashoboard<span class="token comment"># kubectl create token -n kubernetes-dashboard xxxx</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p><img src="/2024/08/16/%E4%BB%8E%E9%9B%B6%E5%88%B0%E4%B8%80--%E6%90%AD%E5%BB%BAweb%E9%A1%B9%E7%9B%AE%E9%9B%86%E7%BE%A4/1.png" alt="dashoard-web"></p>
 <h2 id="NFS存储挂载"><a href="#NFS存储挂载" class="headerlink" title="NFS存储挂载"></a>NFS存储挂载</h2><p>在所有应用部署前，先部署外部存储介质</p>
 <p>首先先要安装 <a target="_blank" rel="noopener" href="https://github.com/kubernetes-csi/csi-driver-nfs">csi-driver-nfs</a> 这个是nfs的卷插件，不安装的话是无法使用nfs相关卷功能</p>
-<pre><code class="hljs shell">root@node-m:~/k8s# cat ./nfs/storageClass.yaml
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">root@node-m:~/k8s<span class="token comment"># cat ./nfs/storageClass.yaml</span>
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: nfs
 provisioner: nfs.csi.k8s.io
 parameters:
-  server: 192.168.1.125
+  server: <span class="token number">192.168</span>.1.125
   share: /mnt/nfs_share
-<span class="hljs-meta prompt_">  # </span><span class="language-bash">csi.storage.k8s.io/provisioner-secret is only needed <span class="hljs-keyword">for</span> providing mountOptions <span class="hljs-keyword">in</span> DeleteVolume</span>
-<span class="hljs-meta prompt_">  # </span><span class="language-bash">csi.storage.k8s.io/provisioner-secret-name: <span class="hljs-string">&quot;mount-options&quot;</span></span>
-<span class="hljs-meta prompt_">  # </span><span class="language-bash">csi.storage.k8s.io/provisioner-secret-namespace: <span class="hljs-string">&quot;default&quot;</span></span>
-reclaimPolicy: Retain #因为要保存redis 和 mysql的数据 所以使用Retain 当pvc或pv被删除以后仍然可以保留数据
+  <span class="token comment"># csi.storage.k8s.io/provisioner-secret is only needed for providing mountOptions in DeleteVolume</span>
+  <span class="token comment"># csi.storage.k8s.io/provisioner-secret-name: "mount-options"</span>
+  <span class="token comment"># csi.storage.k8s.io/provisioner-secret-namespace: "default"</span>
+reclaimPolicy: Retain <span class="token comment">#因为要保存redis 和 mysql的数据 所以使用Retain 当pvc或pv被删除以后仍然可以保留数据</span>
 volumeBindingMode: Immediate
 mountOptions:
-  - nfsvers=4</code></pre>
+  - <span class="token assign-left variable">nfsvers</span><span class="token operator">=</span><span class="token number">4</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>这里使用的是<code> Dynamic Volume Provisioning</code> 这样就不需要每个<code>pvc</code>都声名一个<code>pv</code>了</p>
 <h2 id="MySQL集群"><a href="#MySQL集群" class="headerlink" title="MySQL集群"></a>MySQL集群</h2><p>这里要部署的是一个1个主节点2个从节点的MySQL集群</p>
-<pre><code class="hljs yaml"><span class="hljs-comment">#configmap</span>
-<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
-<span class="hljs-attr">kind:</span> <span class="hljs-string">ConfigMap</span>
-<span class="hljs-attr">metadata:</span>
-  <span class="hljs-attr">name:</span> <span class="hljs-string">mysql</span>
-  <span class="hljs-attr">namespace:</span> <span class="hljs-string">prod</span>
-<span class="hljs-attr">data:</span>
-  <span class="hljs-attr">master.cnf:</span> <span class="hljs-string">|</span>
-<span class="hljs-string">    # 主节点MySQL的配置文件</span>
-<span class="hljs-string">    [mysqld]</span>
-<span class="hljs-string">    log-bin</span>
-<span class="hljs-string"></span>  <span class="hljs-attr">slave.cnf:</span> <span class="hljs-string">|</span>
-<span class="hljs-string">    # 从节点MySQL的配置文件</span>
-<span class="hljs-string">    [mysqld]</span>
-<span class="hljs-string">    log-bin</span>
-<span class="hljs-string">    read_only=1</span>
-<span class="hljs-string">    replicate_ignore_db=information_schema</span>
-<span class="hljs-string">    replicate_ignore_db=performance_schema</span>
-<span class="hljs-string">    replicate_ignore_db=mysql</span>
-<span class="hljs-string">    replicate_ignore_db=sys</span>
-<span class="hljs-string"></span>  <span class="hljs-attr">init.sh:</span> <span class="hljs-string">|</span>
-<span class="hljs-string">    #!/bin/bash</span>
-<span class="hljs-string">    until mysql  -p&quot;$MYSQL_ROOT_PASSWORD&quot; -e &quot;select 1;&quot;; do sleep 1; done</span>
-<span class="hljs-string">    [[ $HOSTNAME =~ -([0-9]+) ]] || exit 1</span>
-<span class="hljs-string">    ordinal=$&#123;BASH_REMATCH[1]&#125;</span>
-<span class="hljs-string">    if [[ $ordinal -eq 0 ]]; then</span>
-<span class="hljs-string">      mysql -p&quot;$MYSQL_ROOT_PASSWORD&quot; -e &quot;grant replication slave on *.* to &#x27;$REPLIC_USER&#x27;@&#x27;%&#x27; identified by &#x27;$REPLIC_PASSWORD&#x27;&quot;</span>
-<span class="hljs-string">      mysql -p&quot;$MYSQL_ROOT_PASSWORD&quot; -e &quot;FLUSH PRIVILEGES&quot;</span>
-<span class="hljs-string">    else</span>
-<span class="hljs-string">      mysql -p&quot;$MYSQL_ROOT_PASSWORD&quot; -e &quot;change master to master_host=&#x27;mysql-0.mysql-svc&#x27;,master_user=&#x27;$REPLIC_USER&#x27;,master_password=&#x27;$REPLIC_PASSWORD&#x27;;&quot;</span>
-<span class="hljs-string">      mysql -p&quot;$MYSQL_ROOT_PASSWORD&quot; -e &quot;start slave&quot;</span>
-<span class="hljs-string">    fi</span>
-<span class="hljs-string"></span>    
-<span class="hljs-comment">#sercet.yaml</span>
-<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
-<span class="hljs-attr">kind:</span> <span class="hljs-string">Secret</span>
-<span class="hljs-attr">metadata:</span>
-  <span class="hljs-attr">name:</span> <span class="hljs-string">mysql</span>
-  <span class="hljs-attr">namespace:</span> <span class="hljs-string">prod</span>
-<span class="hljs-attr">type:</span> <span class="hljs-string">Opaque</span>
-<span class="hljs-attr">data:</span>
-  <span class="hljs-attr">pass:</span> <span class="hljs-string">NlFBMFpGSTRUYzZ6UmU5VWc4amI=</span> <span class="hljs-comment">#6QA0ZFI4Tc6zRe9Ug8jb</span>
-  <span class="hljs-attr">rep_pass:</span> <span class="hljs-string">bWtzdFE2M3ZuYmFQeUJ5eGR6Z3Y=</span> <span class="hljs-comment">#mkstQ63vnbaPyByxdzgv</span>
-  <span class="hljs-attr">rep_user:</span> <span class="hljs-string">cmVw</span> <span class="hljs-comment">#rep</span>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment">#configmap</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> ConfigMap
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+<span class="token key atrule">data</span><span class="token punctuation">:</span>
+  <span class="token key atrule">master.cnf</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string">
+    # 主节点MySQL的配置文件
+    [mysqld]
+    log-bin</span>
+  <span class="token key atrule">slave.cnf</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string">
+    # 从节点MySQL的配置文件
+    [mysqld]
+    log-bin
+    read_only=1
+    replicate_ignore_db=information_schema
+    replicate_ignore_db=performance_schema
+    replicate_ignore_db=mysql
+    replicate_ignore_db=sys</span>
+  <span class="token key atrule">init.sh</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string">
+    #!/bin/bash
+    until mysql  -p"$MYSQL_ROOT_PASSWORD" -e "select 1;"; do sleep 1; done
+    [[ $HOSTNAME =~ -([0-9]+) ]] || exit 1
+    ordinal=$&#123;BASH_REMATCH[1]&#125;
+    if [[ $ordinal -eq 0 ]]; then
+      mysql -p"$MYSQL_ROOT_PASSWORD" -e "grant replication slave on *.* to '$REPLIC_USER'@'%' identified by '$REPLIC_PASSWORD'"
+      mysql -p"$MYSQL_ROOT_PASSWORD" -e "FLUSH PRIVILEGES"
+    else
+      mysql -p"$MYSQL_ROOT_PASSWORD" -e "change master to master_host='mysql-0.mysql-svc',master_user='$REPLIC_USER',master_password='$REPLIC_PASSWORD';"
+      mysql -p"$MYSQL_ROOT_PASSWORD" -e "start slave"
+    fi</span>
+    
+<span class="token comment">#sercet.yaml</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Secret
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+<span class="token key atrule">type</span><span class="token punctuation">:</span> Opaque
+<span class="token key atrule">data</span><span class="token punctuation">:</span>
+  <span class="token key atrule">pass</span><span class="token punctuation">:</span> NlFBMFpGSTRUYzZ6UmU5VWc4amI= <span class="token comment">#6QA0ZFI4Tc6zRe9Ug8jb</span>
+  <span class="token key atrule">rep_pass</span><span class="token punctuation">:</span> bWtzdFE2M3ZuYmFQeUJ5eGR6Z3Y= <span class="token comment">#mkstQ63vnbaPyByxdzgv</span>
+  <span class="token key atrule">rep_user</span><span class="token punctuation">:</span> cmVw <span class="token comment">#rep</span>
   
-<span class="hljs-comment">#mysql.yaml</span>
-<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">apps/v1</span>
-<span class="hljs-attr">kind:</span> <span class="hljs-string">StatefulSet</span>
-<span class="hljs-attr">metadata:</span>
-  <span class="hljs-attr">name:</span> <span class="hljs-string">mysql</span>
-  <span class="hljs-attr">namespace:</span> <span class="hljs-string">prod</span>
-<span class="hljs-attr">spec:</span>
-  <span class="hljs-attr">selector:</span>
-    <span class="hljs-attr">matchLabels:</span>
-      <span class="hljs-attr">app:</span> <span class="hljs-string">mysql</span>
-      <span class="hljs-attr">app.kubernetes.io/name:</span> <span class="hljs-string">mysql</span>
-  <span class="hljs-attr">replicas:</span> <span class="hljs-number">3</span>
-  <span class="hljs-attr">serviceName:</span> <span class="hljs-string">mysql-svc</span>
-  <span class="hljs-attr">template:</span>
-    <span class="hljs-attr">metadata:</span>
-      <span class="hljs-attr">labels:</span>
-        <span class="hljs-attr">app:</span> <span class="hljs-string">mysql</span>
-        <span class="hljs-attr">app.kubernetes.io/name:</span> <span class="hljs-string">mysql</span>
-    <span class="hljs-attr">spec:</span>
-      <span class="hljs-attr">initContainers:</span>
-        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">init-mysql</span>
-          <span class="hljs-attr">image:</span> <span class="hljs-string">mysql:5.7.34</span>
-          <span class="hljs-attr">command:</span>
-          <span class="hljs-bullet">-</span> <span class="hljs-string">bash</span>
-          <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;-c&quot;</span>
-          <span class="hljs-bullet">-</span> <span class="hljs-string">|</span>
-<span class="hljs-string">            set -ex</span>
-<span class="hljs-string">            # Generate mysql server-id from pod ordinal index.</span>
-<span class="hljs-string">            [[ $HOSTNAME =~ -([0-9]+)$ ]] || exit 1</span>
-<span class="hljs-string">            ordinal=$&#123;BASH_REMATCH[1]&#125;</span>
-<span class="hljs-string">            echo [mysqld] &gt; /mnt/conf.d/server-id.cnf</span>
-<span class="hljs-string">            # Add an offset to avoid reserved server-id=0 value.</span>
-<span class="hljs-string">            echo server-id=$((100 + $ordinal)) &gt;&gt; /mnt/conf.d/server-id.cnf</span>
-<span class="hljs-string">            # cp config file to /mnt/conf.d</span>
-<span class="hljs-string">            if [[ $ordinal -eq 0 ]]; then</span>
-<span class="hljs-string">              cp /mnt/config-map/master.cnf /mnt/conf.d/</span>
-<span class="hljs-string">            else</span>
-<span class="hljs-string">              cp /mnt/config-map/slave.cnf /mnt/conf.d</span>
-<span class="hljs-string">            fi</span>
-<span class="hljs-string">            cp /mnt/config-map/init.sh /mnt/conf.d</span>
-<span class="hljs-string"></span>          <span class="hljs-attr">volumeMounts:</span>
-          <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">conf</span>
-            <span class="hljs-attr">mountPath:</span> <span class="hljs-string">/mnt/conf.d/</span>
-          <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">config-map</span>
-            <span class="hljs-attr">mountPath:</span> <span class="hljs-string">/mnt/config-map/</span>
-      <span class="hljs-attr">containers:</span>
-      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">mysql</span>
-        <span class="hljs-attr">image:</span> <span class="hljs-string">mysql:5.7.34</span>
-        <span class="hljs-attr">volumeMounts:</span>
-          <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">conf</span>
-            <span class="hljs-attr">mountPath:</span> <span class="hljs-string">/etc/mysql/conf.d</span>
-          <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">data</span>
-            <span class="hljs-attr">mountPath:</span> <span class="hljs-string">/var/lib/mysql/</span>
-        <span class="hljs-attr">env:</span>
-        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">MYSQL_ROOT_PASSWORD</span>
-          <span class="hljs-attr">valueFrom:</span>
-            <span class="hljs-attr">secretKeyRef:</span>
-              <span class="hljs-attr">name:</span> <span class="hljs-string">mysql</span>
-              <span class="hljs-attr">key:</span> <span class="hljs-string">pass</span>
-        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">REPLIC_USER</span>
-          <span class="hljs-attr">valueFrom:</span>
-            <span class="hljs-attr">secretKeyRef:</span>
-              <span class="hljs-attr">name:</span> <span class="hljs-string">mysql</span>
-              <span class="hljs-attr">key:</span> <span class="hljs-string">rep_user</span>
-        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">REPLIC_PASSWORD</span>
-          <span class="hljs-attr">valueFrom:</span>
-            <span class="hljs-attr">secretKeyRef:</span>
-              <span class="hljs-attr">name:</span> <span class="hljs-string">mysql</span>
-              <span class="hljs-attr">key:</span> <span class="hljs-string">rep_pass</span>
-        <span class="hljs-attr">ports:</span>
-        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">mysql</span>
-          <span class="hljs-attr">containerPort:</span> <span class="hljs-number">3306</span>
-        <span class="hljs-attr">resources:</span>
-          <span class="hljs-attr">requests:</span>
-            <span class="hljs-attr">cpu:</span> <span class="hljs-string">&quot;500m&quot;</span>
-            <span class="hljs-attr">memory:</span> <span class="hljs-string">&quot;500Mi&quot;</span>
-          <span class="hljs-attr">limits:</span>
-            <span class="hljs-attr">cpu:</span> <span class="hljs-string">&quot;500m&quot;</span>
-            <span class="hljs-attr">memory:</span> <span class="hljs-string">&quot;500Mi&quot;</span>
-        <span class="hljs-attr">lifecycle:</span>
-          <span class="hljs-attr">postStart:</span>
-            <span class="hljs-attr">exec:</span>
-              <span class="hljs-attr">command:</span> [<span class="hljs-string">&quot;bash&quot;</span>,<span class="hljs-string">&quot;/etc/mysql/conf.d/init.sh&quot;</span>]
-      <span class="hljs-attr">volumes:</span>
-      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">config-map</span>
-        <span class="hljs-attr">configMap:</span>
-          <span class="hljs-attr">name:</span> <span class="hljs-string">mysql</span>
-      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">conf</span>
-        <span class="hljs-attr">emptyDir:</span> &#123;&#125;
-  <span class="hljs-attr">volumeClaimTemplates:</span>
-  <span class="hljs-bullet">-</span> <span class="hljs-attr">metadata:</span>
-      <span class="hljs-attr">name:</span> <span class="hljs-string">data</span>
-    <span class="hljs-attr">spec:</span>
-      <span class="hljs-attr">accessModes:</span> [<span class="hljs-string">&quot;ReadWriteOnce&quot;</span>]
-      <span class="hljs-attr">storageClassName:</span> <span class="hljs-string">&quot;nfs&quot;</span> <span class="hljs-comment">#这里使用的就是上面声名的Dynamic Volume Provisioning</span>
-      <span class="hljs-attr">resources:</span>
-        <span class="hljs-attr">requests:</span>
-          <span class="hljs-attr">storage:</span> <span class="hljs-string">2Gi</span>
+<span class="token comment">#mysql.yaml</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> apps/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> StatefulSet
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">matchLabels</span><span class="token punctuation">:</span>
+      <span class="token key atrule">app</span><span class="token punctuation">:</span> mysql
+      <span class="token key atrule">app.kubernetes.io/name</span><span class="token punctuation">:</span> mysql
+  <span class="token key atrule">replicas</span><span class="token punctuation">:</span> <span class="token number">3</span>
+  <span class="token key atrule">serviceName</span><span class="token punctuation">:</span> mysql<span class="token punctuation">-</span>svc
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">app</span><span class="token punctuation">:</span> mysql
+        <span class="token key atrule">app.kubernetes.io/name</span><span class="token punctuation">:</span> mysql
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">initContainers</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> init<span class="token punctuation">-</span>mysql
+          <span class="token key atrule">image</span><span class="token punctuation">:</span> mysql<span class="token punctuation">:</span>5.7.34
+          <span class="token key atrule">command</span><span class="token punctuation">:</span>
+          <span class="token punctuation">-</span> bash
+          <span class="token punctuation">-</span> <span class="token string">"-c"</span>
+          <span class="token punctuation">-</span> <span class="token punctuation">|</span><span class="token scalar string">
+            set -ex
+            # Generate mysql server-id from pod ordinal index.
+            [[ $HOSTNAME =~ -([0-9]+)$ ]] || exit 1
+            ordinal=$&#123;BASH_REMATCH[1]&#125;
+            echo [mysqld] > /mnt/conf.d/server-id.cnf
+            # Add an offset to avoid reserved server-id=0 value.
+            echo server-id=$((100 + $ordinal)) >> /mnt/conf.d/server-id.cnf
+            # cp config file to /mnt/conf.d
+            if [[ $ordinal -eq 0 ]]; then
+              cp /mnt/config-map/master.cnf /mnt/conf.d/
+            else
+              cp /mnt/config-map/slave.cnf /mnt/conf.d
+            fi
+            cp /mnt/config-map/init.sh /mnt/conf.d</span>
+          <span class="token key atrule">volumeMounts</span><span class="token punctuation">:</span>
+          <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> conf
+            <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /mnt/conf.d/
+          <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> config<span class="token punctuation">-</span>map
+            <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /mnt/config<span class="token punctuation">-</span>map/
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql
+        <span class="token key atrule">image</span><span class="token punctuation">:</span> mysql<span class="token punctuation">:</span>5.7.34
+        <span class="token key atrule">volumeMounts</span><span class="token punctuation">:</span>
+          <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> conf
+            <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /etc/mysql/conf.d
+          <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> data
+            <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /var/lib/mysql/
+        <span class="token key atrule">env</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> MYSQL_ROOT_PASSWORD
+          <span class="token key atrule">valueFrom</span><span class="token punctuation">:</span>
+            <span class="token key atrule">secretKeyRef</span><span class="token punctuation">:</span>
+              <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql
+              <span class="token key atrule">key</span><span class="token punctuation">:</span> pass
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> REPLIC_USER
+          <span class="token key atrule">valueFrom</span><span class="token punctuation">:</span>
+            <span class="token key atrule">secretKeyRef</span><span class="token punctuation">:</span>
+              <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql
+              <span class="token key atrule">key</span><span class="token punctuation">:</span> rep_user
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> REPLIC_PASSWORD
+          <span class="token key atrule">valueFrom</span><span class="token punctuation">:</span>
+            <span class="token key atrule">secretKeyRef</span><span class="token punctuation">:</span>
+              <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql
+              <span class="token key atrule">key</span><span class="token punctuation">:</span> rep_pass
+        <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql
+          <span class="token key atrule">containerPort</span><span class="token punctuation">:</span> <span class="token number">3306</span>
+        <span class="token key atrule">resources</span><span class="token punctuation">:</span>
+          <span class="token key atrule">requests</span><span class="token punctuation">:</span>
+            <span class="token key atrule">cpu</span><span class="token punctuation">:</span> <span class="token string">"500m"</span>
+            <span class="token key atrule">memory</span><span class="token punctuation">:</span> <span class="token string">"500Mi"</span>
+          <span class="token key atrule">limits</span><span class="token punctuation">:</span>
+            <span class="token key atrule">cpu</span><span class="token punctuation">:</span> <span class="token string">"500m"</span>
+            <span class="token key atrule">memory</span><span class="token punctuation">:</span> <span class="token string">"500Mi"</span>
+        <span class="token key atrule">lifecycle</span><span class="token punctuation">:</span>
+          <span class="token key atrule">postStart</span><span class="token punctuation">:</span>
+            <span class="token key atrule">exec</span><span class="token punctuation">:</span>
+              <span class="token key atrule">command</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"bash"</span><span class="token punctuation">,</span><span class="token string">"/etc/mysql/conf.d/init.sh"</span><span class="token punctuation">]</span>
+      <span class="token key atrule">volumes</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> config<span class="token punctuation">-</span>map
+        <span class="token key atrule">configMap</span><span class="token punctuation">:</span>
+          <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> conf
+        <span class="token key atrule">emptyDir</span><span class="token punctuation">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+  <span class="token key atrule">volumeClaimTemplates</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">name</span><span class="token punctuation">:</span> data
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">accessModes</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"ReadWriteOnce"</span><span class="token punctuation">]</span>
+      <span class="token key atrule">storageClassName</span><span class="token punctuation">:</span> <span class="token string">"nfs"</span> <span class="token comment">#这里使用的就是上面声名的Dynamic Volume Provisioning</span>
+      <span class="token key atrule">resources</span><span class="token punctuation">:</span>
+        <span class="token key atrule">requests</span><span class="token punctuation">:</span>
+          <span class="token key atrule">storage</span><span class="token punctuation">:</span> 2Gi
           
-<span class="hljs-comment">#service.yaml</span>
-<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
-<span class="hljs-attr">kind:</span> <span class="hljs-string">Service</span>
-<span class="hljs-attr">metadata:</span>
-  <span class="hljs-attr">name:</span> <span class="hljs-string">mysql-svc</span>
-  <span class="hljs-attr">namespace:</span> <span class="hljs-string">prod</span>
-  <span class="hljs-attr">labels:</span>
-    <span class="hljs-attr">app:</span> <span class="hljs-string">mysql</span>
-    <span class="hljs-attr">app.kubernetes.io/name:</span> <span class="hljs-string">mysql</span>
-<span class="hljs-attr">spec:</span>
-  <span class="hljs-attr">ports:</span>
-  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">mysql</span>
-    <span class="hljs-attr">port:</span> <span class="hljs-number">3306</span>
-  <span class="hljs-attr">clusterIP:</span> <span class="hljs-string">None</span> <span class="hljs-comment">#使用clusterIP: None 这样每个pod都会有一个独立的dns域名可以单独访问到，同时访问主节点就变成mysql-0.mysql-svc</span>
-  <span class="hljs-attr">selector:</span>
-    <span class="hljs-attr">app:</span> <span class="hljs-string">mysql</span>
-<span class="hljs-meta">---</span>
-<span class="hljs-meta"></span>
-<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
-<span class="hljs-attr">kind:</span> <span class="hljs-string">Service</span>
-<span class="hljs-attr">metadata:</span>
-  <span class="hljs-attr">name:</span> <span class="hljs-string">mysql-read</span>
-  <span class="hljs-attr">namespace:</span> <span class="hljs-string">prod</span>
-  <span class="hljs-attr">labels:</span>
-    <span class="hljs-attr">app:</span> <span class="hljs-string">mysql</span>
-    <span class="hljs-attr">app.kubernetes.io/name:</span> <span class="hljs-string">mysql</span>
-    <span class="hljs-attr">readonly:</span> <span class="hljs-string">&quot;true&quot;</span>
-<span class="hljs-attr">spec:</span>
-  <span class="hljs-attr">ports:</span>
-  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">mysql</span>
-    <span class="hljs-attr">port:</span> <span class="hljs-number">3306</span>
-  <span class="hljs-attr">selector:</span>
-    <span class="hljs-attr">app:</span> <span class="hljs-string">mysql</span></code></pre>
+<span class="token comment">#service.yaml</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Service
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql<span class="token punctuation">-</span>svc
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> mysql
+    <span class="token key atrule">app.kubernetes.io/name</span><span class="token punctuation">:</span> mysql
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql
+    <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">3306</span>
+  <span class="token key atrule">clusterIP</span><span class="token punctuation">:</span> None <span class="token comment">#使用clusterIP: None 这样每个pod都会有一个独立的dns域名可以单独访问到，同时访问主节点就变成mysql-0.mysql-svc</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> mysql
+<span class="token punctuation">---</span>
+
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Service
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql<span class="token punctuation">-</span>read
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> mysql
+    <span class="token key atrule">app.kubernetes.io/name</span><span class="token punctuation">:</span> mysql
+    <span class="token key atrule">readonly</span><span class="token punctuation">:</span> <span class="token string">"true"</span>
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql
+    <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">3306</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> mysql<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>这里有几点需要注意一下：</p>
 <ol>
 <li><p>这里创建集群使用的是<code>StatefulSet</code> 因为mysql集群之间存在拓步结构（必须先启动master节点再启动slaver节点），为了处理这种状态的关系所以使用了<code>StatefulSet</code></p>
 <blockquote>
-<pre><code class="hljs shell">[[ $HOSTNAME =~ -([0-9]+)$ ]] || exit 1
-ordinal=$&#123;BASH_REMATCH[1]&#125;</code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span><span class="token punctuation">[</span> <span class="token environment constant">$HOSTNAME</span> <span class="token operator">=~</span> -<span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">0</span>-9<span class="token punctuation">]</span>+<span class="token punctuation">)</span>$ <span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token builtin class-name">exit</span> <span class="token number">1</span>
+<span class="token assign-left variable">ordinal</span><span class="token operator">=</span><span class="token variable">$&#123;<span class="token environment constant">BASH_REMATCH</span><span class="token punctuation">[</span>1<span class="token punctuation">]</span>&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>这段shell的意思是获取hostname中的数字，然后赋值个ordinal，这样通过判断ordinal就可以知道当前环境是主节点还是从节点。</p>
 <p><code>StatefulSet</code>创建的pod名称是有顺序的，pod-index，index会从0开始，这里规定pod-0为主节点</p>
 </blockquote>
@@ -534,168 +534,168 @@ ordinal=$&#123;BASH_REMATCH[1]&#125;</code></pre>
 </ul>
 </blockquote>
 <p>而这次部署的就是3个node的<code>Redis Cluster</code>其中每个node由一个主一个从组成，所以一共有6个redis服务</p>
-<pre><code class="hljs yaml"><span class="hljs-comment">#configmap</span>
-<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
-<span class="hljs-attr">kind:</span> <span class="hljs-string">ConfigMap</span>
-<span class="hljs-attr">metadata:</span>
-  <span class="hljs-attr">name:</span> <span class="hljs-string">redis</span>
-  <span class="hljs-attr">namespace:</span> <span class="hljs-string">prod</span>
-<span class="hljs-attr">data:</span>
-  <span class="hljs-attr">redis.conf:</span> <span class="hljs-string">|</span>
-<span class="hljs-string">    port 6379</span>
-<span class="hljs-string">    cluster-enabled yes #开启集群模式</span>
-<span class="hljs-string">    cluster-node-timeout 5000</span>
-<span class="hljs-string">    cluster-config-file /data/nodes.conf</span>
-<span class="hljs-string">    appendonly yes</span>
-<span class="hljs-string"></span>
-<span class="hljs-comment">#sercet</span>
-<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
-<span class="hljs-attr">kind:</span> <span class="hljs-string">Secret</span>
-<span class="hljs-attr">metadata:</span>
-  <span class="hljs-attr">name:</span> <span class="hljs-string">redis</span>
-  <span class="hljs-attr">namespace:</span> <span class="hljs-string">prod</span>
-<span class="hljs-attr">type:</span> <span class="hljs-string">Opaque</span>
-<span class="hljs-attr">data:</span>
-  <span class="hljs-attr">pass:</span> <span class="hljs-string">ZHFYbkdJNEUxM28zY0d6V3E1QXI=</span> <span class="hljs-comment">#dqXnGI4E13o3cGzWq5Ar</span>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment">#configmap</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> ConfigMap
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> redis
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+<span class="token key atrule">data</span><span class="token punctuation">:</span>
+  <span class="token key atrule">redis.conf</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string">
+    port 6379
+    cluster-enabled yes #开启集群模式
+    cluster-node-timeout 5000
+    cluster-config-file /data/nodes.conf
+    appendonly yes</span>
+
+<span class="token comment">#sercet</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Secret
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> redis
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+<span class="token key atrule">type</span><span class="token punctuation">:</span> Opaque
+<span class="token key atrule">data</span><span class="token punctuation">:</span>
+  <span class="token key atrule">pass</span><span class="token punctuation">:</span> ZHFYbkdJNEUxM28zY0d6V3E1QXI= <span class="token comment">#dqXnGI4E13o3cGzWq5Ar</span>
   
-<span class="hljs-comment">#redis</span>
-<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">apps/v1</span>
-<span class="hljs-attr">kind:</span> <span class="hljs-string">StatefulSet</span>
-<span class="hljs-attr">metadata:</span>
-  <span class="hljs-attr">name:</span> <span class="hljs-string">redis</span>
-  <span class="hljs-attr">namespace:</span> <span class="hljs-string">prod</span>
-<span class="hljs-attr">spec:</span>
-  <span class="hljs-attr">selector:</span>
-    <span class="hljs-attr">matchLabels:</span>
-      <span class="hljs-attr">app:</span> <span class="hljs-string">redis</span>
-      <span class="hljs-attr">app.kubernetes.io/name:</span> <span class="hljs-string">redis</span>
-  <span class="hljs-attr">serviceName:</span> <span class="hljs-string">redis-svc</span>
-  <span class="hljs-attr">replicas:</span> <span class="hljs-number">6</span>
-  <span class="hljs-attr">template:</span>
-    <span class="hljs-attr">metadata:</span>
-      <span class="hljs-attr">labels:</span>
-        <span class="hljs-attr">app:</span> <span class="hljs-string">redis</span>
-        <span class="hljs-attr">app.kubernetes.io/name:</span> <span class="hljs-string">redis</span>
-    <span class="hljs-attr">spec:</span>
-      <span class="hljs-attr">initContainers:</span>
-        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">init-redis</span>  
-          <span class="hljs-attr">image:</span> <span class="hljs-string">redis:7.4</span>
-          <span class="hljs-attr">env:</span>
-          <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">REDISCLI_AUTH</span>
-            <span class="hljs-attr">valueFrom:</span>
-              <span class="hljs-attr">secretKeyRef:</span>
-                <span class="hljs-attr">name:</span> <span class="hljs-string">redis</span>
-                <span class="hljs-attr">key:</span> <span class="hljs-string">pass</span>
-          <span class="hljs-attr">command:</span>
-          <span class="hljs-bullet">-</span> <span class="hljs-string">bash</span>
-          <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;-c&quot;</span>
-          <span class="hljs-bullet">-</span> <span class="hljs-string">|</span>
-<span class="hljs-string">            set -ex</span>
-<span class="hljs-string">            cp /mnt/config-map/redis.conf /mnt/conf.d</span>
-<span class="hljs-string">            echo &quot;requirepass $REDISCLI_AUTH&quot; &gt;&gt; /mnt/conf.d/redis.conf</span>
-<span class="hljs-string">            echo &quot;masterauth $REDISCLI_AUTH&quot; &gt;&gt; /mnt/conf.d/redis.conf</span>
-<span class="hljs-string"></span>          <span class="hljs-attr">volumeMounts:</span>
-          <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">conf</span>
-            <span class="hljs-attr">mountPath:</span> <span class="hljs-string">/mnt/conf.d/</span>
-          <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">config-map</span>
-            <span class="hljs-attr">mountPath:</span> <span class="hljs-string">/mnt/config-map/</span>
-      <span class="hljs-attr">containers:</span>
-      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">redis</span>
-        <span class="hljs-attr">image:</span> <span class="hljs-string">redis:7.4</span>
-        <span class="hljs-attr">command:</span> [<span class="hljs-string">&quot;redis-server&quot;</span>]
-        <span class="hljs-attr">args:</span>
-        <span class="hljs-bullet">-</span> <span class="hljs-string">/usr/local/etc/redis/redis.conf</span>
-        <span class="hljs-bullet">-</span> <span class="hljs-string">--cluster-announce-ip</span>
-        <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;$(MY_POD_IP)&quot;</span>
-        <span class="hljs-attr">volumeMounts:</span>
-          <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">conf</span>
-            <span class="hljs-attr">mountPath:</span> <span class="hljs-string">/usr/local/etc/redis/</span>
-          <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">data</span>
-            <span class="hljs-attr">mountPath:</span> <span class="hljs-string">/data/</span>
-        <span class="hljs-attr">env:</span>
-        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">REDISCLI_AUTH</span>
-          <span class="hljs-attr">valueFrom:</span>
-            <span class="hljs-attr">secretKeyRef:</span>
-              <span class="hljs-attr">name:</span> <span class="hljs-string">redis</span>
-              <span class="hljs-attr">key:</span> <span class="hljs-string">pass</span>
-        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">MY_POD_IP</span>
-          <span class="hljs-attr">valueFrom:</span>
-            <span class="hljs-attr">fieldRef:</span>
-             <span class="hljs-attr">fieldPath:</span> <span class="hljs-string">status.podIP</span>
-        <span class="hljs-attr">ports:</span>
-        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">redis</span>
-          <span class="hljs-attr">containerPort:</span> <span class="hljs-number">6379</span>
-        <span class="hljs-attr">resources:</span>
-          <span class="hljs-attr">requests:</span>
-            <span class="hljs-attr">cpu:</span> <span class="hljs-string">&quot;100m&quot;</span>
-            <span class="hljs-attr">memory:</span> <span class="hljs-string">&quot;200Mi&quot;</span>
-          <span class="hljs-attr">limits:</span>
-            <span class="hljs-attr">cpu:</span> <span class="hljs-string">&quot;100m&quot;</span>
-            <span class="hljs-attr">memory:</span> <span class="hljs-string">&quot;200Mi&quot;</span>
-      <span class="hljs-attr">volumes:</span>
-      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">config-map</span>
-        <span class="hljs-attr">configMap:</span> 
-          <span class="hljs-attr">name:</span> <span class="hljs-string">redis</span>
-      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">conf</span>
-        <span class="hljs-attr">emptyDir:</span> &#123;&#125;
-  <span class="hljs-attr">volumeClaimTemplates:</span>
-  <span class="hljs-bullet">-</span> <span class="hljs-attr">metadata:</span>
-      <span class="hljs-attr">name:</span> <span class="hljs-string">data</span>
-    <span class="hljs-attr">spec:</span>
-      <span class="hljs-attr">accessModes:</span> [<span class="hljs-string">&quot;ReadWriteOnce&quot;</span>]
-      <span class="hljs-attr">storageClassName:</span> <span class="hljs-string">&quot;nfs&quot;</span>
-      <span class="hljs-attr">resources:</span>
-        <span class="hljs-attr">requests:</span>
-          <span class="hljs-attr">storage:</span> <span class="hljs-string">2Gi</span>
+<span class="token comment">#redis</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> apps/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> StatefulSet
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> redis
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">matchLabels</span><span class="token punctuation">:</span>
+      <span class="token key atrule">app</span><span class="token punctuation">:</span> redis
+      <span class="token key atrule">app.kubernetes.io/name</span><span class="token punctuation">:</span> redis
+  <span class="token key atrule">serviceName</span><span class="token punctuation">:</span> redis<span class="token punctuation">-</span>svc
+  <span class="token key atrule">replicas</span><span class="token punctuation">:</span> <span class="token number">6</span>
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">app</span><span class="token punctuation">:</span> redis
+        <span class="token key atrule">app.kubernetes.io/name</span><span class="token punctuation">:</span> redis
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">initContainers</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> init<span class="token punctuation">-</span>redis  
+          <span class="token key atrule">image</span><span class="token punctuation">:</span> redis<span class="token punctuation">:</span><span class="token number">7.4</span>
+          <span class="token key atrule">env</span><span class="token punctuation">:</span>
+          <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> REDISCLI_AUTH
+            <span class="token key atrule">valueFrom</span><span class="token punctuation">:</span>
+              <span class="token key atrule">secretKeyRef</span><span class="token punctuation">:</span>
+                <span class="token key atrule">name</span><span class="token punctuation">:</span> redis
+                <span class="token key atrule">key</span><span class="token punctuation">:</span> pass
+          <span class="token key atrule">command</span><span class="token punctuation">:</span>
+          <span class="token punctuation">-</span> bash
+          <span class="token punctuation">-</span> <span class="token string">"-c"</span>
+          <span class="token punctuation">-</span> <span class="token punctuation">|</span><span class="token scalar string">
+            set -ex
+            cp /mnt/config-map/redis.conf /mnt/conf.d
+            echo "requirepass $REDISCLI_AUTH" >> /mnt/conf.d/redis.conf
+            echo "masterauth $REDISCLI_AUTH" >> /mnt/conf.d/redis.conf</span>
+          <span class="token key atrule">volumeMounts</span><span class="token punctuation">:</span>
+          <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> conf
+            <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /mnt/conf.d/
+          <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> config<span class="token punctuation">-</span>map
+            <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /mnt/config<span class="token punctuation">-</span>map/
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> redis
+        <span class="token key atrule">image</span><span class="token punctuation">:</span> redis<span class="token punctuation">:</span><span class="token number">7.4</span>
+        <span class="token key atrule">command</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"redis-server"</span><span class="token punctuation">]</span>
+        <span class="token key atrule">args</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> /usr/local/etc/redis/redis.conf
+        <span class="token punctuation">-</span> <span class="token punctuation">-</span><span class="token punctuation">-</span>cluster<span class="token punctuation">-</span>announce<span class="token punctuation">-</span>ip
+        <span class="token punctuation">-</span> <span class="token string">"$(MY_POD_IP)"</span>
+        <span class="token key atrule">volumeMounts</span><span class="token punctuation">:</span>
+          <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> conf
+            <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /usr/local/etc/redis/
+          <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> data
+            <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /data/
+        <span class="token key atrule">env</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> REDISCLI_AUTH
+          <span class="token key atrule">valueFrom</span><span class="token punctuation">:</span>
+            <span class="token key atrule">secretKeyRef</span><span class="token punctuation">:</span>
+              <span class="token key atrule">name</span><span class="token punctuation">:</span> redis
+              <span class="token key atrule">key</span><span class="token punctuation">:</span> pass
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> MY_POD_IP
+          <span class="token key atrule">valueFrom</span><span class="token punctuation">:</span>
+            <span class="token key atrule">fieldRef</span><span class="token punctuation">:</span>
+             <span class="token key atrule">fieldPath</span><span class="token punctuation">:</span> status.podIP
+        <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> redis
+          <span class="token key atrule">containerPort</span><span class="token punctuation">:</span> <span class="token number">6379</span>
+        <span class="token key atrule">resources</span><span class="token punctuation">:</span>
+          <span class="token key atrule">requests</span><span class="token punctuation">:</span>
+            <span class="token key atrule">cpu</span><span class="token punctuation">:</span> <span class="token string">"100m"</span>
+            <span class="token key atrule">memory</span><span class="token punctuation">:</span> <span class="token string">"200Mi"</span>
+          <span class="token key atrule">limits</span><span class="token punctuation">:</span>
+            <span class="token key atrule">cpu</span><span class="token punctuation">:</span> <span class="token string">"100m"</span>
+            <span class="token key atrule">memory</span><span class="token punctuation">:</span> <span class="token string">"200Mi"</span>
+      <span class="token key atrule">volumes</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> config<span class="token punctuation">-</span>map
+        <span class="token key atrule">configMap</span><span class="token punctuation">:</span> 
+          <span class="token key atrule">name</span><span class="token punctuation">:</span> redis
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> conf
+        <span class="token key atrule">emptyDir</span><span class="token punctuation">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+  <span class="token key atrule">volumeClaimTemplates</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">name</span><span class="token punctuation">:</span> data
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">accessModes</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"ReadWriteOnce"</span><span class="token punctuation">]</span>
+      <span class="token key atrule">storageClassName</span><span class="token punctuation">:</span> <span class="token string">"nfs"</span>
+      <span class="token key atrule">resources</span><span class="token punctuation">:</span>
+        <span class="token key atrule">requests</span><span class="token punctuation">:</span>
+          <span class="token key atrule">storage</span><span class="token punctuation">:</span> 2Gi
 
-<span class="hljs-comment">#service</span>
-<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
-<span class="hljs-attr">kind:</span> <span class="hljs-string">Service</span>
-<span class="hljs-attr">metadata:</span>
-  <span class="hljs-attr">name:</span> <span class="hljs-string">redis-svc</span>
-  <span class="hljs-attr">namespace:</span> <span class="hljs-string">prod</span>
-  <span class="hljs-attr">labels:</span>
-    <span class="hljs-attr">app:</span> <span class="hljs-string">redis</span>
-    <span class="hljs-attr">app.kubernetes.io/name:</span> <span class="hljs-string">redis</span>
-<span class="hljs-attr">spec:</span>
-  <span class="hljs-attr">ports:</span>
-  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">redis</span>
-    <span class="hljs-attr">port:</span> <span class="hljs-number">6379</span>
-  <span class="hljs-attr">clusterIP:</span> <span class="hljs-string">None</span> <span class="hljs-comment">#这里跟上面的mysql一样，通过redis-index.redis-svc来访问不同的redis节点</span>
-  <span class="hljs-attr">selector:</span>
-    <span class="hljs-attr">app:</span> <span class="hljs-string">redis</span>
+<span class="token comment">#service</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Service
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> redis<span class="token punctuation">-</span>svc
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> redis
+    <span class="token key atrule">app.kubernetes.io/name</span><span class="token punctuation">:</span> redis
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> redis
+    <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">6379</span>
+  <span class="token key atrule">clusterIP</span><span class="token punctuation">:</span> None <span class="token comment">#这里跟上面的mysql一样，通过redis-index.redis-svc来访问不同的redis节点</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> redis
 
-<span class="hljs-comment">#job</span>
-<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">batch/v1</span>
-<span class="hljs-attr">kind:</span> <span class="hljs-string">Job</span>
-<span class="hljs-attr">metadata:</span>
-  <span class="hljs-attr">name:</span> <span class="hljs-string">redis-cluster-create</span>
-  <span class="hljs-attr">namespace:</span> <span class="hljs-string">prod</span>
-<span class="hljs-attr">spec:</span>
-  <span class="hljs-attr">template:</span>
-    <span class="hljs-attr">spec:</span>
-      <span class="hljs-attr">containers:</span>
-      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">redis-cli</span>
-        <span class="hljs-attr">image:</span> <span class="hljs-string">redis:7.4</span>
-        <span class="hljs-attr">env:</span>
-        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">REDISCLI_AUTH</span>
-          <span class="hljs-attr">valueFrom:</span>
-            <span class="hljs-attr">secretKeyRef:</span>
-              <span class="hljs-attr">name:</span> <span class="hljs-string">redis</span>
-              <span class="hljs-attr">key:</span> <span class="hljs-string">pass</span>
-        <span class="hljs-attr">command:</span> [<span class="hljs-string">&quot;/bin/sh&quot;</span>, <span class="hljs-string">&quot;-c&quot;</span>]
-        <span class="hljs-attr">args:</span>
-          <span class="hljs-bullet">-</span> <span class="hljs-string">|</span>
-<span class="hljs-string">            redis-cli --cluster create \</span>
-<span class="hljs-string">              redis-0.redis-svc:6379 \</span>
-<span class="hljs-string">              redis-1.redis-svc:6379 \</span>
-<span class="hljs-string">              redis-2.redis-svc:6379 \</span>
-<span class="hljs-string">              redis-3.redis-svc:6379 \</span>
-<span class="hljs-string">              redis-4.redis-svc:6379 \</span>
-<span class="hljs-string">              redis-5.redis-svc:6379 \</span>
-<span class="hljs-string">              --cluster-replicas 1 -a $REDISCLI_AUTH --cluster-yes #cluster-replicas 1 表示为每一个主节点分配一个从节点，这样每个node就有两个redis组成一个主一个从，这样3由个node组成的redis cluster就要6个redis</span>
-<span class="hljs-string"></span>      <span class="hljs-attr">restartPolicy:</span> <span class="hljs-string">Never</span>
-  <span class="hljs-attr">backoffLimit:</span> <span class="hljs-number">1</span></code></pre>
+<span class="token comment">#job</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> batch/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Job
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> redis<span class="token punctuation">-</span>cluster<span class="token punctuation">-</span>create
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> redis<span class="token punctuation">-</span>cli
+        <span class="token key atrule">image</span><span class="token punctuation">:</span> redis<span class="token punctuation">:</span><span class="token number">7.4</span>
+        <span class="token key atrule">env</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> REDISCLI_AUTH
+          <span class="token key atrule">valueFrom</span><span class="token punctuation">:</span>
+            <span class="token key atrule">secretKeyRef</span><span class="token punctuation">:</span>
+              <span class="token key atrule">name</span><span class="token punctuation">:</span> redis
+              <span class="token key atrule">key</span><span class="token punctuation">:</span> pass
+        <span class="token key atrule">command</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"/bin/sh"</span><span class="token punctuation">,</span> <span class="token string">"-c"</span><span class="token punctuation">]</span>
+        <span class="token key atrule">args</span><span class="token punctuation">:</span>
+          <span class="token punctuation">-</span> <span class="token punctuation">|</span><span class="token scalar string">
+            redis-cli --cluster create \
+              redis-0.redis-svc:6379 \
+              redis-1.redis-svc:6379 \
+              redis-2.redis-svc:6379 \
+              redis-3.redis-svc:6379 \
+              redis-4.redis-svc:6379 \
+              redis-5.redis-svc:6379 \
+              --cluster-replicas 1 -a $REDISCLI_AUTH --cluster-yes #cluster-replicas 1 表示为每一个主节点分配一个从节点，这样每个node就有两个redis组成一个主一个从，这样3由个node组成的redis cluster就要6个redis</span>
+      <span class="token key atrule">restartPolicy</span><span class="token punctuation">:</span> Never
+  <span class="token key atrule">backoffLimit</span><span class="token punctuation">:</span> <span class="token number">1</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>这里要注意几点</p>
 <ol>
@@ -719,265 +719,265 @@ ordinal=$&#123;BASH_REMATCH[1]&#125;</code></pre>
 <p>代码 <a target="_blank" rel="noopener" href="https://github.com/kehaha-5/k8s_demo/tree/main/web/back">k8s_demo&#x2F;web&#x2F;back at main · kehaha-5&#x2F;k8s_demo (github.com)</a></p>
 </blockquote>
 <p>这个gin后端的话，除了提供api服务以外它还而外监听一个端口用来给pod提供健康检测 <a href="%5BKubernetes%5D(https://kubernetes.io/zh-cn/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)">配置存活、就绪和启动探针</a></p>
-<pre><code class="hljs dockerfile"><span class="hljs-keyword">FROM</span> alpine:<span class="hljs-number">3.20</span>.<span class="hljs-number">2</span>
-<span class="hljs-keyword">COPY</span><span class="language-bash"> ./k8s_demo /app/k8s_demo</span>
-<span class="hljs-keyword">COPY</span><span class="language-bash"> ./config-prod.yaml /app/config-prod.yaml</span>
-<span class="hljs-keyword">RUN</span><span class="language-bash"> <span class="hljs-built_in">set</span> -eux &amp;&amp; sed -i <span class="hljs-string">&#x27;s/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g&#x27;</span> /etc/apk/repositories</span>
-<span class="hljs-keyword">RUN</span><span class="language-bash"> apk update &amp;&amp; apk add tzdata</span></code></pre>
+<pre class="line-numbers language-docker" data-language="docker"><code class="language-docker"><span class="token instruction"><span class="token keyword">FROM</span> alpine:3.20.2</span>
+<span class="token instruction"><span class="token keyword">COPY</span> ./k8s_demo /app/k8s_demo</span>
+<span class="token instruction"><span class="token keyword">COPY</span> ./config-prod.yaml /app/config-prod.yaml</span>
+<span class="token instruction"><span class="token keyword">RUN</span> set -eux &amp;&amp; sed -i <span class="token string">'s/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g'</span> /etc/apk/repositories</span>
+<span class="token instruction"><span class="token keyword">RUN</span> apk update &amp;&amp; apk add tzdata</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>我们要把后端代码和所需要的环境打包成镜像，因为我的k3s使用的运行时是<code>containerd</code>，所以这里利用<code>docker</code>进行打包，然后导出镜像再导入到<code>containerd</code>里面</p>
-<pre><code class="hljs shell">docker build -t k8s_demo/back:1.0 . #注意-t的格式，只有这样的格式导入到ctr中才会保留
-docker save  k8s_demo/back -o k8s_demo_back.tar
-ctr -n k8s.io images import k8s_demo_back.tar #导入时，要选择k8s.io的namesapce 不然可能出现pod找不到image</code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">docker</span> build <span class="token parameter variable">-t</span> k8s_demo/back:1.0 <span class="token builtin class-name">.</span> <span class="token comment">#注意-t的格式，只有这样的格式导入到ctr中才会保留</span>
+<span class="token function">docker</span> save  k8s_demo/back <span class="token parameter variable">-o</span> k8s_demo_back.tar
+ctr <span class="token parameter variable">-n</span> k8s.io images <span class="token function">import</span> k8s_demo_back.tar <span class="token comment">#导入时，要选择k8s.io的namesapce 不然可能出现pod找不到image</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 
-<pre><code class="hljs yaml"><span class="hljs-comment">#k8s-demo-back-end</span>
-<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">apps/v1</span>
-<span class="hljs-attr">kind:</span> <span class="hljs-string">Deployment</span>
-<span class="hljs-attr">metadata:</span>
-  <span class="hljs-attr">name:</span> <span class="hljs-string">k8s-demo-back-end</span>
-  <span class="hljs-attr">namespace:</span> <span class="hljs-string">prod</span>
-  <span class="hljs-attr">labels:</span>
-    <span class="hljs-attr">app:</span> <span class="hljs-string">k8s-demo-back-end</span>
-<span class="hljs-attr">spec:</span>
-  <span class="hljs-attr">replicas:</span> <span class="hljs-number">2</span>
-  <span class="hljs-attr">selector:</span>
-    <span class="hljs-attr">matchLabels:</span>
-      <span class="hljs-attr">app:</span> <span class="hljs-string">k8s-demo-back-end</span>
-  <span class="hljs-attr">template:</span>
-    <span class="hljs-attr">metadata:</span>
-      <span class="hljs-attr">labels:</span>
-        <span class="hljs-attr">app:</span> <span class="hljs-string">k8s-demo-back-end</span>
-    <span class="hljs-attr">spec:</span>
-      <span class="hljs-attr">affinity:</span>
-        <span class="hljs-attr">podAntiAffinity:</span>
-          <span class="hljs-attr">preferredDuringSchedulingIgnoredDuringExecution:</span>
-          <span class="hljs-bullet">-</span> <span class="hljs-attr">weight:</span> <span class="hljs-number">100</span>
-            <span class="hljs-attr">podAffinityTerm:</span>
-              <span class="hljs-attr">labelSelector:</span>
-                <span class="hljs-attr">matchExpressions:</span>
-                <span class="hljs-bullet">-</span> <span class="hljs-attr">key:</span> <span class="hljs-string">app</span>
-                  <span class="hljs-attr">operator:</span> <span class="hljs-string">In</span>
-                  <span class="hljs-attr">values:</span>
-                  <span class="hljs-bullet">-</span> <span class="hljs-string">k8s-demo-back-end</span>
-              <span class="hljs-attr">topologyKey:</span> <span class="hljs-string">kubernetes.io/hostname</span>
-      <span class="hljs-attr">containers:</span>
-      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">k8s-demo-back-end</span>
-        <span class="hljs-attr">image:</span> <span class="hljs-string">docker.io/k8s_demo/back:1.0@sha256:bf9041895c649d1a586851e2f2e072fb9680fe134c359ea59a577b010029ba5d</span>
-        <span class="hljs-attr">command:</span> [<span class="hljs-string">&quot;/app/k8s_demo&quot;</span>]
-        <span class="hljs-attr">args:</span> [<span class="hljs-string">&quot;-c&quot;</span>,<span class="hljs-string">&quot;/app/config-prod.yaml&quot;</span>]
-        <span class="hljs-attr">ports:</span>
-        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">api-port</span>
-          <span class="hljs-attr">containerPort:</span> <span class="hljs-number">40814</span>
-        <span class="hljs-attr">livenessProbe:</span>
-          <span class="hljs-attr">httpGet:</span>
-            <span class="hljs-attr">path:</span> <span class="hljs-string">/api/health</span>
-            <span class="hljs-attr">port:</span> <span class="hljs-number">8080</span>
-          <span class="hljs-attr">initialDelaySeconds:</span> <span class="hljs-number">30</span>
-          <span class="hljs-attr">periodSeconds:</span> <span class="hljs-number">3</span>
-        <span class="hljs-attr">env:</span>
-        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">REDIS_PASSWORD</span>
-          <span class="hljs-attr">valueFrom:</span>
-            <span class="hljs-attr">secretKeyRef:</span>
-              <span class="hljs-attr">name:</span> <span class="hljs-string">redis</span>
-              <span class="hljs-attr">key:</span> <span class="hljs-string">pass</span>
-        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">MYSQL_PASSWORD</span>
-          <span class="hljs-attr">valueFrom:</span>
-            <span class="hljs-attr">secretKeyRef:</span>
-              <span class="hljs-attr">name:</span> <span class="hljs-string">mysql</span>
-              <span class="hljs-attr">key:</span> <span class="hljs-string">pass</span>
-        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">GIN_MODE</span>
-          <span class="hljs-attr">value:</span> <span class="hljs-string">&quot;release&quot;</span>
-        <span class="hljs-attr">resources:</span>
-          <span class="hljs-attr">requests:</span>
-            <span class="hljs-attr">cpu:</span> <span class="hljs-string">&quot;200m&quot;</span>
-            <span class="hljs-attr">memory:</span> <span class="hljs-string">&quot;200Mi&quot;</span>
-          <span class="hljs-attr">limits:</span>
-            <span class="hljs-attr">cpu:</span> <span class="hljs-string">&quot;1000m&quot;</span>
-            <span class="hljs-attr">memory:</span> <span class="hljs-string">&quot;500Mi&quot;</span>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment">#k8s-demo-back-end</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> apps/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Deployment
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>end
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>end
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">replicas</span><span class="token punctuation">:</span> <span class="token number">2</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">matchLabels</span><span class="token punctuation">:</span>
+      <span class="token key atrule">app</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>end
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">app</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>end
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">affinity</span><span class="token punctuation">:</span>
+        <span class="token key atrule">podAntiAffinity</span><span class="token punctuation">:</span>
+          <span class="token key atrule">preferredDuringSchedulingIgnoredDuringExecution</span><span class="token punctuation">:</span>
+          <span class="token punctuation">-</span> <span class="token key atrule">weight</span><span class="token punctuation">:</span> <span class="token number">100</span>
+            <span class="token key atrule">podAffinityTerm</span><span class="token punctuation">:</span>
+              <span class="token key atrule">labelSelector</span><span class="token punctuation">:</span>
+                <span class="token key atrule">matchExpressions</span><span class="token punctuation">:</span>
+                <span class="token punctuation">-</span> <span class="token key atrule">key</span><span class="token punctuation">:</span> app
+                  <span class="token key atrule">operator</span><span class="token punctuation">:</span> In
+                  <span class="token key atrule">values</span><span class="token punctuation">:</span>
+                  <span class="token punctuation">-</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>end
+              <span class="token key atrule">topologyKey</span><span class="token punctuation">:</span> kubernetes.io/hostname
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>end
+        <span class="token key atrule">image</span><span class="token punctuation">:</span> docker.io/k8s_demo/back<span class="token punctuation">:</span>1.0@sha256<span class="token punctuation">:</span>bf9041895c649d1a586851e2f2e072fb9680fe134c359ea59a577b010029ba5d
+        <span class="token key atrule">command</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"/app/k8s_demo"</span><span class="token punctuation">]</span>
+        <span class="token key atrule">args</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"-c"</span><span class="token punctuation">,</span><span class="token string">"/app/config-prod.yaml"</span><span class="token punctuation">]</span>
+        <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> api<span class="token punctuation">-</span>port
+          <span class="token key atrule">containerPort</span><span class="token punctuation">:</span> <span class="token number">40814</span>
+        <span class="token key atrule">livenessProbe</span><span class="token punctuation">:</span>
+          <span class="token key atrule">httpGet</span><span class="token punctuation">:</span>
+            <span class="token key atrule">path</span><span class="token punctuation">:</span> /api/health
+            <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">8080</span>
+          <span class="token key atrule">initialDelaySeconds</span><span class="token punctuation">:</span> <span class="token number">30</span>
+          <span class="token key atrule">periodSeconds</span><span class="token punctuation">:</span> <span class="token number">3</span>
+        <span class="token key atrule">env</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> REDIS_PASSWORD
+          <span class="token key atrule">valueFrom</span><span class="token punctuation">:</span>
+            <span class="token key atrule">secretKeyRef</span><span class="token punctuation">:</span>
+              <span class="token key atrule">name</span><span class="token punctuation">:</span> redis
+              <span class="token key atrule">key</span><span class="token punctuation">:</span> pass
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> MYSQL_PASSWORD
+          <span class="token key atrule">valueFrom</span><span class="token punctuation">:</span>
+            <span class="token key atrule">secretKeyRef</span><span class="token punctuation">:</span>
+              <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql
+              <span class="token key atrule">key</span><span class="token punctuation">:</span> pass
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> GIN_MODE
+          <span class="token key atrule">value</span><span class="token punctuation">:</span> <span class="token string">"release"</span>
+        <span class="token key atrule">resources</span><span class="token punctuation">:</span>
+          <span class="token key atrule">requests</span><span class="token punctuation">:</span>
+            <span class="token key atrule">cpu</span><span class="token punctuation">:</span> <span class="token string">"200m"</span>
+            <span class="token key atrule">memory</span><span class="token punctuation">:</span> <span class="token string">"200Mi"</span>
+          <span class="token key atrule">limits</span><span class="token punctuation">:</span>
+            <span class="token key atrule">cpu</span><span class="token punctuation">:</span> <span class="token string">"1000m"</span>
+            <span class="token key atrule">memory</span><span class="token punctuation">:</span> <span class="token string">"500Mi"</span>
      
-<span class="hljs-comment">#service.yaml</span>
-<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
-<span class="hljs-attr">kind:</span> <span class="hljs-string">Service</span>
-<span class="hljs-attr">metadata:</span>
-  <span class="hljs-attr">name:</span> <span class="hljs-string">k8s-demo-back-end-service</span>
-  <span class="hljs-attr">namespace:</span> <span class="hljs-string">prod</span>
-  <span class="hljs-attr">labels:</span>
-    <span class="hljs-attr">name:</span> <span class="hljs-string">k8s-demo-back-end-service</span>
-<span class="hljs-attr">spec:</span>
-  <span class="hljs-attr">selector:</span>
-    <span class="hljs-attr">app:</span> <span class="hljs-string">k8s-demo-back-end</span>
-  <span class="hljs-attr">ports:</span>
-    <span class="hljs-bullet">-</span> <span class="hljs-attr">protocol:</span> <span class="hljs-string">TCP</span>
-      <span class="hljs-attr">name:</span> <span class="hljs-string">api-port</span>
-      <span class="hljs-attr">port:</span> <span class="hljs-number">40814</span>     
-      <span class="hljs-attr">targetPort:</span> <span class="hljs-number">40814</span>  
-  <span class="hljs-attr">clusterIP:</span> <span class="hljs-string">None</span></code></pre>
+<span class="token comment">#service.yaml</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Service
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>end<span class="token punctuation">-</span>service
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>end<span class="token punctuation">-</span>service
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>end
+  <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">protocol</span><span class="token punctuation">:</span> TCP
+      <span class="token key atrule">name</span><span class="token punctuation">:</span> api<span class="token punctuation">-</span>port
+      <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">40814</span>     
+      <span class="token key atrule">targetPort</span><span class="token punctuation">:</span> <span class="token number">40814</span>  
+  <span class="token key atrule">clusterIP</span><span class="token punctuation">:</span> None<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>这里要注意一下，因为我一个共有3台服务器，除去一台专门的前端服务器，那我还有两台服务器，所以这里的<code>replicas</code>设置为2，然后我想让每个pod尽量不要调度到同一个节点上面，所以使用了<code>affinity.podAntiAffinity</code>尽量不要调度到已经有<code>app=k8s-demo-back-end</code>的节点上面</p>
-<pre><code class="hljs shell">root@node-m:~/k8s# kubectl get pods -n prod -l app=k8s-demo-back-end -o wide
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">root@node-m:~/k8s<span class="token comment"># kubectl get pods -n prod -l app=k8s-demo-back-end -o wide</span>
 NAME                   READY   STATUS    RESTARTS   AGE   IP            NODE     NOMINATED NODE   READINESS GATES
-k8s-demo-back-end...   1/1     Running   0          28s   10.42.1.42    node-s   &lt;none&gt;           &lt;none&gt;
-k8s-demo-back-end...   1/1     Running   0          27s   10.42.0.116   node-m   &lt;none&gt;           &lt;none&gt;</code></pre>
+k8s-demo-back-end<span class="token punctuation">..</span>.   <span class="token number">1</span>/1     Running   <span class="token number">0</span>          28s   <span class="token number">10.42</span>.1.42    node-s   <span class="token operator">&lt;</span>none<span class="token operator">></span>           <span class="token operator">&lt;</span>none<span class="token operator">></span>
+k8s-demo-back-end<span class="token punctuation">..</span>.   <span class="token number">1</span>/1     Running   <span class="token number">0</span>          27s   <span class="token number">10.42</span>.0.116   node-m   <span class="token operator">&lt;</span>none<span class="token operator">></span>           <span class="token operator">&lt;</span>none<span class="token operator">></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 
 <h2 id="前端部署"><a href="#前端部署" class="headerlink" title="前端部署"></a>前端部署</h2><blockquote>
 <p>代码 <a target="_blank" rel="noopener" href="https://github.com/kehaha-5/k8s_demo/tree/main/web/front/k8s_demo">k8s_demo&#x2F;web&#x2F;front&#x2F;k8s_demo at main · kehaha-5&#x2F;k8s_demo (github.com)</a></p>
 </blockquote>
 <p>这里也是要使用docker进行打包</p>
-<pre><code class="hljs dockerfile"><span class="hljs-keyword">FROM</span>  alpine:<span class="hljs-number">3.20</span>.<span class="hljs-number">2</span>
-<span class="hljs-keyword">COPY</span><span class="language-bash"> ./dist/ /app/</span></code></pre>
+<pre class="line-numbers language-docker" data-language="docker"><code class="language-docker"><span class="token instruction"><span class="token keyword">FROM</span>  alpine:3.20.2</span>
+<span class="token instruction"><span class="token keyword">COPY</span> ./dist/ /app/</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 
 <p>导入到<code>containerd</code></p>
-<pre><code class="hljs shell">docker build -t k8s_demo/front:1.0 .
-docker save  k8s_demo/front -o k8s_demo_front.tar
-ctr -n k8s.io images import k8s_demo_front.tar</code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">docker</span> build <span class="token parameter variable">-t</span> k8s_demo/front:1.0 <span class="token builtin class-name">.</span>
+<span class="token function">docker</span> save  k8s_demo/front <span class="token parameter variable">-o</span> k8s_demo_front.tar
+ctr <span class="token parameter variable">-n</span> k8s.io images <span class="token function">import</span> k8s_demo_front.tar<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 
-<pre><code class="hljs yaml"><span class="hljs-comment">#configmap.yaml</span>
-<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
-<span class="hljs-attr">kind:</span> <span class="hljs-string">ConfigMap</span>
-<span class="hljs-attr">metadata:</span>
-  <span class="hljs-attr">name:</span> <span class="hljs-string">web-nginx</span>
-  <span class="hljs-attr">namespace:</span> <span class="hljs-string">prod</span>
-<span class="hljs-attr">data:</span>
-  <span class="hljs-attr">app.conf:</span> <span class="hljs-string">|</span>
-<span class="hljs-string">    server &#123;</span>
-<span class="hljs-string">        listen       80;</span>
-<span class="hljs-string">        listen  [::]:80;</span>
-<span class="hljs-string">        server_name  localhost;</span>
-<span class="hljs-string"></span>
-        <span class="hljs-comment">#access_log  /var/log/nginx/host.access.log  main;</span>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment">#configmap.yaml</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> ConfigMap
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> web<span class="token punctuation">-</span>nginx
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+<span class="token key atrule">data</span><span class="token punctuation">:</span>
+  <span class="token key atrule">app.conf</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string">
+    server &#123;
+        listen       80;
+        listen  [::]:80;
+        server_name  localhost;</span>
 
-        <span class="hljs-string">location</span> <span class="hljs-string">/</span> &#123;
-            <span class="hljs-string">root</span>   <span class="hljs-string">/usr/share/nginx/html;</span>
-            <span class="hljs-string">index</span>  <span class="hljs-string">index.html</span> <span class="hljs-string">index.htm;</span>
-            <span class="hljs-string">try_files</span> <span class="hljs-string">$uri</span> <span class="hljs-string">$uri/</span> <span class="hljs-string">/index.html;</span> <span class="hljs-comment">#vue3的history模式下的路由配置</span>
-        &#125;
-    <span class="hljs-string">&#125;</span>
+        <span class="token comment">#access_log  /var/log/nginx/host.access.log  main;</span>
 
-<span class="hljs-comment">#k8s-demo-back-front</span>
-<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">apps/v1</span>
-<span class="hljs-attr">kind:</span> <span class="hljs-string">Deployment</span>
-<span class="hljs-attr">metadata:</span>
-  <span class="hljs-attr">name:</span> <span class="hljs-string">k8s-demo-back-front</span>
-  <span class="hljs-attr">namespace:</span> <span class="hljs-string">prod</span>
-<span class="hljs-attr">spec:</span>
-  <span class="hljs-attr">selector:</span>
-    <span class="hljs-attr">matchLabels:</span>
-      <span class="hljs-attr">app:</span> <span class="hljs-string">k8s-demo-back-front</span>
-      <span class="hljs-attr">app.kubernetes.io/name:</span> <span class="hljs-string">k8s-demo-back-front</span>
-  <span class="hljs-attr">template:</span>
-    <span class="hljs-attr">metadata:</span>
-      <span class="hljs-attr">labels:</span>
-        <span class="hljs-attr">app:</span> <span class="hljs-string">k8s-demo-back-front</span>
-        <span class="hljs-attr">app.kubernetes.io/name:</span> <span class="hljs-string">k8s-demo-back-front</span>
-    <span class="hljs-attr">spec:</span>
-      <span class="hljs-attr">tolerations:</span>
-        <span class="hljs-bullet">-</span> <span class="hljs-attr">key:</span> <span class="hljs-string">&quot;type&quot;</span>
-          <span class="hljs-attr">operator:</span> <span class="hljs-string">&quot;Equal&quot;</span>
-          <span class="hljs-attr">value:</span> <span class="hljs-string">&quot;res&quot;</span>
-          <span class="hljs-attr">effect:</span> <span class="hljs-string">&quot;NoSchedule&quot;</span>
-      <span class="hljs-attr">initContainers:</span>
-        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">init-nginx</span>
-          <span class="hljs-attr">image:</span> <span class="hljs-string">docker.io/k8s_demo/front:1.0@sha256:fecfc2dc67c49d8ff27a77cff8aee431f9baaee3ffc0fd22da8e8da20caaeddf</span>
-          <span class="hljs-attr">command:</span>
-          <span class="hljs-bullet">-</span> <span class="hljs-string">sh</span>
-          <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;-c&quot;</span>
-          <span class="hljs-bullet">-</span> <span class="hljs-string">|</span>
-<span class="hljs-string">            set -ex</span>
-<span class="hljs-string">            cp -r /app/* /mnt/app/</span>
-<span class="hljs-string"></span>          <span class="hljs-attr">volumeMounts:</span>
-          <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">app</span>
-            <span class="hljs-attr">mountPath:</span> <span class="hljs-string">/mnt/app/</span>
-      <span class="hljs-attr">containers:</span>
-      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">app-nginx</span>
-        <span class="hljs-attr">image:</span> <span class="hljs-string">nginx:1.27.1-alpine3.20</span>
-        <span class="hljs-attr">volumeMounts:</span>
-          <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">app</span>
-            <span class="hljs-attr">mountPath:</span> <span class="hljs-string">/usr/share/nginx/html/</span>
-          <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">config-map</span>
-            <span class="hljs-attr">mountPath:</span> <span class="hljs-string">/etc/nginx/conf.d/</span>
-        <span class="hljs-attr">ports:</span>
-        <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">app-nginx</span>
-          <span class="hljs-attr">containerPort:</span> <span class="hljs-number">80</span>
-      <span class="hljs-attr">volumes:</span>
-      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">app</span>
-        <span class="hljs-attr">emptyDir:</span> &#123;&#125;
-      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">config-map</span>
-        <span class="hljs-attr">configMap:</span> 
-          <span class="hljs-attr">name:</span> <span class="hljs-string">web-nginx</span>
+        location / <span class="token punctuation">&#123;</span>
+            root   /usr/share/nginx/html;
+            index  index.html index.htm;
+            try_files $uri $uri/ /index.html; <span class="token comment">#vue3的history模式下的路由配置</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+
+<span class="token comment">#k8s-demo-back-front</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> apps/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Deployment
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>front
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">matchLabels</span><span class="token punctuation">:</span>
+      <span class="token key atrule">app</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>front
+      <span class="token key atrule">app.kubernetes.io/name</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>front
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">app</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>front
+        <span class="token key atrule">app.kubernetes.io/name</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>front
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">tolerations</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">key</span><span class="token punctuation">:</span> <span class="token string">"type"</span>
+          <span class="token key atrule">operator</span><span class="token punctuation">:</span> <span class="token string">"Equal"</span>
+          <span class="token key atrule">value</span><span class="token punctuation">:</span> <span class="token string">"res"</span>
+          <span class="token key atrule">effect</span><span class="token punctuation">:</span> <span class="token string">"NoSchedule"</span>
+      <span class="token key atrule">initContainers</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> init<span class="token punctuation">-</span>nginx
+          <span class="token key atrule">image</span><span class="token punctuation">:</span> docker.io/k8s_demo/front<span class="token punctuation">:</span>1.0@sha256<span class="token punctuation">:</span>fecfc2dc67c49d8ff27a77cff8aee431f9baaee3ffc0fd22da8e8da20caaeddf
+          <span class="token key atrule">command</span><span class="token punctuation">:</span>
+          <span class="token punctuation">-</span> sh
+          <span class="token punctuation">-</span> <span class="token string">"-c"</span>
+          <span class="token punctuation">-</span> <span class="token punctuation">|</span><span class="token scalar string">
+            set -ex
+            cp -r /app/* /mnt/app/</span>
+          <span class="token key atrule">volumeMounts</span><span class="token punctuation">:</span>
+          <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> app
+            <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /mnt/app/
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> app<span class="token punctuation">-</span>nginx
+        <span class="token key atrule">image</span><span class="token punctuation">:</span> nginx<span class="token punctuation">:</span>1.27.1<span class="token punctuation">-</span>alpine3.20
+        <span class="token key atrule">volumeMounts</span><span class="token punctuation">:</span>
+          <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> app
+            <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /usr/share/nginx/html/
+          <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> config<span class="token punctuation">-</span>map
+            <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /etc/nginx/conf.d/
+        <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> app<span class="token punctuation">-</span>nginx
+          <span class="token key atrule">containerPort</span><span class="token punctuation">:</span> <span class="token number">80</span>
+      <span class="token key atrule">volumes</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> app
+        <span class="token key atrule">emptyDir</span><span class="token punctuation">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> config<span class="token punctuation">-</span>map
+        <span class="token key atrule">configMap</span><span class="token punctuation">:</span> 
+          <span class="token key atrule">name</span><span class="token punctuation">:</span> web<span class="token punctuation">-</span>nginx
       
-<span class="hljs-comment">#service.yaml</span>
-<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
-<span class="hljs-attr">kind:</span> <span class="hljs-string">Service</span>
-<span class="hljs-attr">metadata:</span>
-  <span class="hljs-attr">name:</span> <span class="hljs-string">k8s-demo-back-front-service</span>
-  <span class="hljs-attr">namespace:</span> <span class="hljs-string">prod</span>
-  <span class="hljs-attr">labels:</span>
-    <span class="hljs-attr">name:</span> <span class="hljs-string">k8s-demo-back-front-service</span>
-<span class="hljs-attr">spec:</span>
-  <span class="hljs-attr">selector:</span>
-    <span class="hljs-attr">app:</span> <span class="hljs-string">k8s-demo-back-front</span>
-  <span class="hljs-attr">ports:</span>
-    <span class="hljs-bullet">-</span> <span class="hljs-attr">protocol:</span> <span class="hljs-string">TCP</span>
-      <span class="hljs-attr">name:</span> <span class="hljs-string">web</span>
-      <span class="hljs-attr">port:</span> <span class="hljs-number">80</span>     
-      <span class="hljs-attr">targetPort:</span> <span class="hljs-number">80</span>  
-  <span class="hljs-attr">clusterIP:</span> <span class="hljs-string">None</span>
-</code></pre>
+<span class="token comment">#service.yaml</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Service
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>front<span class="token punctuation">-</span>service
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>front<span class="token punctuation">-</span>service
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>front
+  <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">protocol</span><span class="token punctuation">:</span> TCP
+      <span class="token key atrule">name</span><span class="token punctuation">:</span> web
+      <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">80</span>     
+      <span class="token key atrule">targetPort</span><span class="token punctuation">:</span> <span class="token number">80</span>  
+  <span class="token key atrule">clusterIP</span><span class="token punctuation">:</span> None
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>这里需要注意一下我使用了<code>tolerations</code>容忍，容忍了节点可以存在<code>type=res</code>的键值对，刚好对应了<code>node-res</code>这个专门用来运行前端的节点</p>
-<pre><code class="hljs shell">root@node-m:~/k8s# kubectl get pods -n prod -l app=k8s-demo-back-front -o wide
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">root@node-m:~/k8s<span class="token comment"># kubectl get pods -n prod -l app=k8s-demo-back-front -o wide</span>
 NAME                     READY   STATUS    RESTARTS        AGE   IP           NODE       NOMINATED NODE   READINESS GATES
-k8s-demo-back-front...   1/1     Running   3 (3h10m ago)   23h   10.42.2.41   node-res   &lt;none&gt;           &lt;none&gt;</code></pre>
+k8s-demo-back-front<span class="token punctuation">..</span>.   <span class="token number">1</span>/1     Running   <span class="token number">3</span> <span class="token punctuation">(</span>3h10m ago<span class="token punctuation">)</span>   23h   <span class="token number">10.42</span>.2.41   node-res   <span class="token operator">&lt;</span>none<span class="token operator">></span>           <span class="token operator">&lt;</span>none<span class="token operator">></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 
 <h2 id="ingress"><a href="#ingress" class="headerlink" title="ingress"></a>ingress</h2><p>现在所有的服务都部署了，但是需要把它们统一暴露出去给外部访问，这里就用到了<code>ingress</code>，<code>ingress</code>可以说是管理<code>service</code>的<code>service</code>所以就是它来暴露服务到外部</p>
 <p>为了让<code>ingress</code>可以正常工作，我们必须要有一个可用的<code>ingress</code>控制器 <a target="_blank" rel="noopener" href="https://kubernetes.io/zh-cn/docs/concepts/services-networking/ingress-controllers/">Ingress 控制器 | Kubernetes</a></p>
 <p>这里使用的是k3s默认使用的是<code>Traefik ingress controller</code>的，所以第一步先要部署<code>traefik</code>的<code>dashboard</code></p>
-<h3 id="Traefik-dashboard"><a href="#Traefik-dashboard" class="headerlink" title="Traefik dashboard"></a>Traefik dashboard</h3><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
-<span class="hljs-attr">kind:</span> <span class="hljs-string">Namespace</span>
-<span class="hljs-attr">metadata:</span>
-  <span class="hljs-attr">name:</span> <span class="hljs-string">traefik-dashboard</span>
-  <span class="hljs-attr">labels:</span>
-    <span class="hljs-attr">name:</span> <span class="hljs-string">traefik-dashboard</span>
+<h3 id="Traefik-dashboard"><a href="#Traefik-dashboard" class="headerlink" title="Traefik dashboard"></a>Traefik dashboard</h3><pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Namespace
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> traefik<span class="token punctuation">-</span>dashboard
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> traefik<span class="token punctuation">-</span>dashboard
 
-<span class="hljs-meta">---</span>
-<span class="hljs-meta"></span>
-<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">traefik.io/v1alpha1</span>
-<span class="hljs-attr">kind:</span> <span class="hljs-string">IngressRoute</span>
-<span class="hljs-attr">metadata:</span>
-  <span class="hljs-attr">name:</span> <span class="hljs-string">traefik-dashboard</span>
-  <span class="hljs-attr">namespace:</span> <span class="hljs-string">traefik-dashboard</span>
-<span class="hljs-attr">spec:</span>
-  <span class="hljs-attr">routes:</span>
-  <span class="hljs-bullet">-</span> <span class="hljs-attr">match:</span> <span class="hljs-string">Host(`traefik.localhost.com`)</span> <span class="hljs-string">&amp;&amp;</span> <span class="hljs-string">(PathPrefix(`/api`)</span> <span class="hljs-string">||</span> <span class="hljs-string">PathPrefix(`/dashboard`))</span>
-    <span class="hljs-attr">kind:</span> <span class="hljs-string">Rule</span>
-    <span class="hljs-attr">services:</span>
-    <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">api@internal</span>
-      <span class="hljs-attr">kind:</span> <span class="hljs-string">TraefikService</span>
-    <span class="hljs-attr">middlewares:</span>
-      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">auth</span>
+<span class="token punctuation">---</span>
 
-<span class="hljs-meta">---</span>
-<span class="hljs-meta"></span>
-<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">traefik.io/v1alpha1</span>
-<span class="hljs-attr">kind:</span> <span class="hljs-string">Middleware</span>
-<span class="hljs-attr">metadata:</span>
-  <span class="hljs-attr">name:</span> <span class="hljs-string">auth</span>
-  <span class="hljs-attr">namespace:</span> <span class="hljs-string">traefik-dashboard</span>
-<span class="hljs-attr">spec:</span>
-  <span class="hljs-attr">basicAuth:</span>
-    <span class="hljs-attr">secret:</span> <span class="hljs-string">authsecret</span>  <span class="hljs-comment"># Kubernetes secret named &quot;secretName&quot;</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> traefik.io/v1alpha1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> IngressRoute
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> traefik<span class="token punctuation">-</span>dashboard
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> traefik<span class="token punctuation">-</span>dashboard
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">routes</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">match</span><span class="token punctuation">:</span> Host(`traefik.localhost.com`) <span class="token important">&amp;&amp;</span> (PathPrefix(`/api`) <span class="token punctuation">|</span><span class="token punctuation">|</span> PathPrefix(`/dashboard`))
+    <span class="token key atrule">kind</span><span class="token punctuation">:</span> Rule
+    <span class="token key atrule">services</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> api@internal
+      <span class="token key atrule">kind</span><span class="token punctuation">:</span> TraefikService
+    <span class="token key atrule">middlewares</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> auth
+
+<span class="token punctuation">---</span>
+
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> traefik.io/v1alpha1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Middleware
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> auth
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> traefik<span class="token punctuation">-</span>dashboard
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">basicAuth</span><span class="token punctuation">:</span>
+    <span class="token key atrule">secret</span><span class="token punctuation">:</span> authsecret  <span class="token comment"># Kubernetes secret named "secretName"</span>
 
 
-<span class="hljs-meta">--- </span>
-<span class="hljs-meta"></span>
-<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
-<span class="hljs-attr">kind:</span> <span class="hljs-string">Secret</span>
-<span class="hljs-attr">metadata:</span>
-  <span class="hljs-attr">name:</span> <span class="hljs-string">authsecret</span>
-  <span class="hljs-attr">namespace:</span> <span class="hljs-string">traefik-dashboard</span>
-<span class="hljs-attr">data:</span>
-  <span class="hljs-attr">users:</span>
-    <span class="hljs-string">cm9vdDokYXByMSRibUhSclNOaSQ0L2d4L0xNMmpzVGdBRTUzMTcwSEkuCgo=</span> <span class="hljs-comment">#htpasswd -nb root wwM9yCz52mWpWysVONM0 | base64</span></code></pre>
+<span class="token punctuation">---</span> 
+
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Secret
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> authsecret
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> traefik<span class="token punctuation">-</span>dashboard
+<span class="token key atrule">data</span><span class="token punctuation">:</span>
+  <span class="token key atrule">users</span><span class="token punctuation">:</span>
+    cm9vdDokYXByMSRibUhSclNOaSQ0L2d4L0xNMmpzVGdBRTUzMTcwSEkuCgo= <span class="token comment">#htpasswd -nb root wwM9yCz52mWpWysVONM0 | base64</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>这个就是部署<code>Traefik dashboard</code>的配置，它就是使用<code>ingress route</code>把服务暴露到了<code>traefik.localhost.com</code>的<code>/dashboard</code>和<code>/api</code>。同时我还使用了中间件来做用户认证，在访问的时候必须输入账号和密码才能正常访问，否则就是401。</p>
 <p>除此之外，我还要修改本地的host文件把<code>traefik.localhost.com</code>这个域名指向我的节点ip。之后访问<code>http://traefik.localhost.com/dashboard/#/</code>即可</p>
@@ -985,55 +985,55 @@ k8s-demo-back-front...   1/1     Running   3 (3h10m ago)   23h   10.42.2.41   no
 <p>参考:</p>
 <p><a target="_blank" rel="noopener" href="https://doc.traefik.io/traefik/operations/dashboard/">Traefik Dashboard Documentation - Traefik</a>   </p>
 <p><a target="_blank" rel="noopener" href="https://doc.traefik.io/traefik/middlewares/http/basicauth/">Traefik BasicAuth Documentation - Traefik</a></p>
-<h3 id="服务配置"><a href="#服务配置" class="headerlink" title="服务配置"></a>服务配置</h3><pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">traefik.io/v1alpha1</span>
-<span class="hljs-attr">kind:</span> <span class="hljs-string">Middleware</span>
-<span class="hljs-attr">metadata:</span>
-  <span class="hljs-attr">name:</span> <span class="hljs-string">header</span>
-  <span class="hljs-attr">namespace:</span> <span class="hljs-string">prod</span>
-<span class="hljs-attr">spec:</span>
-  <span class="hljs-attr">headers:</span>
-    <span class="hljs-attr">accessControlAllowMethods:</span>
-      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;GET&quot;</span>
-      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;OPTIONS&quot;</span>
-      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;POST&quot;</span>
-      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;PUT&quot;</span>
-    <span class="hljs-attr">accessControlAllowHeaders:</span>
-      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;*&quot;</span>
-    <span class="hljs-attr">addVaryHeader:</span> <span class="hljs-literal">true</span>
-    <span class="hljs-attr">accessControlAllowOriginList:</span> 
-      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;*&quot;</span> <span class="hljs-comment">#这里最好设置为前端的域名 web.k8s.demo</span>
+<h3 id="服务配置"><a href="#服务配置" class="headerlink" title="服务配置"></a>服务配置</h3><pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> traefik.io/v1alpha1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Middleware
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> header
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">headers</span><span class="token punctuation">:</span>
+    <span class="token key atrule">accessControlAllowMethods</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token string">"GET"</span>
+      <span class="token punctuation">-</span> <span class="token string">"OPTIONS"</span>
+      <span class="token punctuation">-</span> <span class="token string">"POST"</span>
+      <span class="token punctuation">-</span> <span class="token string">"PUT"</span>
+    <span class="token key atrule">accessControlAllowHeaders</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token string">"*"</span>
+    <span class="token key atrule">addVaryHeader</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+    <span class="token key atrule">accessControlAllowOriginList</span><span class="token punctuation">:</span> 
+      <span class="token punctuation">-</span> <span class="token string">"*"</span> <span class="token comment">#这里最好设置为前端的域名 web.k8s.demo</span>
 
-<span class="hljs-meta">---</span>
-<span class="hljs-meta"></span>
-<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">networking.k8s.io/v1</span>
-<span class="hljs-attr">kind:</span> <span class="hljs-string">Ingress</span>
-<span class="hljs-attr">metadata:</span>
-  <span class="hljs-attr">name:</span> <span class="hljs-string">web-ingress</span>
-  <span class="hljs-attr">namespace:</span> <span class="hljs-string">prod</span>
-  <span class="hljs-attr">annotations:</span>
-    <span class="hljs-attr">traefik.ingress.kubernetes.io/router.middlewares:</span> <span class="hljs-string">prod-header@kubernetescrd</span>
-<span class="hljs-attr">spec:</span>
-  <span class="hljs-attr">rules:</span>
-  <span class="hljs-bullet">-</span> <span class="hljs-attr">host:</span> <span class="hljs-string">api.k8s.demo</span>
-    <span class="hljs-attr">http:</span>
-      <span class="hljs-attr">paths:</span>
-      <span class="hljs-bullet">-</span> <span class="hljs-attr">path:</span> <span class="hljs-string">/api</span>
-        <span class="hljs-attr">pathType:</span> <span class="hljs-string">Prefix</span>
-        <span class="hljs-attr">backend:</span>
-          <span class="hljs-attr">service:</span>
-            <span class="hljs-attr">name:</span> <span class="hljs-string">k8s-demo-back-end-service</span>
-            <span class="hljs-attr">port:</span> 
-              <span class="hljs-attr">number:</span> <span class="hljs-number">40814</span>
-  <span class="hljs-bullet">-</span> <span class="hljs-attr">host:</span> <span class="hljs-string">web.k8s.demo</span>
-    <span class="hljs-attr">http:</span>
-      <span class="hljs-attr">paths:</span>
-      <span class="hljs-bullet">-</span> <span class="hljs-attr">path:</span> <span class="hljs-string">/</span>
-        <span class="hljs-attr">pathType:</span> <span class="hljs-string">Prefix</span>
-        <span class="hljs-attr">backend:</span>
-          <span class="hljs-attr">service:</span>
-            <span class="hljs-attr">name:</span> <span class="hljs-string">k8s-demo-back-front-service</span>
-            <span class="hljs-attr">port:</span> 
-              <span class="hljs-attr">number:</span> <span class="hljs-number">80</span></code></pre>
+<span class="token punctuation">---</span>
+
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> networking.k8s.io/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Ingress
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> web<span class="token punctuation">-</span>ingress
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+  <span class="token key atrule">annotations</span><span class="token punctuation">:</span>
+    <span class="token key atrule">traefik.ingress.kubernetes.io/router.middlewares</span><span class="token punctuation">:</span> prod<span class="token punctuation">-</span>header@kubernetescrd
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">rules</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">host</span><span class="token punctuation">:</span> api.k8s.demo
+    <span class="token key atrule">http</span><span class="token punctuation">:</span>
+      <span class="token key atrule">paths</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">path</span><span class="token punctuation">:</span> /api
+        <span class="token key atrule">pathType</span><span class="token punctuation">:</span> Prefix
+        <span class="token key atrule">backend</span><span class="token punctuation">:</span>
+          <span class="token key atrule">service</span><span class="token punctuation">:</span>
+            <span class="token key atrule">name</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>end<span class="token punctuation">-</span>service
+            <span class="token key atrule">port</span><span class="token punctuation">:</span> 
+              <span class="token key atrule">number</span><span class="token punctuation">:</span> <span class="token number">40814</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">host</span><span class="token punctuation">:</span> web.k8s.demo
+    <span class="token key atrule">http</span><span class="token punctuation">:</span>
+      <span class="token key atrule">paths</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">path</span><span class="token punctuation">:</span> /
+        <span class="token key atrule">pathType</span><span class="token punctuation">:</span> Prefix
+        <span class="token key atrule">backend</span><span class="token punctuation">:</span>
+          <span class="token key atrule">service</span><span class="token punctuation">:</span>
+            <span class="token key atrule">name</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>front<span class="token punctuation">-</span>service
+            <span class="token key atrule">port</span><span class="token punctuation">:</span> 
+              <span class="token key atrule">number</span><span class="token punctuation">:</span> <span class="token number">80</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>这个就是我的服务配置，这里使用了<code>api.k8s.demo</code>访问后端，<code>web.k8s.demo</code>访问前端，其中<code>web.k8s.demo</code>要把ip绑定到前端节点上面，同时这里还写了一个中间件来解决跨域问题。</p>
 <p><img src="/2024/08/16/%E4%BB%8E%E9%9B%B6%E5%88%B0%E4%B8%80--%E6%90%AD%E5%BB%BAweb%E9%A1%B9%E7%9B%AE%E9%9B%86%E7%BE%A4/3.png" alt="Traefik-ingress1"></p>
@@ -1042,28 +1042,28 @@ k8s-demo-back-front...   1/1     Running   3 (3h10m ago)   23h   10.42.2.41   no
 <ol>
 <li><p>在<code>Ingress</code>里面使用中间件需要遵循一定的命名规则</p>
 <blockquote>
-<pre><code class="hljs yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">traefik.io/v1alpha1</span>
-<span class="hljs-attr">kind:</span> <span class="hljs-string">Middleware</span>
-<span class="hljs-attr">metadata:</span>
-  <span class="hljs-attr">name:</span> <span class="hljs-string">stripprefix</span>
-  <span class="hljs-attr">namespace:</span> <span class="hljs-string">appspace</span>
-<span class="hljs-attr">spec:</span>
-  <span class="hljs-attr">stripPrefix:</span>
-    <span class="hljs-attr">prefixes:</span>
-      <span class="hljs-bullet">-</span> <span class="hljs-string">/stripit</span>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> traefik.io/v1alpha1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Middleware
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> stripprefix
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> appspace
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">stripPrefix</span><span class="token punctuation">:</span>
+    <span class="token key atrule">prefixes</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> /stripit
 
-<span class="hljs-meta">---</span>
-<span class="hljs-attr">apiVersion:</span> <span class="hljs-string">networking.k8s.io/v1</span>
-<span class="hljs-attr">kind:</span> <span class="hljs-string">Ingress</span>
-<span class="hljs-attr">metadata:</span>
-  <span class="hljs-attr">name:</span> <span class="hljs-string">ingress</span>
-  <span class="hljs-attr">namespace:</span> <span class="hljs-string">appspace</span>
-  <span class="hljs-attr">annotations:</span>
-    <span class="hljs-comment"># referencing a middleware from Kubernetes CRD provider: </span>
-    <span class="hljs-comment"># &lt;middleware-namespace&gt;-&lt;middleware-name&gt;@kubernetescrd</span>
-    <span class="hljs-attr">&quot;traefik.ingress.kubernetes.io/router.middlewares&quot;:</span> <span class="hljs-string">appspace-stripprefix@kubernetescrd</span>
-<span class="hljs-attr">spec:</span>
-  <span class="hljs-comment"># ... regular ingress definition</span></code></pre>
+<span class="token punctuation">---</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> networking.k8s.io/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Ingress
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> ingress
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> appspace
+  <span class="token key atrule">annotations</span><span class="token punctuation">:</span>
+    <span class="token comment"># referencing a middleware from Kubernetes CRD provider: </span>
+    <span class="token comment"># &lt;middleware-namespace>-&lt;middleware-name>@kubernetescrd</span>
+    <span class="token key atrule">"traefik.ingress.kubernetes.io/router.middlewares"</span><span class="token punctuation">:</span> appspace<span class="token punctuation">-</span>stripprefix@kubernetescrd
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token comment"># ... regular ingress definition</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p><a target="_blank" rel="noopener" href="https://doc.traefik.io/traefik/providers/overview/#provider-namespace">Traefik Configuration Discovery Overview - Traefik</a></p>
 </blockquote>
@@ -1136,7 +1136,7 @@ k8s-demo-back-front...   1/1     Running   3 (3h10m ago)   23h   10.42.2.41   no
 
 <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 <script src="/js/jquery.min.js"></script>
-<script src="/js/highlight.min.js"></script>
+<script src="/js/prism.js"></script>
 
 
 
