@@ -63,7 +63,7 @@ marked:
   postAsset: true
 relative_link: false
 future: true
-syntax_highlighter: highlight.js
+syntax_highlighter: prismjs
 highlight:
   line_number: false
   auto_detect: true
