@@ -71,7 +71,7 @@ highlight:
   hljs: true # 是否使用 highlight.js 语法高亮
 prismjs:
   preprocess: true
-  line_number: true
+  line_number: false
   tab_replace: ''
 
 # Home page setting
