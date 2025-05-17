@@ -182,7 +182,7 @@
 <h1 id="Harbor"><a href="#Harbor" class="headerlink" title="Harbor"></a>Harbor</h1><p>首先要先部署<code>harbor</code>作为私有镜像仓库，方便上传后续构建的私有镜像和所需要的镜像。</p>
 <p>这次部署会去配置harbor的<code>tls </code> <a target="_blank" rel="noopener" href="https://goharbor.io/docs/2.0.0/install-config/configure-https/">Harbor docs | Configure HTTPS Access to Harbor (goharbor.io)</a> 按着该文档就可以生成对应的域名证书，并且要配置<code>k3s</code>的私有仓库配置<a target="_blank" rel="noopener" href="https://docs.k3s.io/installation/private-registry">Private Registry Configuration | K3s</a>，同时在我的<code>ubuntu</code>系统上面还要进行<code>update-ca-certificates</code> <a target="_blank" rel="noopener" href="https://goharbor.io/docs/2.0.0/install-config/troubleshoot-installation/">Harbor docs | Troubleshooting Harbor Installation (goharbor.io)</a></p>
 <p>在生成好证书以后还要把证书配置到<code>secret</code></p>
-<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
 <span class="token key atrule">kind</span><span class="token punctuation">:</span> Secret
 <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
   <span class="token key atrule">name</span><span class="token punctuation">:</span> my<span class="token punctuation">-</span>harbor<span class="token punctuation">-</span>tls
@@ -193,11 +193,11 @@
     LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0t....</span>
   <span class="token key atrule">tls.key</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string">
     LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tL....</span>
-    <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+    </code></pre>
 
 <p>这次安装是通过<code>helm</code>来安装，所以需要修改<code>value.yaml</code>来进行详细配置 <a target="_blank" rel="noopener" href="https://goharbor.io/docs/2.0.0/install-config/harbor-ha-helm/">Harbor docs | Deploying Harbor with High Availability via Helm (goharbor.io)</a></p>
 <p>这里说一下我的<code>expose</code>配置，我是要通过<code>ingress</code>来进行对外暴露的，因为我自己生成了tls证书，所以<code>certSource</code>要改成<code>secret</code>，并且把<code>secretName: </code>改成我上述配置的secret中</p>
-<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"> <span class="token punctuation">...</span>.
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"> <span class="token punctuation">...</span>.
  <span class="token key atrule">type</span><span class="token punctuation">:</span> ingress
  <span class="token key atrule">tls</span><span class="token punctuation">:</span>
    <span class="token key atrule">enabled</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
@@ -221,18 +221,18 @@
 <span class="token key atrule">ingress</span><span class="token punctuation">:</span>
      <span class="token key atrule">hosts</span><span class="token punctuation">:</span>
        <span class="token key atrule">core</span><span class="token punctuation">:</span> harbor.k8s.demo
-   <span class="token punctuation">...</span>.<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+   <span class="token punctuation">...</span>.</code></pre>
 
 <p>其他的按需配置即可</p>
 <p><img src="/2024/08/23/k8s-jenkins-%E6%9E%84%E5%BB%BA%E6%8C%81%E7%BB%AD%E4%BA%A4%E4%BB%98%E6%B5%81%E6%B0%B4%E7%BA%BF/1.png" alt="harbor"></p>
 <p>在成功部署以后，先把项目需要到的镜像进行构建和上传</p>
-<pre class="line-numbers language-Dockerfile" data-language="Dockerfile"><code class="language-Dockerfile">FROM alpine:3.20.2
+<pre class="language-Dockerfile" data-language="Dockerfile"><code class="language-Dockerfile">FROM alpine:3.20.2
 RUN set -eux &amp;&amp; sed -i &#39;s&#x2F;dl-cdn.alpinelinux.org&#x2F;mirrors.ustc.edu.cn&#x2F;g&#39; &#x2F;etc&#x2F;apk&#x2F;repositories
-RUN apk update &amp;&amp; apk add tzdata<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+RUN apk update &amp;&amp; apk add tzdata</code></pre>
 
 <p>先构建后端基础镜像，到时候就流水线中直接使用，不需要而外下载所需要的包，节约流水线时间</p>
 <p>同时在<code>docker login</code>以后把配置文件保存到<code>Secret</code>里面，方便后续在流水线中进行镜像上传</p>
-<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment">#harborLoginSecret.yaml</span>
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment">#harborLoginSecret.yaml</span>
 <span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
 <span class="token key atrule">kind</span><span class="token punctuation">:</span> Secret
 <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
@@ -240,11 +240,11 @@ RUN apk update &amp;&amp; apk add tzdata<span aria-hidden="true" class="line-num
   <span class="token key atrule">namespace</span><span class="token punctuation">:</span> devops<span class="token punctuation">-</span>tools  <span class="token comment"># Specify your namespace</span>
 <span class="token key atrule">type</span><span class="token punctuation">:</span> kubernetes.io/dockerconfigjson
 <span class="token key atrule">data</span><span class="token punctuation">:</span>
-  <span class="token key atrule">.dockerconfigjson</span><span class="token punctuation">:</span> ewoJImF1dGhzIjogewoJCSJoYXJib3IuazhzLmRlbW8iOiB7CgkJCSJhdXRoIjogIllXUnRhVzQ2U0dGeVltOXlNVEl6TkRVPSIKCQl9Cgl9Cn0=<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+  <span class="token key atrule">.dockerconfigjson</span><span class="token punctuation">:</span> ewoJImF1dGhzIjogewoJCSJoYXJib3IuazhzLmRlbW8iOiB7CgkJCSJhdXRoIjogIllXUnRhVzQ2U0dGeVltOXlNVEl6TkRVPSIKCQl9Cgl9Cn0=</code></pre>
 
 <h1 id="Jenkins"><a href="#Jenkins" class="headerlink" title="Jenkins"></a>Jenkins</h1><p>这里按着官方文档<a target="_blank" rel="noopener" href="https://www.jenkins.io/doc/book/installing/kubernetes/">Kubernetes (jenkins.io)</a>在k8s中部署jenkins</p>
 <p>其中因为jenkins在流水线中会使用到<code>kubernetes</code>的<code>agents</code> <a target="_blank" rel="noopener" href="https://www.jenkins.io/doc/book/using/using-agents/">Using Jenkins agents</a>，所以这里再service中要同时代理<code>50000</code>端口的流量，让<code>agents</code>可以和<code>jenkins</code>可以进行连接 <a target="_blank" rel="noopener" href="https://www.jenkins.io/projects/remoting/">Jenkins Remoting</a></p>
-<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
 <span class="token key atrule">kind</span><span class="token punctuation">:</span> Service
 <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
   <span class="token key atrule">name</span><span class="token punctuation">:</span> jenkins<span class="token punctuation">-</span>service
@@ -265,7 +265,7 @@ RUN apk update &amp;&amp; apk add tzdata<span aria-hidden="true" class="line-num
     <span class="token punctuation">-</span> <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">50000</span>
       <span class="token key atrule">name</span><span class="token punctuation">:</span> jnlpport
       <span class="token key atrule">targetPort</span><span class="token punctuation">:</span> <span class="token number">50000</span>
-      <span class="token key atrule">nodePort</span><span class="token punctuation">:</span> <span class="token number">32500</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+      <span class="token key atrule">nodePort</span><span class="token punctuation">:</span> <span class="token number">32500</span></code></pre>
 
 <p><img src="/2024/08/23/k8s-jenkins-%E6%9E%84%E5%BB%BA%E6%8C%81%E7%BB%AD%E4%BA%A4%E4%BB%98%E6%B5%81%E6%B0%B4%E7%BA%BF/2.png" alt="jenkins"></p>
 <h2 id="git配置"><a href="#git配置" class="headerlink" title="git配置"></a>git配置</h2><p>这里要去系统配置里面的凭证里面配置一个<code>SSH Username with private key</code>，这样才可以通过<code>git</code>来拉去私有仓库</p>
@@ -302,7 +302,7 @@ RUN apk update &amp;&amp; apk add tzdata<span aria-hidden="true" class="line-num
 <h3 id="在K8S中动态创建代理"><a href="#在K8S中动态创建代理" class="headerlink" title="在K8S中动态创建代理"></a>在K8S中动态创建代理</h3><p>Jenkins构建项目时，并行构建，如果多个项目同时构建就会有等待。所以这里采用<code>master/slave</code>架构</p>
 <p>这里官方是提供了基础的<code>slave</code>镜像 <a target="_blank" rel="noopener" href="https://hub.docker.com/r/jenkins/inbound-agent/">jenkins&#x2F;inbound-agent - Docker Image | Docker Hub</a></p>
 <p>但是我是需要<code>node</code>和<code>go</code>环境来进行项目构建的，所以这里需要在官方镜像的基础上面添加所需要的构建工具</p>
-<pre class="line-numbers language-docker" data-language="docker"><code class="language-docker"><span class="token instruction"><span class="token keyword">FROM</span> jenkins/inbound-agent:alpine3.20-jdk17</span>
+<pre class="language-docker" data-language="docker"><code class="language-docker"><span class="token instruction"><span class="token keyword">FROM</span> jenkins/inbound-agent:alpine3.20-jdk17</span>
 
 <span class="token comment"># 切换到 root 用户</span>
 <span class="token instruction"><span class="token keyword">USER</span> root</span>
@@ -319,11 +319,11 @@ npm install @vue/cli@5.0.8</span>
     ln -s /usr/local/go/bin/go /usr/local/bin/go &amp;&amp; rm -rf /app/go1.22.6.linux-amd64.tar.gz</span>
 
 <span class="token instruction"><span class="token keyword">USER</span> jenkins</span>
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</code></pre>
 
 <p>把它打包成镜像并上传到私有的<code>harbor</code>中</p>
 <h3 id="在K8s中的权限配置"><a href="#在K8s中的权限配置" class="headerlink" title="在K8s中的权限配置"></a>在K8s中的权限配置</h3><p>因为在流水线中，会使用<code>kubectl</code>对不同<code>namespace</code>的deployment进行操作所以需要有对应的权限</p>
-<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
 <span class="token key atrule">kind</span><span class="token punctuation">:</span> ServiceAccount
 <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
   <span class="token key atrule">name</span><span class="token punctuation">:</span> jenkins<span class="token punctuation">-</span>prod
@@ -357,7 +357,7 @@ npm install @vue/cli@5.0.8</span>
   <span class="token key atrule">name</span><span class="token punctuation">:</span> prod<span class="token punctuation">-</span>pod<span class="token punctuation">-</span>management
   <span class="token key atrule">apiGroup</span><span class="token punctuation">:</span> rbac.authorization.k8s.io
 
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</code></pre>
 
 <p>这里创建了一个<code>jenkins-prod</code>的用户，并且可以操作 <code>namespace</code>为 <code> prod</code>下的<code>deployments</code>所有行为</p>
 <ul>
@@ -371,12 +371,12 @@ npm install @vue/cli@5.0.8</span>
 <ul>
 <li>我要定义了<code>parameters</code>就是在执行流水线前，要输入本次构建的版本号和镜像地址配置，这样打包出来的镜像都会存在版本信息，方便追踪和管理</li>
 </ul>
-<pre class="line-numbers language-groovy" data-language="groovy"><code class="language-groovy">parameters <span class="token punctuation">&#123;</span>
+<pre class="language-groovy" data-language="groovy"><code class="language-groovy">parameters <span class="token punctuation">&#123;</span>
     <span class="token function">string</span><span class="token punctuation">(</span>name<span class="token punctuation">:</span> <span class="token string">'FRONTEND_VERSION'</span><span class="token punctuation">,</span> defaultValue<span class="token punctuation">:</span> <span class="token string">'1.0.0'</span><span class="token punctuation">,</span> description<span class="token punctuation">:</span> <span class="token string">'前端版本号'</span><span class="token punctuation">)</span>
     <span class="token function">string</span><span class="token punctuation">(</span>name<span class="token punctuation">:</span> <span class="token string">'BACKEND_VERSION'</span><span class="token punctuation">,</span> defaultValue<span class="token punctuation">:</span> <span class="token string">'1.0.0'</span><span class="token punctuation">,</span> description<span class="token punctuation">:</span> <span class="token string">'后端版本号'</span><span class="token punctuation">)</span>
     <span class="token function">string</span><span class="token punctuation">(</span>name<span class="token punctuation">:</span> <span class="token string">'HARBOR_IP'</span><span class="token punctuation">,</span> defaultValue<span class="token punctuation">:</span> <span class="token string">'192.168.1.120'</span><span class="token punctuation">,</span> description<span class="token punctuation">:</span> <span class="token string">'harbor仓库ip'</span><span class="token punctuation">)</span>
     <span class="token function">string</span><span class="token punctuation">(</span>name<span class="token punctuation">:</span> <span class="token string">'HARBOR_REGISTRY'</span><span class="token punctuation">,</span> defaultValue<span class="token punctuation">:</span> <span class="token string">'harbor.k8s.demo'</span><span class="token punctuation">,</span> description<span class="token punctuation">:</span> <span class="token string">'harbor仓库地址'</span><span class="token punctuation">)</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token punctuation">&#125;</span></code></pre>
 
 <ul>
 <li><p>在使用<code>agents</code>时要进行一定的配置</p>
@@ -395,7 +395,7 @@ npm install @vue/cli@5.0.8</span>
 </ul>
 </li>
 </ul>
-<pre class="line-numbers language-groovy" data-language="groovy"><code class="language-groovy">agent <span class="token punctuation">&#123;</span>
+<pre class="language-groovy" data-language="groovy"><code class="language-groovy">agent <span class="token punctuation">&#123;</span>
     kubernetes <span class="token punctuation">&#123;</span>
         yaml <span class="token string">'''
         apiVersion: v1
@@ -432,7 +432,7 @@ npm install @vue/cli@5.0.8</span>
               path: /mnt/nfs_share/npm-cache  
         '''</span>
     <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token punctuation">&#125;</span></code></pre>
 
 <ul>
 <li>在构建镜像时，使用了<code>kaniko</code>作为<code>agents</code><ul>
@@ -441,7 +441,7 @@ npm install @vue/cli@5.0.8</span>
 </ul>
 </li>
 </ul>
-<pre class="line-numbers language-groovy" data-language="groovy"><code class="language-groovy">agent <span class="token punctuation">&#123;</span>
+<pre class="language-groovy" data-language="groovy"><code class="language-groovy">agent <span class="token punctuation">&#123;</span>
                kubernetes <span class="token punctuation">&#123;</span>
                    yaml <span class="token string">'''
                    apiVersion: v1
@@ -466,7 +466,7 @@ npm install @vue/cli@5.0.8</span>
                                path: config.json
                    '''</span>
                <span class="token punctuation">&#125;</span>
-           <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+           <span class="token punctuation">&#125;</span></code></pre>
 
 <ul>
 <li>构建镜像命令<ul>
@@ -478,7 +478,7 @@ npm install @vue/cli@5.0.8</span>
 </ul>
 </li>
 </ul>
-<pre class="line-numbers language-groovy" data-language="groovy"><code class="language-groovy">    steps <span class="token punctuation">&#123;</span>
+<pre class="language-groovy" data-language="groovy"><code class="language-groovy">    steps <span class="token punctuation">&#123;</span>
         parallel <span class="token punctuation">(</span>
             <span class="token string">'构建前端镜像'</span><span class="token punctuation">:</span> <span class="token punctuation">&#123;</span>
                 unstash <span class="token string">'frontend-artifact'</span>
@@ -506,7 +506,7 @@ npm install @vue/cli@5.0.8</span>
             <span class="token punctuation">&#125;</span>
         <span class="token punctuation">)</span>
     <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token punctuation">&#125;</span></code></pre>
 
 <ul>
 <li><p>k8s更新部署</p>
@@ -540,7 +540,7 @@ npm install @vue/cli@5.0.8</span>
 </ul>
 </li>
 </ul>
-<pre class="line-numbers language-groovy" data-language="groovy"><code class="language-groovy"><span class="token function">stage</span><span class="token punctuation">(</span><span class="token string">'更新K8s部署'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+<pre class="language-groovy" data-language="groovy"><code class="language-groovy"><span class="token function">stage</span><span class="token punctuation">(</span><span class="token string">'更新K8s部署'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
             steps <span class="token punctuation">&#123;</span>
                 script <span class="token punctuation">&#123;</span>
                     sh <span class="token interpolation-string"><span class="token string">"""
@@ -555,13 +555,13 @@ npm install @vue/cli@5.0.8</span>
                       """</span></span>
                 <span class="token punctuation">&#125;</span>
             <span class="token punctuation">&#125;</span>
-        <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+        <span class="token punctuation">&#125;</span></code></pre>
 
 <p>最后完整的配置文件在 <a target="_blank" rel="noopener" href="https://github.com/kehaha-5/k8s_demo/blob/main/web/jenkins/jenkins.pipeline">k8s_demo&#x2F;web&#x2F;jenkins&#x2F;jenkins.pipeline at main · kehaha-5&#x2F;k8s_demo (github.com)</a></p>
 <h2 id="执行"><a href="#执行" class="headerlink" title="执行"></a>执行</h2><p>在执行的时候可以配置对应的版本和镜像信息</p>
 <p><img src="/2024/08/23/k8s-jenkins-%E6%9E%84%E5%BB%BA%E6%8C%81%E7%BB%AD%E4%BA%A4%E4%BB%98%E6%B5%81%E6%B0%B4%E7%BA%BF/4.png" alt="jenkins k8s-demo"></p>
 <p>在执行成功后可以查看对应的记录</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#查看滚动更新过程</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#查看滚动更新过程</span>
 root@node-m:~<span class="token comment"># kubectl rollout status  deployment  -n prod -l app=k8s-demo-back-end</span>
 deployment <span class="token string">"k8s-demo-back-end"</span> successfully rolled out
 root@node-m:~<span class="token comment"># kubectl rollout status  deployment  -n prod -l app=k8s-demo-back-end</span>
@@ -587,7 +587,7 @@ REVISION  CHANGE-CAUSE
 root@node-m:~<span class="token comment"># kubectl get pods -n prod -l app=k8s-demo-back-end</span>
 NAME                                 READY   STATUS    RESTARTS   AGE
 k8s-demo-back-end-5c74755bcd-cgt78   <span class="token number">1</span>/1     Running   <span class="token number">0</span>          2m13s
-k8s-demo-back-end-5c74755bcd-md6j2   <span class="token number">1</span>/1     Running   <span class="token number">0</span>          2m14s<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+k8s-demo-back-end-5c74755bcd-md6j2   <span class="token number">1</span>/1     Running   <span class="token number">0</span>          2m14s</code></pre>
 
 <p>ok，以上就是实现了在k8s中部署jenkins和harbor实现自动交付流水线</p>
 

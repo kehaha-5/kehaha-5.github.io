@@ -202,7 +202,7 @@
 <li>在k3s中如果需要配置镜像源可以参考 <a target="_blank" rel="noopener" href="https://docs.k3s.io/zh/installation/private-registry">k3s-Private Registry Configuration</a>，同时最好启用<code>Embedded Registry Mirror</code>功能，这个可以使节点通过集群里面的其他节点获取已有的镜像 <a target="_blank" rel="noopener" href="https://docs.k3s.io/zh/installation/registry-mirror">k3s-Embedded Registry Mirror</a></li>
 </ol>
 <h2 id="额外配置"><a href="#额外配置" class="headerlink" title="额外配置"></a>额外配置</h2><p>因为在上述中提到需要一台服务器专门做web资源服务器，所以在部署完集群后，需要把对应服务node打上污点，防止其他pod被调度到该节点上面</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">root@node-m:~/k8s<span class="token comment"># kubectl taint nodes node-res type=res:NoSchedule </span>
+<pre class="language-bash" data-language="bash"><code class="language-bash">root@node-m:~/k8s<span class="token comment"># kubectl taint nodes node-res type=res:NoSchedule </span>
 <span class="token comment"># 其中NoSchedule的含有如下和其他污点类型：</span>
 <span class="token comment"># NoSchedule ：表示k8s将不会将Pod调度到具有该污点的Node上</span>
 <span class="token comment"># PreferNoSchedule ：表示k8s将尽量避免将Pod调度到具有该污点的Node上</span>
@@ -212,26 +212,26 @@ Name:               node-res
 <span class="token punctuation">..</span>.
 Taints:             <span class="token assign-left variable">type</span><span class="token operator">=</span>res:NoSchedule
 Unschedulable:      <span class="token boolean">false</span>
-<span class="token punctuation">..</span>.<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token punctuation">..</span>.</code></pre>
 <p>或者使用k3s中的<code>agent</code>配置文件给节点进行污点配置 <a target="_blank" rel="noopener" href="https://docs.k3s.io/zh/cli/agent">k3s-agent</a></p>
 <p>同时创建一个<code>prod</code>的namespace，我的所有应用都将会部署到该<code>namespace</code>上面</p>
-<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
 <span class="token key atrule">kind</span><span class="token punctuation">:</span> Namespace
 <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
   <span class="token key atrule">name</span><span class="token punctuation">:</span> prod
   <span class="token key atrule">labels</span><span class="token punctuation">:</span>
-    <span class="token key atrule">name</span><span class="token punctuation">:</span> prod<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> prod</code></pre>
 
 
 
 <h1 id="开始部署"><a href="#开始部署" class="headerlink" title="开始部署"></a>开始部署</h1><h2 id="kubernetes-dashboard"><a href="#kubernetes-dashboard" class="headerlink" title="kubernetes dashboard"></a>kubernetes dashboard</h2><p>根据<a target="_blank" rel="noopener" href="https://github.com/kubernetes/dashboard">文档</a>命令部署 <code>dashboard</code></p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># Add kubernetes-dashboard repository</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># Add kubernetes-dashboard repository</span>
 helm repo <span class="token function">add</span> kubernetes-dashboard https://kubernetes.github.io/dashboard/
 <span class="token comment"># Deploy a Helm Release named "kubernetes-dashboard" using the kubernetes-dashboard chart</span>
-helm upgrade <span class="token parameter variable">--install</span> kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --create-namespace <span class="token parameter variable">--namespace</span> kubernetes-dashboard<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+helm upgrade <span class="token parameter variable">--install</span> kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --create-namespace <span class="token parameter variable">--namespace</span> kubernetes-dashboard</code></pre>
 <p>部署完后我们还要创建一个用户用于管理k8s <a target="_blank" rel="noopener" href="https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md">Creating sample user</a></p>
 <p>完成上述部署以后，我们就要访问对应的<code>dashboard</code>，然后我是要用ip+端口的访问方式，所以还要创建一个<code>service</code>把流量代理到对应的pod上</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">cat</span> node-web.yaml
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">cat</span> node-web.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -246,9 +246,9 @@ spec:
   ports:
     - protocol: TCP
       port: <span class="token number">8000</span>
-      targetPort: <span class="token number">8443</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+      targetPort: <span class="token number">8443</span></code></pre>
 <p>注意这里要代理的是<code>kubernetes-dashboard-kong</code>不是<code>kubernetes-dashboard-web</code></p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">root@node-m:~/k8s/dashoboard<span class="token comment"># kubectl get endpoints -n kubernetes-dashboard</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash">root@node-m:~/k8s/dashoboard<span class="token comment"># kubectl get endpoints -n kubernetes-dashboard</span>
 NAME                               ENDPOINTS              AGE
 dashoard-web                       <span class="token number">10.42</span>.1.242:8443       12d
 <span class="token punctuation">..</span>.
@@ -259,13 +259,13 @@ kubernetes-dashboard-kong-proxy    <span class="token number">10.42</span>.1.242
 NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT<span class="token punctuation">(</span>S<span class="token punctuation">)</span>          AGE
 dashoard-web  NodePort    <span class="token number">10.43</span>.234.91    <span class="token operator">&lt;</span>none<span class="token operator">></span>        <span class="token number">8000</span>:30756/TCP   12d
 <span class="token punctuation">..</span>.
-<span class="token comment">#查看service信息可以得知 dashoard-web 的外部访问端口为 30756</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token comment">#查看service信息可以得知 dashoard-web 的外部访问端口为 30756</span></code></pre>
 <p>然后ip+30756 即可访问 <code>dashboard</code> 同时还要创建对应用户的token</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">root@node-m:~/k8s/dashoboard<span class="token comment"># kubectl create token -n kubernetes-dashboard xxxx</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">root@node-m:~/k8s/dashoboard<span class="token comment"># kubectl create token -n kubernetes-dashboard xxxx</span></code></pre>
 <p><img src="/2024/08/16/%E4%BB%8E%E9%9B%B6%E5%88%B0%E4%B8%80--%E6%90%AD%E5%BB%BAweb%E9%A1%B9%E7%9B%AE%E9%9B%86%E7%BE%A4/1.png" alt="dashoard-web"></p>
 <h2 id="NFS存储挂载"><a href="#NFS存储挂载" class="headerlink" title="NFS存储挂载"></a>NFS存储挂载</h2><p>在所有应用部署前，先部署外部存储介质</p>
 <p>首先先要安装 <a target="_blank" rel="noopener" href="https://github.com/kubernetes-csi/csi-driver-nfs">csi-driver-nfs</a> 这个是nfs的卷插件，不安装的话是无法使用nfs相关卷功能</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">root@node-m:~/k8s<span class="token comment"># cat ./nfs/storageClass.yaml</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash">root@node-m:~/k8s<span class="token comment"># cat ./nfs/storageClass.yaml</span>
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
@@ -280,11 +280,11 @@ parameters:
 reclaimPolicy: Retain <span class="token comment">#因为要保存redis 和 mysql的数据 所以使用Retain 当pvc或pv被删除以后仍然可以保留数据</span>
 volumeBindingMode: Immediate
 mountOptions:
-  - <span class="token assign-left variable">nfsvers</span><span class="token operator">=</span><span class="token number">4</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+  - <span class="token assign-left variable">nfsvers</span><span class="token operator">=</span><span class="token number">4</span></code></pre>
 
 <p>这里使用的是<code> Dynamic Volume Provisioning</code> 这样就不需要每个<code>pvc</code>都声名一个<code>pv</code>了</p>
 <h2 id="MySQL集群"><a href="#MySQL集群" class="headerlink" title="MySQL集群"></a>MySQL集群</h2><p>这里要部署的是一个1个主节点2个从节点的MySQL集群</p>
-<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment">#configmap</span>
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment">#configmap</span>
 <span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
 <span class="token key atrule">kind</span><span class="token punctuation">:</span> ConfigMap
 <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
@@ -460,14 +460,14 @@ mountOptions:
   <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql
     <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">3306</span>
   <span class="token key atrule">selector</span><span class="token punctuation">:</span>
-    <span class="token key atrule">app</span><span class="token punctuation">:</span> mysql<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> mysql</code></pre>
 
 <p>这里有几点需要注意一下：</p>
 <ol>
 <li><p>这里创建集群使用的是<code>StatefulSet</code> 因为mysql集群之间存在拓步结构（必须先启动master节点再启动slaver节点），为了处理这种状态的关系所以使用了<code>StatefulSet</code></p>
 <blockquote>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span><span class="token punctuation">[</span> <span class="token environment constant">$HOSTNAME</span> <span class="token operator">=~</span> -<span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">0</span>-9<span class="token punctuation">]</span>+<span class="token punctuation">)</span>$ <span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token builtin class-name">exit</span> <span class="token number">1</span>
-<span class="token assign-left variable">ordinal</span><span class="token operator">=</span><span class="token variable">$&#123;<span class="token environment constant">BASH_REMATCH</span><span class="token punctuation">[</span>1<span class="token punctuation">]</span>&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span><span class="token punctuation">[</span> <span class="token environment constant">$HOSTNAME</span> <span class="token operator">=~</span> -<span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">0</span>-9<span class="token punctuation">]</span>+<span class="token punctuation">)</span>$ <span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token builtin class-name">exit</span> <span class="token number">1</span>
+<span class="token assign-left variable">ordinal</span><span class="token operator">=</span><span class="token variable">$&#123;<span class="token environment constant">BASH_REMATCH</span><span class="token punctuation">[</span>1<span class="token punctuation">]</span>&#125;</span></code></pre>
 <p>这段shell的意思是获取hostname中的数字，然后赋值个ordinal，这样通过判断ordinal就可以知道当前环境是主节点还是从节点。</p>
 <p><code>StatefulSet</code>创建的pod名称是有顺序的，pod-index，index会从0开始，这里规定pod-0为主节点</p>
 </blockquote>
@@ -534,7 +534,7 @@ mountOptions:
 </ul>
 </blockquote>
 <p>而这次部署的就是3个node的<code>Redis Cluster</code>其中每个node由一个主一个从组成，所以一共有6个redis服务</p>
-<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment">#configmap</span>
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment">#configmap</span>
 <span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
 <span class="token key atrule">kind</span><span class="token punctuation">:</span> ConfigMap
 <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
@@ -695,7 +695,7 @@ mountOptions:
               redis-5.redis-svc:6379 \
               --cluster-replicas 1 -a $REDISCLI_AUTH --cluster-yes #cluster-replicas 1 表示为每一个主节点分配一个从节点，这样每个node就有两个redis组成一个主一个从，这样3由个node组成的redis cluster就要6个redis</span>
       <span class="token key atrule">restartPolicy</span><span class="token punctuation">:</span> Never
-  <span class="token key atrule">backoffLimit</span><span class="token punctuation">:</span> <span class="token number">1</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+  <span class="token key atrule">backoffLimit</span><span class="token punctuation">:</span> <span class="token number">1</span></code></pre>
 
 <p>这里要注意几点</p>
 <ol>
@@ -719,18 +719,18 @@ mountOptions:
 <p>代码 <a target="_blank" rel="noopener" href="https://github.com/kehaha-5/k8s_demo/tree/main/web/back">k8s_demo&#x2F;web&#x2F;back at main · kehaha-5&#x2F;k8s_demo (github.com)</a></p>
 </blockquote>
 <p>这个gin后端的话，除了提供api服务以外它还而外监听一个端口用来给pod提供健康检测 <a href="%5BKubernetes%5D(https://kubernetes.io/zh-cn/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)">配置存活、就绪和启动探针</a></p>
-<pre class="line-numbers language-docker" data-language="docker"><code class="language-docker"><span class="token instruction"><span class="token keyword">FROM</span> alpine:3.20.2</span>
+<pre class="language-docker" data-language="docker"><code class="language-docker"><span class="token instruction"><span class="token keyword">FROM</span> alpine:3.20.2</span>
 <span class="token instruction"><span class="token keyword">COPY</span> ./k8s_demo /app/k8s_demo</span>
 <span class="token instruction"><span class="token keyword">COPY</span> ./config-prod.yaml /app/config-prod.yaml</span>
 <span class="token instruction"><span class="token keyword">RUN</span> set -eux &amp;&amp; sed -i <span class="token string">'s/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g'</span> /etc/apk/repositories</span>
-<span class="token instruction"><span class="token keyword">RUN</span> apk update &amp;&amp; apk add tzdata</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token instruction"><span class="token keyword">RUN</span> apk update &amp;&amp; apk add tzdata</span></code></pre>
 
 <p>我们要把后端代码和所需要的环境打包成镜像，因为我的k3s使用的运行时是<code>containerd</code>，所以这里利用<code>docker</code>进行打包，然后导出镜像再导入到<code>containerd</code>里面</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">docker</span> build <span class="token parameter variable">-t</span> k8s_demo/back:1.0 <span class="token builtin class-name">.</span> <span class="token comment">#注意-t的格式，只有这样的格式导入到ctr中才会保留</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">docker</span> build <span class="token parameter variable">-t</span> k8s_demo/back:1.0 <span class="token builtin class-name">.</span> <span class="token comment">#注意-t的格式，只有这样的格式导入到ctr中才会保留</span>
 <span class="token function">docker</span> save  k8s_demo/back <span class="token parameter variable">-o</span> k8s_demo_back.tar
-ctr <span class="token parameter variable">-n</span> k8s.io images <span class="token function">import</span> k8s_demo_back.tar <span class="token comment">#导入时，要选择k8s.io的namesapce 不然可能出现pod找不到image</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+ctr <span class="token parameter variable">-n</span> k8s.io images <span class="token function">import</span> k8s_demo_back.tar <span class="token comment">#导入时，要选择k8s.io的namesapce 不然可能出现pod找不到image</span></code></pre>
 
-<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment">#k8s-demo-back-end</span>
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment">#k8s-demo-back-end</span>
 <span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> apps/v1
 <span class="token key atrule">kind</span><span class="token punctuation">:</span> Deployment
 <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
@@ -811,27 +811,27 @@ ctr <span class="token parameter variable">-n</span> k8s.io images <span class="
       <span class="token key atrule">name</span><span class="token punctuation">:</span> api<span class="token punctuation">-</span>port
       <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">40814</span>     
       <span class="token key atrule">targetPort</span><span class="token punctuation">:</span> <span class="token number">40814</span>  
-  <span class="token key atrule">clusterIP</span><span class="token punctuation">:</span> None<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+  <span class="token key atrule">clusterIP</span><span class="token punctuation">:</span> None</code></pre>
 
 <p>这里要注意一下，因为我一个共有3台服务器，除去一台专门的前端服务器，那我还有两台服务器，所以这里的<code>replicas</code>设置为2，然后我想让每个pod尽量不要调度到同一个节点上面，所以使用了<code>affinity.podAntiAffinity</code>尽量不要调度到已经有<code>app=k8s-demo-back-end</code>的节点上面</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">root@node-m:~/k8s<span class="token comment"># kubectl get pods -n prod -l app=k8s-demo-back-end -o wide</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash">root@node-m:~/k8s<span class="token comment"># kubectl get pods -n prod -l app=k8s-demo-back-end -o wide</span>
 NAME                   READY   STATUS    RESTARTS   AGE   IP            NODE     NOMINATED NODE   READINESS GATES
 k8s-demo-back-end<span class="token punctuation">..</span>.   <span class="token number">1</span>/1     Running   <span class="token number">0</span>          28s   <span class="token number">10.42</span>.1.42    node-s   <span class="token operator">&lt;</span>none<span class="token operator">></span>           <span class="token operator">&lt;</span>none<span class="token operator">></span>
-k8s-demo-back-end<span class="token punctuation">..</span>.   <span class="token number">1</span>/1     Running   <span class="token number">0</span>          27s   <span class="token number">10.42</span>.0.116   node-m   <span class="token operator">&lt;</span>none<span class="token operator">></span>           <span class="token operator">&lt;</span>none<span class="token operator">></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+k8s-demo-back-end<span class="token punctuation">..</span>.   <span class="token number">1</span>/1     Running   <span class="token number">0</span>          27s   <span class="token number">10.42</span>.0.116   node-m   <span class="token operator">&lt;</span>none<span class="token operator">></span>           <span class="token operator">&lt;</span>none<span class="token operator">></span></code></pre>
 
 <h2 id="前端部署"><a href="#前端部署" class="headerlink" title="前端部署"></a>前端部署</h2><blockquote>
 <p>代码 <a target="_blank" rel="noopener" href="https://github.com/kehaha-5/k8s_demo/tree/main/web/front/k8s_demo">k8s_demo&#x2F;web&#x2F;front&#x2F;k8s_demo at main · kehaha-5&#x2F;k8s_demo (github.com)</a></p>
 </blockquote>
 <p>这里也是要使用docker进行打包</p>
-<pre class="line-numbers language-docker" data-language="docker"><code class="language-docker"><span class="token instruction"><span class="token keyword">FROM</span>  alpine:3.20.2</span>
-<span class="token instruction"><span class="token keyword">COPY</span> ./dist/ /app/</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<pre class="language-docker" data-language="docker"><code class="language-docker"><span class="token instruction"><span class="token keyword">FROM</span>  alpine:3.20.2</span>
+<span class="token instruction"><span class="token keyword">COPY</span> ./dist/ /app/</span></code></pre>
 
 <p>导入到<code>containerd</code></p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">docker</span> build <span class="token parameter variable">-t</span> k8s_demo/front:1.0 <span class="token builtin class-name">.</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">docker</span> build <span class="token parameter variable">-t</span> k8s_demo/front:1.0 <span class="token builtin class-name">.</span>
 <span class="token function">docker</span> save  k8s_demo/front <span class="token parameter variable">-o</span> k8s_demo_front.tar
-ctr <span class="token parameter variable">-n</span> k8s.io images <span class="token function">import</span> k8s_demo_front.tar<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+ctr <span class="token parameter variable">-n</span> k8s.io images <span class="token function">import</span> k8s_demo_front.tar</code></pre>
 
-<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment">#configmap.yaml</span>
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment">#configmap.yaml</span>
 <span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
 <span class="token key atrule">kind</span><span class="token punctuation">:</span> ConfigMap
 <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
@@ -922,17 +922,17 @@ ctr <span class="token parameter variable">-n</span> k8s.io images <span class="
       <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">80</span>     
       <span class="token key atrule">targetPort</span><span class="token punctuation">:</span> <span class="token number">80</span>  
   <span class="token key atrule">clusterIP</span><span class="token punctuation">:</span> None
-<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</code></pre>
 
 <p>这里需要注意一下我使用了<code>tolerations</code>容忍，容忍了节点可以存在<code>type=res</code>的键值对，刚好对应了<code>node-res</code>这个专门用来运行前端的节点</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">root@node-m:~/k8s<span class="token comment"># kubectl get pods -n prod -l app=k8s-demo-back-front -o wide</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash">root@node-m:~/k8s<span class="token comment"># kubectl get pods -n prod -l app=k8s-demo-back-front -o wide</span>
 NAME                     READY   STATUS    RESTARTS        AGE   IP           NODE       NOMINATED NODE   READINESS GATES
-k8s-demo-back-front<span class="token punctuation">..</span>.   <span class="token number">1</span>/1     Running   <span class="token number">3</span> <span class="token punctuation">(</span>3h10m ago<span class="token punctuation">)</span>   23h   <span class="token number">10.42</span>.2.41   node-res   <span class="token operator">&lt;</span>none<span class="token operator">></span>           <span class="token operator">&lt;</span>none<span class="token operator">></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+k8s-demo-back-front<span class="token punctuation">..</span>.   <span class="token number">1</span>/1     Running   <span class="token number">3</span> <span class="token punctuation">(</span>3h10m ago<span class="token punctuation">)</span>   23h   <span class="token number">10.42</span>.2.41   node-res   <span class="token operator">&lt;</span>none<span class="token operator">></span>           <span class="token operator">&lt;</span>none<span class="token operator">></span></code></pre>
 
 <h2 id="ingress"><a href="#ingress" class="headerlink" title="ingress"></a>ingress</h2><p>现在所有的服务都部署了，但是需要把它们统一暴露出去给外部访问，这里就用到了<code>ingress</code>，<code>ingress</code>可以说是管理<code>service</code>的<code>service</code>所以就是它来暴露服务到外部</p>
 <p>为了让<code>ingress</code>可以正常工作，我们必须要有一个可用的<code>ingress</code>控制器 <a target="_blank" rel="noopener" href="https://kubernetes.io/zh-cn/docs/concepts/services-networking/ingress-controllers/">Ingress 控制器 | Kubernetes</a></p>
 <p>这里使用的是k3s默认使用的是<code>Traefik ingress controller</code>的，所以第一步先要部署<code>traefik</code>的<code>dashboard</code></p>
-<h3 id="Traefik-dashboard"><a href="#Traefik-dashboard" class="headerlink" title="Traefik dashboard"></a>Traefik dashboard</h3><pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<h3 id="Traefik-dashboard"><a href="#Traefik-dashboard" class="headerlink" title="Traefik dashboard"></a>Traefik dashboard</h3><pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
 <span class="token key atrule">kind</span><span class="token punctuation">:</span> Namespace
 <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
   <span class="token key atrule">name</span><span class="token punctuation">:</span> traefik<span class="token punctuation">-</span>dashboard
@@ -977,7 +977,7 @@ k8s-demo-back-front<span class="token punctuation">..</span>.   <span class="tok
   <span class="token key atrule">namespace</span><span class="token punctuation">:</span> traefik<span class="token punctuation">-</span>dashboard
 <span class="token key atrule">data</span><span class="token punctuation">:</span>
   <span class="token key atrule">users</span><span class="token punctuation">:</span>
-    cm9vdDokYXByMSRibUhSclNOaSQ0L2d4L0xNMmpzVGdBRTUzMTcwSEkuCgo= <span class="token comment">#htpasswd -nb root wwM9yCz52mWpWysVONM0 | base64</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+    cm9vdDokYXByMSRibUhSclNOaSQ0L2d4L0xNMmpzVGdBRTUzMTcwSEkuCgo= <span class="token comment">#htpasswd -nb root wwM9yCz52mWpWysVONM0 | base64</span></code></pre>
 
 <p>这个就是部署<code>Traefik dashboard</code>的配置，它就是使用<code>ingress route</code>把服务暴露到了<code>traefik.localhost.com</code>的<code>/dashboard</code>和<code>/api</code>。同时我还使用了中间件来做用户认证，在访问的时候必须输入账号和密码才能正常访问，否则就是401。</p>
 <p>除此之外，我还要修改本地的host文件把<code>traefik.localhost.com</code>这个域名指向我的节点ip。之后访问<code>http://traefik.localhost.com/dashboard/#/</code>即可</p>
@@ -985,7 +985,7 @@ k8s-demo-back-front<span class="token punctuation">..</span>.   <span class="tok
 <p>参考:</p>
 <p><a target="_blank" rel="noopener" href="https://doc.traefik.io/traefik/operations/dashboard/">Traefik Dashboard Documentation - Traefik</a>   </p>
 <p><a target="_blank" rel="noopener" href="https://doc.traefik.io/traefik/middlewares/http/basicauth/">Traefik BasicAuth Documentation - Traefik</a></p>
-<h3 id="服务配置"><a href="#服务配置" class="headerlink" title="服务配置"></a>服务配置</h3><pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> traefik.io/v1alpha1
+<h3 id="服务配置"><a href="#服务配置" class="headerlink" title="服务配置"></a>服务配置</h3><pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> traefik.io/v1alpha1
 <span class="token key atrule">kind</span><span class="token punctuation">:</span> Middleware
 <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
   <span class="token key atrule">name</span><span class="token punctuation">:</span> header
@@ -1033,7 +1033,7 @@ k8s-demo-back-front<span class="token punctuation">..</span>.   <span class="tok
           <span class="token key atrule">service</span><span class="token punctuation">:</span>
             <span class="token key atrule">name</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>front<span class="token punctuation">-</span>service
             <span class="token key atrule">port</span><span class="token punctuation">:</span> 
-              <span class="token key atrule">number</span><span class="token punctuation">:</span> <span class="token number">80</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+              <span class="token key atrule">number</span><span class="token punctuation">:</span> <span class="token number">80</span></code></pre>
 
 <p>这个就是我的服务配置，这里使用了<code>api.k8s.demo</code>访问后端，<code>web.k8s.demo</code>访问前端，其中<code>web.k8s.demo</code>要把ip绑定到前端节点上面，同时这里还写了一个中间件来解决跨域问题。</p>
 <p><img src="/2024/08/16/%E4%BB%8E%E9%9B%B6%E5%88%B0%E4%B8%80--%E6%90%AD%E5%BB%BAweb%E9%A1%B9%E7%9B%AE%E9%9B%86%E7%BE%A4/3.png" alt="Traefik-ingress1"></p>
@@ -1042,7 +1042,7 @@ k8s-demo-back-front<span class="token punctuation">..</span>.   <span class="tok
 <ol>
 <li><p>在<code>Ingress</code>里面使用中间件需要遵循一定的命名规则</p>
 <blockquote>
-<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> traefik.io/v1alpha1
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> traefik.io/v1alpha1
 <span class="token key atrule">kind</span><span class="token punctuation">:</span> Middleware
 <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
   <span class="token key atrule">name</span><span class="token punctuation">:</span> stripprefix
@@ -1063,7 +1063,7 @@ k8s-demo-back-front<span class="token punctuation">..</span>.   <span class="tok
     <span class="token comment"># &lt;middleware-namespace>-&lt;middleware-name>@kubernetescrd</span>
     <span class="token key atrule">"traefik.ingress.kubernetes.io/router.middlewares"</span><span class="token punctuation">:</span> appspace<span class="token punctuation">-</span>stripprefix@kubernetescrd
 <span class="token key atrule">spec</span><span class="token punctuation">:</span>
-  <span class="token comment"># ... regular ingress definition</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+  <span class="token comment"># ... regular ingress definition</span></code></pre>
 
 <p><a target="_blank" rel="noopener" href="https://doc.traefik.io/traefik/providers/overview/#provider-namespace">Traefik Configuration Discovery Overview - Traefik</a></p>
 </blockquote>

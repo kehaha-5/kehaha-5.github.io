@@ -230,7 +230,7 @@
 <li>通过<code>key+csr</code>生成对应的<code>crt</code>证书</li>
 </ul>
 <p>本文通过<code>openssl</code>来生成自签证书，以下是生成证书的脚本</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
 
 <span class="token comment"># Check if domain name is provided</span>
 <span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token parameter variable">-z</span> <span class="token string">"<span class="token variable">$1</span>"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
@@ -290,10 +290,10 @@ openssl x509 <span class="token parameter variable">-req</span> <span class="tok
     <span class="token parameter variable">-extensions</span> cert_ext <span class="token punctuation">\</span>
     <span class="token parameter variable">-extfile</span> <span class="token variable">$CONFIG_FILE</span>
 
-<span class="token builtin class-name">echo</span> <span class="token string">"Certificate and key have been generated in the <span class="token variable">$CERT_DIR</span> directory."</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token builtin class-name">echo</span> <span class="token string">"Certificate and key have been generated in the <span class="token variable">$CERT_DIR</span> directory."</span></code></pre>
 
 <p>对应生成出来的证书，可以使用以下命令来进行查看</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 查看证书(crt)信息</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 查看证书(crt)信息</span>
 openssl x509 <span class="token parameter variable">-noout</span> <span class="token parameter variable">-text</span> <span class="token parameter variable">-in</span> server.crt
 
 <span class="token comment"># 查看证书请求(csr)信息</span>
@@ -306,7 +306,7 @@ openssl rsa <span class="token parameter variable">-noout</span> <span class="to
 <span class="token comment">## 1. 使用系统的证书链进行验证</span>
 openssl verify server.crt
 <span class="token comment">## 2. 使用指定的 CA 证书进行验证</span>
-openssl verify <span class="token parameter variable">-CAfile</span> ca.crt server.crt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+openssl verify <span class="token parameter variable">-CAfile</span> ca.crt server.crt</code></pre>
 
 <h2 id="为系统安装自签证书"><a href="#为系统安装自签证书" class="headerlink" title="为系统安装自签证书"></a>为系统安装自签证书</h2><p>这里只介绍 RockyLinux9.3 和 Debain12 。因为我的系统是<code>RockyLinux9.3</code>，pod的镜像是 <code>Debain12</code>其它的大差不差。</p>
 <p>RockyLinux9.3</p>
@@ -321,11 +321,11 @@ openssl verify <span class="token parameter variable">-CAfile</span> ca.crt serv
 <li>就会生包含私有证书的<code>ca-certificates.crt</code> 到 <code>/etc/ssl/certs/</code>中</li>
 </ul>
 <p>安装完成以后，就可以使用<code>curl</code>命令对证书进行验证</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 在把证书配置到web服务后，可以使用curl命令来查看证书是否匹配</span>
-<span class="token function">curl</span> <span class="token parameter variable">-v</span> https://xxx.test.com <span class="token parameter variable">--cacert</span> /etc/ssl/certs/xxx.test.com.crt <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 在把证书配置到web服务后，可以使用curl命令来查看证书是否匹配</span>
+<span class="token function">curl</span> <span class="token parameter variable">-v</span> https://xxx.test.com <span class="token parameter variable">--cacert</span> /etc/ssl/certs/xxx.test.com.crt </code></pre>
 
 <h2 id="为Pod配置证书"><a href="#为Pod配置证书" class="headerlink" title="为Pod配置证书"></a>为Pod配置证书</h2><p>应用部署环境：项目使用的是<code>Kustomize</code>来部署不同的环境。项目中的代码：<a target="_blank" rel="noopener" href="https://github.com/kehaha-5/k8s_demo/tree/main/certs/app">k8s_demo&#x2F;certs&#x2F;app at main · kehaha-5&#x2F;k8s_demo</a></p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@rocky-testing app<span class="token punctuation">]</span><span class="token comment"># tree -L 3</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@rocky-testing app<span class="token punctuation">]</span><span class="token comment"># tree -L 3</span>
 <span class="token builtin class-name">.</span>
 ├── debianupcaDockerfile
 ├── deploy
@@ -342,18 +342,18 @@ openssl verify <span class="token parameter variable">-CAfile</span> ca.crt serv
 ├── main.go
 └── makefile
 
-<span class="token number">6</span> directories, <span class="token number">8</span> files<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token number">6</span> directories, <span class="token number">8</span> files</code></pre>
 
 <h3 id="在镜像系统中安装证书"><a href="#在镜像系统中安装证书" class="headerlink" title="在镜像系统中安装证书"></a>在镜像系统中安装证书</h3><p>根据上述的为系统安装证书的步骤，我们可以使用 <code>init-container</code> 把证书安装到应用的<code>pod</code>中。注意一些镜像是没有默认安装<code>ca-certificates </code> 需要额外安装或者把物理机的证书<code>COPY</code>到镜像内</p>
 <ol>
 <li>首先先把证书crt apply到k8s的secret中</li>
 </ol>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl create secret generic ssl-test-web-crt --from-file<span class="token operator">=</span>./ssl.test.com.crt --dry-run<span class="token operator">=</span>client  <span class="token parameter variable">-o</span> yaml  <span class="token operator">|</span> kubectl apply <span class="token parameter variable">-f</span> -<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">kubectl create secret generic ssl-test-web-crt --from-file<span class="token operator">=</span>./ssl.test.com.crt --dry-run<span class="token operator">=</span>client  <span class="token parameter variable">-o</span> yaml  <span class="token operator">|</span> kubectl apply <span class="token parameter variable">-f</span> -</code></pre>
 
 <ol start="2">
 <li>使用<code>init-container</code> 把证书生成到<code>ca-certificates.crt</code>中，同时把新的证书挂载到应用的<code>Pod</code>中</li>
 </ol>
-<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> kustomize.config.k8s.io/v1beta1
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> kustomize.config.k8s.io/v1beta1
 <span class="token key atrule">kind</span><span class="token punctuation">:</span> Kustomization
 
 <span class="token punctuation">...</span>.
@@ -395,7 +395,7 @@ openssl verify <span class="token parameter variable">-CAfile</span> ca.crt serv
               <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> ssl<span class="token punctuation">-</span>test<span class="token punctuation">-</span>web<span class="token punctuation">-</span>crt
                 <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /usr/local/share/ca<span class="token punctuation">-</span>certificates/
               <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> ssl<span class="token punctuation">-</span>certs
-                <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /mnt/ssl<span class="token punctuation">-</span>certs<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+                <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /mnt/ssl<span class="token punctuation">-</span>certs</code></pre>
 
 <ol start="3">
 <li>使用 <code>kubectl apply -k ./deploy/overlays/uat/</code>部署该环境</li>
@@ -423,7 +423,7 @@ openssl verify <span class="token parameter variable">-CAfile</span> ca.crt serv
 <blockquote>
 <p>By default, the trust namespace is the only namespace where<code>Secret</code>s will be read. This restriction is in place for security reasons - we don’t want to give trust-manager the permission to read all <code>Secret</code>s in all namespaces. With additional configuration, secrets may be read from or written to other namespaces.</p>
 </blockquote>
-<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml">helm repo add jetstack https<span class="token punctuation">:</span>//charts.jetstack.io <span class="token punctuation">-</span><span class="token punctuation">-</span>force<span class="token punctuation">-</span>update
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml">helm repo add jetstack https<span class="token punctuation">:</span>//charts.jetstack.io <span class="token punctuation">-</span><span class="token punctuation">-</span>force<span class="token punctuation">-</span>update
 helm upgrade trust<span class="token punctuation">-</span>manager jetstack/trust<span class="token punctuation">-</span>manager \
   <span class="token punctuation">-</span><span class="token punctuation">-</span>install \
   <span class="token punctuation">-</span><span class="token punctuation">-</span>namespace cert<span class="token punctuation">-</span>manager \
@@ -432,12 +432,12 @@ helm upgrade trust<span class="token punctuation">-</span>manager jetstack/trust
 helm template \
   trust<span class="token punctuation">-</span>manager jetstack/cert<span class="token punctuation">-</span>manager \
   <span class="token punctuation">-</span><span class="token punctuation">-</span>namespace cert<span class="token punctuation">-</span>manager 
-  <span class="token punctuation">></span> cert<span class="token punctuation">-</span>manager.custom.yaml<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+  <span class="token punctuation">></span> cert<span class="token punctuation">-</span>manager.custom.yaml</code></pre>
 
 <ul>
 <li>先把证书导入到<code>trust-namespace</code>的</li>
 </ul>
-<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml">kubectl create secret generic ssl<span class="token punctuation">-</span>test<span class="token punctuation">-</span>web<span class="token punctuation">-</span>crt <span class="token punctuation">-</span><span class="token punctuation">-</span>from<span class="token punctuation">-</span>file=./ssl.test.com.crt <span class="token punctuation">-</span><span class="token punctuation">-</span>dry<span class="token punctuation">-</span>run=client <span class="token punctuation">-</span>n cert<span class="token punctuation">-</span>manager  <span class="token punctuation">-</span>o yaml  <span class="token punctuation">|</span> kubectl apply <span class="token punctuation">-</span>f <span class="token punctuation">-</span>   <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml">kubectl create secret generic ssl<span class="token punctuation">-</span>test<span class="token punctuation">-</span>web<span class="token punctuation">-</span>crt <span class="token punctuation">-</span><span class="token punctuation">-</span>from<span class="token punctuation">-</span>file=./ssl.test.com.crt <span class="token punctuation">-</span><span class="token punctuation">-</span>dry<span class="token punctuation">-</span>run=client <span class="token punctuation">-</span>n cert<span class="token punctuation">-</span>manager  <span class="token punctuation">-</span>o yaml  <span class="token punctuation">|</span> kubectl apply <span class="token punctuation">-</span>f <span class="token punctuation">-</span>   </code></pre>
 
 <ul>
 <li>编写对应的<code>Bundle</code><ul>
@@ -445,7 +445,7 @@ helm template \
 </ul>
 </li>
 </ul>
-<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> trust.cert<span class="token punctuation">-</span>manager.io/v1alpha1
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> trust.cert<span class="token punctuation">-</span>manager.io/v1alpha1
 <span class="token key atrule">kind</span><span class="token punctuation">:</span> Bundle
 <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
   <span class="token key atrule">name</span><span class="token punctuation">:</span> public<span class="token punctuation">-</span>bundle
@@ -464,12 +464,12 @@ helm template \
 <span class="token comment"># kubectl label ns default trust=enabled</span>
     <span class="token key atrule">namespaceSelector</span><span class="token punctuation">:</span>
       <span class="token key atrule">matchLabels</span><span class="token punctuation">:</span>
-        <span class="token key atrule">trust</span><span class="token punctuation">:</span> enabled<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+        <span class="token key atrule">trust</span><span class="token punctuation">:</span> enabled</code></pre>
 
 <ul>
 <li>我们只需要在对应的容器中挂载<code>public-bundle</code>到<code>/etc/ssl/certs</code></li>
 </ul>
-<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> kustomize.config.k8s.io/v1beta1
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> kustomize.config.k8s.io/v1beta1
 <span class="token key atrule">kind</span><span class="token punctuation">:</span> Kustomization
 
 <span class="token key atrule">resources</span><span class="token punctuation">:</span>
@@ -505,31 +505,31 @@ helm template \
 <span class="token key atrule">images</span><span class="token punctuation">:</span>
   <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> https<span class="token punctuation">-</span>client
     <span class="token key atrule">newTag</span><span class="token punctuation">:</span> v1.0
-    <span class="token key atrule">newName</span><span class="token punctuation">:</span> https<span class="token punctuation">-</span>client<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+    <span class="token key atrule">newName</span><span class="token punctuation">:</span> https<span class="token punctuation">-</span>client</code></pre>
 
 <ul>
 <li>如果成功了，在容器中就会如下显示</li>
 </ul>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">root@https-client-6b74cfbddd-2nw2r:/app<span class="token comment"># ls -ltr /etc/ssl/certs/ca-certificates.crt              </span>
-lrwxrwxrwx. <span class="token number">1</span> root root <span class="token number">26</span> Mar <span class="token number">23</span> 06:26 /etc/ssl/certs/ca-certificates.crt -<span class="token operator">></span> <span class="token punctuation">..</span>data/ca-certificates.crt<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">root@https-client-6b74cfbddd-2nw2r:/app<span class="token comment"># ls -ltr /etc/ssl/certs/ca-certificates.crt              </span>
+lrwxrwxrwx. <span class="token number">1</span> root root <span class="token number">26</span> Mar <span class="token number">23</span> 06:26 /etc/ssl/certs/ca-certificates.crt -<span class="token operator">></span> <span class="token punctuation">..</span>data/ca-certificates.crt</code></pre>
 
 <h1 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h1><p>对比上述的两种方法</p>
 <p>第一种方法我觉得比较简单，无须额外安装其它组件，但是对配置的入侵性比较高，需要额外配置一个有<code>ca-certificates</code>的<code>init-container</code></p>
 <p>第二种方法需要额外安装多一个<code>trust-manager</code>，但是落实到具体的<code>Pod</code>配置只需要额外挂载一个 <code>ConfigMap</code> 到对应的证书路径即可，同时对应的<code>bundle/public-bundle</code>也是支持自动更新的，即你的<code>secret</code>更新了，它也会自动同步。</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@rocky-testing ~<span class="token punctuation">]</span><span class="token comment"># kubectl get events</span>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@rocky-testing ~<span class="token punctuation">]</span><span class="token comment"># kubectl get events</span>
 LAST SEEN   TYPE     REASON              OBJECT                               MESSAGE
-52m         Normal   Synced              bundle/public-bundle                 Successfully synced Bundle to namespaces that match this label selector: <span class="token assign-left variable">trust</span><span class="token operator">=</span>enabled<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+52m         Normal   Synced              bundle/public-bundle                 Successfully synced Bundle to namespaces that match this label selector: <span class="token assign-left variable">trust</span><span class="token operator">=</span>enabled</code></pre>
 
 <p>当然除了上述两种方法，还有没有<strong>更简单的方法，甚至不需要额外的配置</strong>🤔</p>
 <p>有的！如果你公司有一份支持多域名的证书，就可以直接使用该 crt(一般叫做xxx_chain.crt或者.pem) 和 key</p>
 <p>如何查看？使用 <code>openssl x509 -noout -text -in server.crt</code> 查看证书信息 类似如下</p>
-<pre class="line-numbers language-text" data-language="text"><code class="language-text">           ·······
+<pre class="language-text" data-language="text"><code class="language-text">           ·······
 # 如果 SAN (Subject Alternative Name) 中包含多个域名 或者 通配符 *.test.com 
            X509v3 Subject Alternative Name: 
                DNS:*.test.com, DNS:test.com, DNS:abc.test.com
    Signature Algorithm: sha256WithRSAEncryption
    Signature Value:
-   ······<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+   ······</code></pre>
 
 <p>这样你就可以用 <code>abc.test.com</code> 等类似的<code>xxx.test.com</code> 的二级域名 (注意三级不行 如 <code>xxx.adb.test.com</code>)</p>
 <p>再通过修改hosts或者k8s中的coredns，就可以使用不需要额外配置使用<code>Https</code>了 😊</p>

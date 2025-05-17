@@ -166,15 +166,15 @@
 <h1 id="排查"><a href="#排查" class="headerlink" title="排查"></a>排查</h1><h2 id="sql优化"><a href="#sql优化" class="headerlink" title="sql优化"></a>sql优化</h2><p>输入sql执行发现执行时间很短而且整个数据库的数据量不是很大，所以可以排查sql优化的问题</p>
 <h2 id="网络排查"><a href="#网络排查" class="headerlink" title="网络排查"></a>网络排查</h2><p>环境：应用在143上面，数据库在142上面，数据库端口13360</p>
 <p>利用tcpdump+wireshark 进行抓包</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">tcpdump <span class="token parameter variable">-i</span> bond4.128 port <span class="token number">13360</span> <span class="token parameter variable">-w</span> ./mysql_cap<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash">tcpdump <span class="token parameter variable">-i</span> bond4.128 port <span class="token number">13360</span> <span class="token parameter variable">-w</span> ./mysql_cap</code></pre>
 
 <p>使用wireshark打开选中可用的数据流，找到对应的sql数据tcp流</p>
 <p><img src="/2025/01/05/Mysql%E6%89%A7%E8%A1%8C%E8%BF%87%E9%95%BF%E6%8E%92%E6%9F%A5/cap.jpg" alt="cap"></p>
 <p>分析发现从tcp握手到数据库密码认证，经历了20秒(52-105)，后面执行数据库用的时间并不多(105-116)</p>
 <p><img src="/2025/01/05/Mysql%E6%89%A7%E8%A1%8C%E8%BF%87%E9%95%BF%E6%8E%92%E6%9F%A5/cap1.jpg" alt="cap1"></p>
 <p>可以断定是数据库初始化连接的问题，查询相关信息发现有一个相关配置</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>mysqld<span class="token punctuation">]</span>
-skip-name-resolve<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>mysqld<span class="token punctuation">]</span>
+skip-name-resolve</code></pre>
 
 <p>修改该配置后，数据访问正常了</p>
 <h1 id="扩展"><a href="#扩展" class="headerlink" title="扩展"></a>扩展</h1><h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><p>那个这个 <code>skip-name-resolve</code>的配置有什么作用 为什么会导致链接超时</p>
