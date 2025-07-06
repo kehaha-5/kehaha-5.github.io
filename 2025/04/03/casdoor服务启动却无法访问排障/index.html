@@ -106,7 +106,7 @@
     </div>
     
         <div id="toc" class="toc-article">
-    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83"><span class="toc-text">环境</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%8E%92%E6%9F%A5"><span class="toc-text">排查</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91"><span class="toc-text">端口转发</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#strace-pstack%E6%9F%A5%E7%9C%8B%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8"><span class="toc-text">strace\pstack查看系统调用</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%F0%9F%A4%94"><span class="toc-text">问题🤔</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%981"><span class="toc-text">问题1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%982"><span class="toc-text">问题2</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%983"><span class="toc-text">问题3</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83"><span class="toc-text">环境</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%8E%92%E6%9F%A5"><span class="toc-text">排查</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91"><span class="toc-text">端口转发</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#strace-pstack%E6%9F%A5%E7%9C%8B%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8"><span class="toc-text">strace\pstack查看系统调用</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%F0%9F%A4%94"><span class="toc-text">问题🤔</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88casdoor%E5%90%AF%E5%8A%A8%E6%97%B6%E8%A6%81%E5%8E%BB%E8%AE%BF%E9%97%AEsession%E6%96%87%E4%BB%B6"><span class="toc-text">为什么casdoor启动时要去访问session文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%9C%8D%E5%8A%A1%E6%97%A5%E5%BF%97%E9%83%BD%E6%98%BE%E7%A4%BA%E7%AB%AF%E5%8F%A3%E5%B7%B2%E7%BB%8F%E7%9B%91%E5%90%AC%E4%BA%86%EF%BC%8C%E4%BD%86%E6%98%AFcurl%E8%AF%A5%E6%9C%8D%E5%8A%A1%E8%BF%98%E6%98%AF%E4%B8%8D%E8%83%BD%E9%A9%AC%E4%B8%8A%E8%BF%94%E5%9B%9E%E8%AF%B7%E6%B1%82"><span class="toc-text">为什么服务日志都显示端口已经监听了，但是curl该服务还是不能马上返回请求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E4%BA%A7%E7%94%9F%E8%BF%99%E4%B9%88%E5%A4%9Atmp%E6%96%87%E4%BB%B6"><span class="toc-text">为什么会产生这么多tmp文件</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
 </div>
     
 </div>
@@ -264,11 +264,11 @@ pstack <span class="token number">1456231</span> <span class="token operator">><
 <h1 id="问题🤔"><a href="#问题🤔" class="headerlink" title="问题🤔"></a>问题🤔</h1><p>虽然服务可以启动了但是留下了3个问题：</p>
 <ul>
 <li><strong>为什么casdoor启动的时候要去访问session文件(tmp目录下的文件)</strong></li>
-<li><strong>为什么casdoor的日志都显示服务的端口已经监听了，为什么curl该服务还是不能马上返回请求</strong></li>
+<li><strong>为什么casdoor的日志都显示服务的端口已经监听了，但是curl该服务还是不能马上返回请求</strong></li>
 <li><strong>同学反映该tmp文件之前已经清理过一次了，但是一天左右磁盘占用率又上来了这是为什么</strong></li>
 </ul>
 <p>针对上面的3个问题，我选择 <code>源码</code> 启动👀</p>
-<h2 id="问题1"><a href="#问题1" class="headerlink" title="问题1"></a>问题1</h2><p>为什么casdoor启动要去访问session文件</p>
+<h2 id="为什么casdoor启动时要去访问session文件"><a href="#为什么casdoor启动时要去访问session文件" class="headerlink" title="为什么casdoor启动时要去访问session文件"></a>为什么casdoor启动时要去访问session文件</h2><p>为什么casdoor启动要去访问session文件</p>
 <p>首先找到对应的<a target="_blank" rel="noopener" href="https://github.dev/casdoor/casdoor/tree/v1.814.0">github.dev&#x2F;casdoor&#x2F;casdoor&#x2F;tree&#x2F;v1.814.0</a>版本，查看其<code>main.go</code></p>
 <pre class="language-go" data-language="go"><code class="language-go">https<span class="token punctuation">:</span><span class="token operator">/</span><span class="token operator">/</span>github<span class="token punctuation">.</span>dev<span class="token operator">/</span>casdoor<span class="token operator">/</span>casdoor<span class="token operator">/</span>blob<span class="token operator">/</span>a5a627f92efd3cc3f3613ca119b340b66258ce64<span class="token operator">/</span>main<span class="token punctuation">.</span><span class="token keyword">go</span>#L65<span class="token operator">-</span>L95
 	<span class="token operator">...</span><span class="token punctuation">.</span>
@@ -422,7 +422,7 @@ https<span class="token punctuation">:</span><span class="token operator">/</spa
 <span class="token punctuation">&#125;</span></code></pre>
 
 <p>到此第一个问题已经解决了，就是因为<code>beego.go</code>启动的时候会执行session的GC，而程序配置为利用<code>file</code>保存<code>session</code>，所以就解释了为什么查看<code>strace</code>和<code>pstack</code>的日志时会有锁<code>futex</code> 和文件读取的<code>newfstatat</code>的系统调用</p>
-<h2 id="问题2"><a href="#问题2" class="headerlink" title="问题2"></a>问题2</h2><p>为什么日志已经显示了端口绑定了，但是<code>curl</code>对应服务还是不通</p>
+<h2 id="为什么服务日志都显示端口已经监听了，但是curl该服务还是不能马上返回请求"><a href="#为什么服务日志都显示端口已经监听了，但是curl该服务还是不能马上返回请求" class="headerlink" title="为什么服务日志都显示端口已经监听了，但是curl该服务还是不能马上返回请求"></a>为什么服务日志都显示端口已经监听了，但是curl该服务还是不能马上返回请求</h2><p>为什么日志已经显示了端口绑定了，但是<code>curl</code>对应服务还是不通</p>
 <p>在上面我们得知我们的服务是在<code>beego.go</code>中启动的，所以先查看其源码</p>
 <pre class="language-go" data-language="go"><code class="language-go">https<span class="token punctuation">:</span><span class="token operator">/</span><span class="token operator">/</span>github<span class="token punctuation">.</span>com<span class="token operator">/</span>beego<span class="token operator">/</span>beego<span class="token operator">/</span>blob<span class="token operator">/</span>c280209bf5b94cf31094a200b166c97eb3898851<span class="token operator">/</span>beego<span class="token punctuation">.</span><span class="token keyword">go</span>#L51<span class="token operator">-</span>L73
 <span class="token comment">// Run beego application.</span>
@@ -641,7 +641,7 @@ https<span class="token punctuation">:</span><span class="token operator">/</spa
 <p><img src="/2025/04/03/casdoor%E6%9C%8D%E5%8A%A1%E5%90%AF%E5%8A%A8%E5%8D%B4%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E6%8E%92%E9%9A%9C/curl-8001.png" alt="log"></p>
 <p>在第一个curl通了以后，后面的curl服务响应时间才会正常</p>
 <p><img src="/2025/04/03/casdoor%E6%9C%8D%E5%8A%A1%E5%90%AF%E5%8A%A8%E5%8D%B4%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E6%8E%92%E9%9A%9C/curl-8001-normal.png" alt="log"></p>
-<h2 id="问题3"><a href="#问题3" class="headerlink" title="问题3"></a>问题3</h2><p>为什么一天多的时间，<code>tmp</code>文件会产生很多的文件，占用比较大的存储？</p>
+<h2 id="为什么会产生这么多tmp文件"><a href="#为什么会产生这么多tmp文件" class="headerlink" title="为什么会产生这么多tmp文件"></a>为什么会产生这么多tmp文件</h2><p>为什么一天多的时间，<code>tmp</code>文件会产生很多的文件，占用比较大的存储？</p>
 <p>这就不得不提这个<code>casdoor</code>了，从上面我们知道<code>casdoor</code>可以让是用来解决用户在多个应用中的登录问题的，那么应用在用户登录的时候就要访问<code>casdoor</code>获取用户的信息，而刚好，我们在生产的环境中，有一个服务大概会每秒请求<code>casdoor</code>服务3次左右(后面改成利用缓存机制了)，同时<code>casdoor</code>内部的缓存超时时间配置设置成了30天🙁，而<code>beego</code>自己默认是1小时。</p>
 <p>这里又有一个问题，<code>beego</code>里面的<code>session/session.go</code>中不是有<code>manager.provider.SessionExist</code>来查看<code>sid</code>是否存在，不存在的话才创建新的。对的，这个对一般网页上使用的用户来说是没有问题的，因为浏览器会帮你把<code>cookie</code>放到每次的请求中，所以一个用户只用创建一个<code>sid</code>即可，但是这个是应用的请求，取决于编写应用的人有没有把<code>cookie</code>或者<code>sid</code>给你传递过来，如果没有传递就会出现每次请求都有重新创建一个<code>sid</code>和对应的<code>session</code>信息</p>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>根据上述的分析，我画出来了整个请求流程图</p>
