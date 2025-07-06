@@ -166,7 +166,12 @@
 <p>最近要对20多台windows主机进行管理（启动进程、挂载网络硬盘和修改环境变量），所以使用了ansible做管理工具</p>
 </blockquote>
 <h1 id="安装ansible"><a href="#安装ansible" class="headerlink" title="安装ansible"></a>安装ansible</h1><p>在使用absible时，只需要在集群中的一台选择任意一台服务器(linux系统)在上面安装ansible即可</p>
-<p>但是集群中是windwos系统， 所以要在windwos上面安装wsl</p>
+<p>但是集群中是windwos系统， 所以要在windwos上面安装wsl，先要在系统功能里面开启wsl功能，然后安装wsl2程序</p>
+<p><a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-cn/windows/wsl/install">安装 WSL | Microsoft Learn</a></p>
+<pre class="language-powershell" data-language="powershell"><code class="language-powershell">wsl <span class="token operator">--</span>list <span class="token operator">--</span>online <span class="token comment"># 查询可以按照的linux版本</span>
+wsl <span class="token operator">--</span>install <span class="token operator">-</span>d &lt;Distribution Name> <span class="token comment"># 安装对应的linux系统</span></code></pre>
+
+<p>安装完成后在wsl中安装ansible，我的系统是使用dnf进行安装</p>
 <pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># dnf install ansible-core</span></code></pre>
 
 <h1 id="配置windwos"><a href="#配置windwos" class="headerlink" title="配置windwos"></a>配置windwos</h1><p>ansible要控制windwos的话，windwos需要进行配置，要开启windwos的wrm（Windows Remote Management）或者配置ssh服务</p>
