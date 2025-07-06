@@ -1,0 +1,70 @@
+---
+- name: Execute tasks on Windows host
+  hosts: win
+  gather_facts: no 
+
+  vars:
+    env_var_name: "RQD_TAGS"       
+    env_var_value: "AMD_EPYC_7542_64C_128T Houdini_20.5.487 Maya_2024 MtoA_5.3.4.1 HtoA_6.3.6.1"
+    nas_password: "isoftstone " 
+    nas_username: "isoftstone" 
+    kill_rqd_script: "Z:\\rqd\\ansible\\kill_rqd.bat"
+    pause_seconds: 120                 # 暂停的秒数
+
+  tasks:
+    - name: Display environment variable value
+      ansible.builtin.debug:
+        msg: "Environment Variable Value: {{ env_var_value }}"
+
+    - name: Set Windows Environment Variable
+      ansible.windows.win_environment: 
+        state: present
+        name: "{{ env_var_name }}"
+        value: "{{ env_var_value }}"
+        level: user # 或 machine, process, user
+
+    - name: Execute kill rqd batch script
+      ansible.windows.win_shell:
+        _raw_params: |
+          $port = 8444
+          $connections = Get-NetTCPConnection -LocalPort $port -ErrorAction SilentlyContinue
+          if ($connections) {
+              foreach ($conn in $connections) {
+                  $pidToKill = $conn.OwningProcess
+                  Write-Output "Terminating process with PID $pidToKill listening on port $port"
+                  Stop-Process -Id $pidToKill -Force -ErrorAction SilentlyContinue
+              }
+          } else {
+              Write-Output "No process is listening on port $port"
+          }
+
+    # - name: Pause execution for {{ pause_seconds }} seconds
+    #   ansible.builtin.pause:
+    #     seconds: "{{ pause_seconds }}"
+    #     prompt: "Playbook paused for {{ pause_seconds }} seconds before executing the second script." 
+
+    - name: Execute start rqd script asynchronously using PowerShell
+      ansible.windows.win_powershell:
+        script: |
+          $rqd_path = "C:\Users\xingzai\AppData\Local\Programs\Python\Python38\Scripts\rqd.exe"
+          # 检查 rqd.exe 是否已经在运行
+          $process = Get-Process -Name rqd -ErrorAction SilentlyContinue
+          if ($process) {
+              Write-Host "rqd.exe 已经在运行。"
+          } else {
+              Write-Host "starting rqd.exe..."
+              try {
+                  # 使用 Start-Process 启动 rqd.exe，指定 WindowStyle 为 Normal 以确保新窗口
+                  # ErrorAction Stop 会在 Start-Process 失败时产生错误
+                  Start-Process -FilePath $rqd_path -WindowStyle Normal -ErrorAction Stop
+                  Write-Host "rqd.exe start success."
+              } catch {
+                  Write-Host "start rqd.exe failed, please check the path or permission. Error: $($_.Exception.Message)"
+                  # 如果启动失败，可以根据需要设置非零退出码
+                  # exit 1
+              }
+          }
+          # 脚本执行完毕后立即退出
+          exit 0
+      async: 300 # 异步执行任务，设定一个最大运行时间 (例如 300 秒)
+      poll: 0   # 启动任务后立即检查状态并进入下一步，不等待任务实际完成
