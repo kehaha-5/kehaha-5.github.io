@@ -225,7 +225,8 @@ manage-bde <span class="token operator">-</span>off C:</code></pre>
 <p>而cloudbase-init-unattend.conf中只能使用<strong>MTU</strong> 和 <strong>hostname</strong> plugins</p>
 <p>因为要在本地验证配置，所以使用的service是  <strong>cloudbaseinit.metadata.services.nocloudservice.NoCloudConfigDriveService</strong></p>
 <p><a target="_blank" rel="noopener" href="https://cloudbase-init.readthedocs.io/en/latest/tutorial.html#configuration-file">https://cloudbase-init.readthedocs.io/en/latest/tutorial.html#configuration-file</a></p>
-<pre class="language-plain" data-language="plain"><code class="language-plain">metadata_services=cloudbaseinit.metadata.services.nocloudservice.NoCloudConfigDriveService
+<pre class="language-plain" data-language="plain"><code class="language-plain"># cloudbase-init.conf  metadata_services和plugins等相关配置
+metadata_services=cloudbaseinit.metadata.services.nocloudservice.NoCloudConfigDriveService
 plugins=cloudbaseinit.plugins.common.sethostname.SetHostNamePlugin,cloudbaseinit.plugins.common.setuserpassword.SetUserPasswordPlugin,cloudbaseinit.plugins.windows.updates.WindowsAutoUpdatesPlugin,cloudbaseinit.plugins.common.userdata.UserDataPlugin
 allow_reboot=false    # allow the service to reboot the system
 stop_service_on_exit=false</code></pre>
