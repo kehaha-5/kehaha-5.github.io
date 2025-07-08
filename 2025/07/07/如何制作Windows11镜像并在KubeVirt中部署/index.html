@@ -327,7 +327,7 @@ Mode                 LastWriteTime         Length Name
 <p>注意如果想要hostname配置成功，可能需要重新系统</p>
 </blockquote>
 <p><a target="_blank" rel="noopener" href="https://cloudbase-init.readthedocs.io/en/latest/userdata.html#cloud-config">https://cloudbase-init.readthedocs.io/en/latest/userdata.html#cloud-config</a></p>
-<h1 id="kubevirt配置"><a href="#kubevirt配置" class="headerlink" title="kubevirt配置"></a>kubevirt配置</h1><p>此时就完成了系统的封装，接下来把对应的qcow2镜像导出到webserver</p>
+<h1 id="kubevirt配置"><a href="#kubevirt配置" class="headerlink" title="kubevirt配置"></a>kubevirt配置</h1><p>此时就完成了系统的封装，接下来把对应的qcow2镜像导出到webserver，方便后续导入cdi中</p>
 <p>启动虚拟机用的是kubevirt组件，里面一个虚拟机的相关资源有 cdi、vm、vmi和pod，其中</p>
 <p>cdi是用来导入虚拟机镜像的，可以用http的方式导入上面打包好的win11的镜像</p>
 <p>vm可以理解为定义虚拟机的xml</p>
@@ -342,7 +342,7 @@ Mode                 LastWriteTime         Length Name
 <h2 id="cloudbase配置"><a href="#cloudbase配置" class="headerlink" title="cloudbase配置"></a>cloudbase配置</h2><p>kubevirt是支持 <code>cloudInitNoCloud</code> 和 <code>cloudInitConfigDrive</code>的配置的，并且也支持从k8s的secret中获取配置信息</p>
 <p>具体看如下链接</p>
 <p><a target="_blank" rel="noopener" href="https://kubevirt.io/user-guide/user_workloads/startup_scripts/#cloud-init-examples">https://kubevirt.io/user-guide/user_workloads&#x2F;startup_scripts&#x2F;#cloud-init-examples</a></p>
-<p>至此，就可以在k8s解锁win11虚拟机了🥰</p>
+<p>至此，就可以在k8s中解锁win11虚拟机了🥰</p>
 
         
         <br />
