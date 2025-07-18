@@ -49,7 +49,9 @@ tags: [k8s,certs,边做边学]
 
 # 实践
 
-## 生成自签证书
+## 证书的生成和安装
+
+### 生成自签证书
 
 流程 
 
@@ -148,7 +150,7 @@ openssl verify server.crt
 openssl verify -CAfile ca.crt server.crt
 ```
 
-## 为系统安装自签证书
+### 为系统安装自签证书
 
 这里只介绍 RockyLinux9.3 和 Debain12 。因为我的系统是`RockyLinux9.3`，pod的镜像是 `Debain12`其它的大差不差。
 
@@ -172,7 +174,10 @@ curl -v https://xxx.test.com --cacert /etc/ssl/certs/xxx.test.com.crt
 
 ## 为Pod配置证书
 
-应用部署环境：项目使用的是`Kustomize`来部署不同的环境。项目中的代码：[k8s_demo/certs/app at main · kehaha-5/k8s_demo](https://github.com/kehaha-5/k8s_demo/tree/main/certs/app)
+- 本次将会使用两种方式来进行配置，一种是通过`init-container`的方式来安装证书，另一种是使用`certs-manager`中的`trust-manager`来自动管理pod的证书
+
+- 应用部署环境：项目使用的是`Kustomize`来部署不同的环境。项目中的代码：[k8s_demo/certs/app at main · kehaha-5/k8s_demo](https://github.com/kehaha-5/k8s_demo/tree/main/certs/app)
+
 
 ```shell
 [root@rocky-testing app]# tree -L 3
