@@ -223,9 +223,11 @@ oobe: <font style="color:rgb(22, 22, 22);">客户可以通过开箱即用体验 
 
 注意必须要添加 `/mode:vm` 参数，否则可能会出现启动蓝屏（code:INACCESSIBLE BOOT DEVICE）或者出现提示系统无法启动，请重新安装windwos等无法启动的问题
 
+这里使用添加 `/shutdown` 参数确保系统打包好后自动关机
+
 ## 配置验证
 
-在配置完上述的CloudBase-Init和Sysprep后，系统启动完成后可以在cloudbase-init的log目录下面查看对应的执行日志
+在配置完上述的CloudBase-Init和Sysprep打包关机后，手动启动系统，在系统启动完成后可以在cloudbase-init的log目录下面查看对应的执行日志
 
 ```log
 2025-07-07 14:59:04.852 3768 INFO cloudbaseinit.metadata.services.osconfigdrive.windows [-] Config Drive found on G:\
