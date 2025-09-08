@@ -291,5 +291,9 @@ kubevirt是支持 `cloudInitNoCloud` 和 `cloudInitConfigDrive`的配置的，�
 
 [https://kubevirt.io/user-guide/user_workloads/startup_scripts/#cloud-init-examples](https://kubevirt.io/user-guide/user_workloads/startup_scripts/#cloud-init-examples)
 
+其它参考：
+
+[https://kubevirt.io/2022/KubeVirt-installing_Microsoft_Windows_11_from_an_iso.html](https://kubevirt.io/2022/KubeVirt-installing_Microsoft_Windows_11_from_an_iso.html)
+
 至此，就可以在k8s中解锁win11虚拟机了🥰
 
