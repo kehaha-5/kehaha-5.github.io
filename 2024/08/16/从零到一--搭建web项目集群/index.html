@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang=zh-CN>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="website">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        从零到一--搭建web项目集群 - kehaha-5
+        
+    </title>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/aircloud.css">
+
+    
+<link rel="stylesheet" href="/css/gitment.css">
+
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_28hi1hpxx24.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i> Just record it ! </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar radius">
+            <img src="/img/avatar.jpg" />
+        </div>
+        <div class="name">
+            <i>kehaha-5</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li >
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li >
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li >
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li >
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+            <li>
+                <a id="search">
+                    <i class="iconfont icon-sousuo1"></i>
+                    <span>搜索</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%A6%82%E8%BF%B0"><span class="toc-text">概述</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%AE%E6%A0%87"><span class="toc-text">目标</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83"><span class="toc-text">环境</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E6%9C%9F%E5%87%86%E5%A4%87"><span class="toc-text">前期准备</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA"><span class="toc-text">集群搭建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%9D%E5%A4%96%E9%85%8D%E7%BD%AE"><span class="toc-text">额外配置</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%BC%80%E5%A7%8B%E9%83%A8%E7%BD%B2"><span class="toc-text">开始部署</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#kubernetes-dashboard"><span class="toc-text">kubernetes dashboard</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NFS%E5%AD%98%E5%82%A8%E6%8C%82%E8%BD%BD"><span class="toc-text">NFS存储挂载</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MySQL%E9%9B%86%E7%BE%A4"><span class="toc-text">MySQL集群</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#redis%E9%9B%86%E7%BE%A4"><span class="toc-text">redis集群</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Gin%E5%90%8E%E7%AB%AF"><span class="toc-text">Gin后端</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E7%AB%AF%E9%83%A8%E7%BD%B2"><span class="toc-text">前端部署</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ingress"><span class="toc-text">ingress</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Traefik-dashboard"><span class="toc-text">Traefik dashboard</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E9%85%8D%E7%BD%AE"><span class="toc-text">服务配置</span></a></li></ol></li></ol></li></ol>
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-bg" id="search-bg"></div>
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input"/>
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+
+        <div class="index-about-mobile">
+            <i> Just record it ! </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        从零到一--搭建web项目集群
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2024-08-16 21:57:55</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#k8s_demo" title="k8s_demo">k8s_demo</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#k3s" title="k3s">k3s</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+</span>
+    </div>
+    <div class="post-content no-indent">
+        <blockquote>
+<p>本次配置和代码都在<a target="_blank" rel="noopener" href="https://github.com/kehaha-5/k8s_demo">github</a>上 </p>
+</blockquote>
+<p>使用方法:</p>
+<blockquote>
+<p><code>git clone https://github.com/kehaha-5/k8s_demo</code><br>  <code>cd k8s_demo</code><br>  <code>git fetch --all</code><br>  <code>git checkout -b tag 1.0</code></p>
+</blockquote>
+<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><ol>
+<li>部署mysql集群</li>
+<li>部署redis集群</li>
+<li>部署一个前后端分离的项目<ol>
+<li>后端gin纯api</li>
+<li>前端vue3</li>
+</ol>
+</li>
+</ol>
+<h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><p>服务器一共有3台：</p>
+<ol>
+<li>主服务器(4c,6g) 是集群里面的server节点 </li>
+<li>节点服务器1(2c,4g) 是集群里面的agent节点</li>
+<li>节点服务器2(2c,2g) 该服务器不仅是集群里面的agent节点，也是项目中的前端服务器<blockquote>
+<p>那为什么要专门弄一台低配置的服务器专门运行前端?</p>
+<ol>
+<li><p>前端的资源流量会在web占据比较大的部分，即使上了<code>cdn</code>在某些时刻也会存在流量回流到服务器的，导致服务器带宽被占满，若后端也是部署在该服务器上面，会因为服务器带宽问题导致api的响应变慢，带来不好的用户体验。</p>
+</li>
+<li><p>同时进行合理的资源分配也可以节约成本</p>
+</li>
+</ol>
+</blockquote>
+</li>
+<li>一台nfs存储服务器</li>
+<li>所有服务器都在同一个内网下，可以相互ping通</li>
+</ol>
+<h1 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h1><h2 id="集群搭建"><a href="#集群搭建" class="headerlink" title="集群搭建"></a>集群搭建</h2><p>这次利用<a target="_blank" rel="noopener" href="https://github.com/k3s-io/k3s">k3s</a>来进行集群的搭建，k3s是一个轻量级的kubernetes集群，相比较于k8s，k3s的资源占用更少，并且部署更加简单。</p>
+<p>在利用k3s部署集群的时候要注意一下几点：</p>
+<ol>
+<li>默认的k3s集群的储存是使用sqlite3，这个并不适合在高可用的生产环境下使用，所以在正式的生产环境中要使用<a target="_blank" rel="noopener" href="https://docs.k3s.io/zh/datastore/ha">k3s-高可用外部数据库</a></li>
+<li>在存储定义方面<code>pvc</code>中，k3s是没有<code>Kubernetes</code>这么多卷插件的，需要自己去配置 <a target="_blank" rel="noopener" href="https://docs.k3s.io/zh/storage">k3s-卷和存储</a></li>
+<li>集群访问的方式，k3s默认使用<code>k3s kubectl</code>命令行进行集群的访问，如果是另外安装的<code>kubectl</code>，需要配置<code>kubectl</code>的访问方式，另外<code>helm</code>也是如此 <a target="_blank" rel="noopener" href="https://docs.k3s.io/zh/kubectl">k3s-集群访问</a></li>
+<li>k3s默认是使用了<code>traefik</code>作为集群的<code>ingress controller</code>，相关配置文件的位置和信息 <a target="_blank" rel="noopener" href="https://docs.k3s.io/zh/networking/networking-services">k3s-Networking Services</a></li>
+<li>在k3s中如果需要配置镜像源可以参考 <a target="_blank" rel="noopener" href="https://docs.k3s.io/zh/installation/private-registry">k3s-Private Registry Configuration</a>，同时最好启用<code>Embedded Registry Mirror</code>功能，这个可以使节点通过集群里面的其他节点获取已有的镜像 <a target="_blank" rel="noopener" href="https://docs.k3s.io/zh/installation/registry-mirror">k3s-Embedded Registry Mirror</a></li>
+</ol>
+<h2 id="额外配置"><a href="#额外配置" class="headerlink" title="额外配置"></a>额外配置</h2><p>因为在上述中提到需要一台服务器专门做web资源服务器，所以在部署完集群后，需要把对应服务node打上污点，防止其他pod被调度到该节点上面</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">root@node-m:~/k8s<span class="token comment"># kubectl taint nodes node-res type=res:NoSchedule </span>
+<span class="token comment"># 其中NoSchedule的含有如下和其他污点类型：</span>
+<span class="token comment"># NoSchedule ：表示k8s将不会将Pod调度到具有该污点的Node上</span>
+<span class="token comment"># PreferNoSchedule ：表示k8s将尽量避免将Pod调度到具有该污点的Node上</span>
+<span class="token comment"># NoExecute ：表示k8s将不会将Pod调度到具有该污点的Node上，同时会将Node上已经存在的Pod驱逐出去</span>
+root@node-m:~/k8s<span class="token comment"># kubectl describe nodes node-res</span>
+Name:               node-res
+<span class="token punctuation">..</span>.
+Taints:             <span class="token assign-left variable">type</span><span class="token operator">=</span>res:NoSchedule
+Unschedulable:      <span class="token boolean">false</span>
+<span class="token punctuation">..</span>.</code></pre>
+<p>或者使用k3s中的<code>agent</code>配置文件给节点进行污点配置 <a target="_blank" rel="noopener" href="https://docs.k3s.io/zh/cli/agent">k3s-agent</a></p>
+<p>同时创建一个<code>prod</code>的namespace，我的所有应用都将会部署到该<code>namespace</code>上面</p>
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Namespace
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> prod
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> prod</code></pre>
+
+
+
+<h1 id="开始部署"><a href="#开始部署" class="headerlink" title="开始部署"></a>开始部署</h1><h2 id="kubernetes-dashboard"><a href="#kubernetes-dashboard" class="headerlink" title="kubernetes dashboard"></a>kubernetes dashboard</h2><p>根据<a target="_blank" rel="noopener" href="https://github.com/kubernetes/dashboard">文档</a>命令部署 <code>dashboard</code></p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># Add kubernetes-dashboard repository</span>
+helm repo <span class="token function">add</span> kubernetes-dashboard https://kubernetes.github.io/dashboard/
+<span class="token comment"># Deploy a Helm Release named "kubernetes-dashboard" using the kubernetes-dashboard chart</span>
+helm upgrade <span class="token parameter variable">--install</span> kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --create-namespace <span class="token parameter variable">--namespace</span> kubernetes-dashboard</code></pre>
+<p>部署完后我们还要创建一个用户用于管理k8s <a target="_blank" rel="noopener" href="https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md">Creating sample user</a></p>
+<p>完成上述部署以后，我们就要访问对应的<code>dashboard</code>，然后我是要用ip+端口的访问方式，所以还要创建一个<code>service</code>把流量代理到对应的pod上</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">cat</span> node-web.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: dashoard-web
+  namespace: kubernetes-dashboard
+  labels:
+    k8s-app: kubernetes-dashboard
+spec:
+  type: NodePort <span class="token comment">#这里使用NodePort 因为我想要从集群外部访问</span>
+  selector:
+    app.kubernetes.io/name: kong
+  ports:
+    - protocol: TCP
+      port: <span class="token number">8000</span>
+      targetPort: <span class="token number">8443</span></code></pre>
+<p>注意这里要代理的是<code>kubernetes-dashboard-kong</code>不是<code>kubernetes-dashboard-web</code></p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">root@node-m:~/k8s/dashoboard<span class="token comment"># kubectl get endpoints -n kubernetes-dashboard</span>
+NAME                               ENDPOINTS              AGE
+dashoard-web                       <span class="token number">10.42</span>.1.242:8443       12d
+<span class="token punctuation">..</span>.
+kubernetes-dashboard-kong-proxy    <span class="token number">10.42</span>.1.242:8443       34h
+<span class="token punctuation">..</span>.
+<span class="token comment">#这里可以看到我的dashoard-web已经绑定到kubernetes-dashboard-kong-proxy上了</span>
+ kubectl get svc <span class="token parameter variable">-n</span> kubernetes-dashboard
+NAME          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT<span class="token punctuation">(</span>S<span class="token punctuation">)</span>          AGE
+dashoard-web  NodePort    <span class="token number">10.43</span>.234.91    <span class="token operator">&lt;</span>none<span class="token operator">></span>        <span class="token number">8000</span>:30756/TCP   12d
+<span class="token punctuation">..</span>.
+<span class="token comment">#查看service信息可以得知 dashoard-web 的外部访问端口为 30756</span></code></pre>
+<p>然后ip+30756 即可访问 <code>dashboard</code> 同时还要创建对应用户的token</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">root@node-m:~/k8s/dashoboard<span class="token comment"># kubectl create token -n kubernetes-dashboard xxxx</span></code></pre>
+<p><img src="/2024/08/16/%E4%BB%8E%E9%9B%B6%E5%88%B0%E4%B8%80--%E6%90%AD%E5%BB%BAweb%E9%A1%B9%E7%9B%AE%E9%9B%86%E7%BE%A4/1.png" alt="dashoard-web"></p>
+<h2 id="NFS存储挂载"><a href="#NFS存储挂载" class="headerlink" title="NFS存储挂载"></a>NFS存储挂载</h2><p>在所有应用部署前，先部署外部存储介质</p>
+<p>首先先要安装 <a target="_blank" rel="noopener" href="https://github.com/kubernetes-csi/csi-driver-nfs">csi-driver-nfs</a> 这个是nfs的卷插件，不安装的话是无法使用nfs相关卷功能</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">root@node-m:~/k8s<span class="token comment"># cat ./nfs/storageClass.yaml</span>
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs
+provisioner: nfs.csi.k8s.io
+parameters:
+  server: <span class="token number">192.168</span>.1.125
+  share: /mnt/nfs_share
+  <span class="token comment"># csi.storage.k8s.io/provisioner-secret is only needed for providing mountOptions in DeleteVolume</span>
+  <span class="token comment"># csi.storage.k8s.io/provisioner-secret-name: "mount-options"</span>
+  <span class="token comment"># csi.storage.k8s.io/provisioner-secret-namespace: "default"</span>
+reclaimPolicy: Retain <span class="token comment">#因为要保存redis 和 mysql的数据 所以使用Retain 当pvc或pv被删除以后仍然可以保留数据</span>
+volumeBindingMode: Immediate
+mountOptions:
+  - <span class="token assign-left variable">nfsvers</span><span class="token operator">=</span><span class="token number">4</span></code></pre>
+
+<p>这里使用的是<code> Dynamic Volume Provisioning</code> 这样就不需要每个<code>pvc</code>都声名一个<code>pv</code>了</p>
+<h2 id="MySQL集群"><a href="#MySQL集群" class="headerlink" title="MySQL集群"></a>MySQL集群</h2><p>这里要部署的是一个1个主节点2个从节点的MySQL集群</p>
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment">#configmap</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> ConfigMap
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+<span class="token key atrule">data</span><span class="token punctuation">:</span>
+  <span class="token key atrule">master.cnf</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string">
+    # 主节点MySQL的配置文件
+    [mysqld]
+    log-bin</span>
+  <span class="token key atrule">slave.cnf</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string">
+    # 从节点MySQL的配置文件
+    [mysqld]
+    log-bin
+    read_only=1
+    replicate_ignore_db=information_schema
+    replicate_ignore_db=performance_schema
+    replicate_ignore_db=mysql
+    replicate_ignore_db=sys</span>
+  <span class="token key atrule">init.sh</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string">
+    #!/bin/bash
+    until mysql  -p"$MYSQL_ROOT_PASSWORD" -e "select 1;"; do sleep 1; done
+    [[ $HOSTNAME =~ -([0-9]+) ]] || exit 1
+    ordinal=$&#123;BASH_REMATCH[1]&#125;
+    if [[ $ordinal -eq 0 ]]; then
+      mysql -p"$MYSQL_ROOT_PASSWORD" -e "grant replication slave on *.* to '$REPLIC_USER'@'%' identified by '$REPLIC_PASSWORD'"
+      mysql -p"$MYSQL_ROOT_PASSWORD" -e "FLUSH PRIVILEGES"
+    else
+      mysql -p"$MYSQL_ROOT_PASSWORD" -e "change master to master_host='mysql-0.mysql-svc',master_user='$REPLIC_USER',master_password='$REPLIC_PASSWORD';"
+      mysql -p"$MYSQL_ROOT_PASSWORD" -e "start slave"
+    fi</span>
+    
+<span class="token comment">#sercet.yaml</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Secret
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+<span class="token key atrule">type</span><span class="token punctuation">:</span> Opaque
+<span class="token key atrule">data</span><span class="token punctuation">:</span>
+  <span class="token key atrule">pass</span><span class="token punctuation">:</span> NlFBMFpGSTRUYzZ6UmU5VWc4amI= <span class="token comment">#6QA0ZFI4Tc6zRe9Ug8jb</span>
+  <span class="token key atrule">rep_pass</span><span class="token punctuation">:</span> bWtzdFE2M3ZuYmFQeUJ5eGR6Z3Y= <span class="token comment">#mkstQ63vnbaPyByxdzgv</span>
+  <span class="token key atrule">rep_user</span><span class="token punctuation">:</span> cmVw <span class="token comment">#rep</span>
+  
+<span class="token comment">#mysql.yaml</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> apps/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> StatefulSet
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">matchLabels</span><span class="token punctuation">:</span>
+      <span class="token key atrule">app</span><span class="token punctuation">:</span> mysql
+      <span class="token key atrule">app.kubernetes.io/name</span><span class="token punctuation">:</span> mysql
+  <span class="token key atrule">replicas</span><span class="token punctuation">:</span> <span class="token number">3</span>
+  <span class="token key atrule">serviceName</span><span class="token punctuation">:</span> mysql<span class="token punctuation">-</span>svc
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">app</span><span class="token punctuation">:</span> mysql
+        <span class="token key atrule">app.kubernetes.io/name</span><span class="token punctuation">:</span> mysql
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">initContainers</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> init<span class="token punctuation">-</span>mysql
+          <span class="token key atrule">image</span><span class="token punctuation">:</span> mysql<span class="token punctuation">:</span>5.7.34
+          <span class="token key atrule">command</span><span class="token punctuation">:</span>
+          <span class="token punctuation">-</span> bash
+          <span class="token punctuation">-</span> <span class="token string">"-c"</span>
+          <span class="token punctuation">-</span> <span class="token punctuation">|</span><span class="token scalar string">
+            set -ex
+            # Generate mysql server-id from pod ordinal index.
+            [[ $HOSTNAME =~ -([0-9]+)$ ]] || exit 1
+            ordinal=$&#123;BASH_REMATCH[1]&#125;
+            echo [mysqld] > /mnt/conf.d/server-id.cnf
+            # Add an offset to avoid reserved server-id=0 value.
+            echo server-id=$((100 + $ordinal)) >> /mnt/conf.d/server-id.cnf
+            # cp config file to /mnt/conf.d
+            if [[ $ordinal -eq 0 ]]; then
+              cp /mnt/config-map/master.cnf /mnt/conf.d/
+            else
+              cp /mnt/config-map/slave.cnf /mnt/conf.d
+            fi
+            cp /mnt/config-map/init.sh /mnt/conf.d</span>
+          <span class="token key atrule">volumeMounts</span><span class="token punctuation">:</span>
+          <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> conf
+            <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /mnt/conf.d/
+          <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> config<span class="token punctuation">-</span>map
+            <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /mnt/config<span class="token punctuation">-</span>map/
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql
+        <span class="token key atrule">image</span><span class="token punctuation">:</span> mysql<span class="token punctuation">:</span>5.7.34
+        <span class="token key atrule">volumeMounts</span><span class="token punctuation">:</span>
+          <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> conf
+            <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /etc/mysql/conf.d
+          <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> data
+            <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /var/lib/mysql/
+        <span class="token key atrule">env</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> MYSQL_ROOT_PASSWORD
+          <span class="token key atrule">valueFrom</span><span class="token punctuation">:</span>
+            <span class="token key atrule">secretKeyRef</span><span class="token punctuation">:</span>
+              <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql
+              <span class="token key atrule">key</span><span class="token punctuation">:</span> pass
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> REPLIC_USER
+          <span class="token key atrule">valueFrom</span><span class="token punctuation">:</span>
+            <span class="token key atrule">secretKeyRef</span><span class="token punctuation">:</span>
+              <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql
+              <span class="token key atrule">key</span><span class="token punctuation">:</span> rep_user
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> REPLIC_PASSWORD
+          <span class="token key atrule">valueFrom</span><span class="token punctuation">:</span>
+            <span class="token key atrule">secretKeyRef</span><span class="token punctuation">:</span>
+              <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql
+              <span class="token key atrule">key</span><span class="token punctuation">:</span> rep_pass
+        <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql
+          <span class="token key atrule">containerPort</span><span class="token punctuation">:</span> <span class="token number">3306</span>
+        <span class="token key atrule">resources</span><span class="token punctuation">:</span>
+          <span class="token key atrule">requests</span><span class="token punctuation">:</span>
+            <span class="token key atrule">cpu</span><span class="token punctuation">:</span> <span class="token string">"500m"</span>
+            <span class="token key atrule">memory</span><span class="token punctuation">:</span> <span class="token string">"500Mi"</span>
+          <span class="token key atrule">limits</span><span class="token punctuation">:</span>
+            <span class="token key atrule">cpu</span><span class="token punctuation">:</span> <span class="token string">"500m"</span>
+            <span class="token key atrule">memory</span><span class="token punctuation">:</span> <span class="token string">"500Mi"</span>
+        <span class="token key atrule">lifecycle</span><span class="token punctuation">:</span>
+          <span class="token key atrule">postStart</span><span class="token punctuation">:</span>
+            <span class="token key atrule">exec</span><span class="token punctuation">:</span>
+              <span class="token key atrule">command</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"bash"</span><span class="token punctuation">,</span><span class="token string">"/etc/mysql/conf.d/init.sh"</span><span class="token punctuation">]</span>
+      <span class="token key atrule">volumes</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> config<span class="token punctuation">-</span>map
+        <span class="token key atrule">configMap</span><span class="token punctuation">:</span>
+          <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> conf
+        <span class="token key atrule">emptyDir</span><span class="token punctuation">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+  <span class="token key atrule">volumeClaimTemplates</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">name</span><span class="token punctuation">:</span> data
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">accessModes</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"ReadWriteOnce"</span><span class="token punctuation">]</span>
+      <span class="token key atrule">storageClassName</span><span class="token punctuation">:</span> <span class="token string">"nfs"</span> <span class="token comment">#这里使用的就是上面声名的Dynamic Volume Provisioning</span>
+      <span class="token key atrule">resources</span><span class="token punctuation">:</span>
+        <span class="token key atrule">requests</span><span class="token punctuation">:</span>
+          <span class="token key atrule">storage</span><span class="token punctuation">:</span> 2Gi
+          
+<span class="token comment">#service.yaml</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Service
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql<span class="token punctuation">-</span>svc
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> mysql
+    <span class="token key atrule">app.kubernetes.io/name</span><span class="token punctuation">:</span> mysql
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql
+    <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">3306</span>
+  <span class="token key atrule">clusterIP</span><span class="token punctuation">:</span> None <span class="token comment">#使用clusterIP: None 这样每个pod都会有一个独立的dns域名可以单独访问到，同时访问主节点就变成mysql-0.mysql-svc</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> mysql
+<span class="token punctuation">---</span>
+
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Service
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql<span class="token punctuation">-</span>read
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> mysql
+    <span class="token key atrule">app.kubernetes.io/name</span><span class="token punctuation">:</span> mysql
+    <span class="token key atrule">readonly</span><span class="token punctuation">:</span> <span class="token string">"true"</span>
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql
+    <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">3306</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> mysql</code></pre>
+
+<p>这里有几点需要注意一下：</p>
+<ol>
+<li><p>这里创建集群使用的是<code>StatefulSet</code> 因为mysql集群之间存在拓步结构（必须先启动master节点再启动slaver节点），为了处理这种状态的关系所以使用了<code>StatefulSet</code></p>
+<blockquote>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span><span class="token punctuation">[</span> <span class="token environment constant">$HOSTNAME</span> <span class="token operator">=~</span> -<span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">0</span>-9<span class="token punctuation">]</span>+<span class="token punctuation">)</span>$ <span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token builtin class-name">exit</span> <span class="token number">1</span>
+<span class="token assign-left variable">ordinal</span><span class="token operator">=</span><span class="token variable">$&#123;<span class="token environment constant">BASH_REMATCH</span><span class="token punctuation">[</span>1<span class="token punctuation">]</span>&#125;</span></code></pre>
+<p>这段shell的意思是获取hostname中的数字，然后赋值个ordinal，这样通过判断ordinal就可以知道当前环境是主节点还是从节点。</p>
+<p><code>StatefulSet</code>创建的pod名称是有顺序的，pod-index，index会从0开始，这里规定pod-0为主节点</p>
+</blockquote>
+</li>
+<li><p>mysql.yaml中的<code>serviceName</code>必须跟Service里面的<code>metadata.name</code>一致，不然dns只能解析<code>StatefulSetName</code>-<code>ServiceName</code>到任意一个pod上，不能通过<code>podsName</code>-<code>serviceName</code>解析到指定的pod上面  <a target="_blank" rel="noopener" href="https://kubernetes.io/zh-cn/docs/reference/kubernetes-api/workload-resources/stateful-set-v1/#:~:text=serviceName">StatefulSet | Kubernetes</a></p>
+<blockquote>
+<p><strong>serviceName</strong> (string), 必需</p>
+<p>serviceName 是管理此 StatefulSet 服务的名称。 该服务必须在 StatefulSet 之前即已存在，并负责该集合的网络标识。 Pod 会获得符合以下模式的 DNS&#x2F;主机名： pod-specific-string.serviceName.default.svc.cluster.local。 其中 “pod-specific-string” 由 StatefulSet 控制器管理。</p>
+</blockquote>
+</li>
+<li><p>因为我这里是用了一个自定义的<code>namespace</code>，如果在本<code>namespace</code>上面通过<code>podsName</code>-<code>serviceName</code>是可以直接访问的，但是如果是其他<code>namespace</code>访问就要使用 <code>podsName</code>-<code>serviceName</code>.<code>my-namcespace</code> 才可以访问 <a target="_blank" rel="noopener" href="https://kubernetes.io/zh-cn/docs/concepts/services-networking/dns-pod-service/#dns-records:~:text=Service%20%E7%9A%84%E5%90%8D%E5%AD%97,%E9%A1%B5%E9%9D%A2%E3%80%82">详细</a></p>
+</li>
+<li><p>我这里的<code>resources.requests</code>和<code>resources.limits</code>的配置是一样的，这个属于是<code>Qos</code>中的<code>Guaranteed</code></p>
+<blockquote>
+<p>Qos中的类型：</p>
+<p><strong>Guaranteed（保障型）：</strong></p>
+<ul>
+<li><strong>条件：</strong> Pod 中所有容器的 <code>resources.requests</code> 和 <code>resources.limits</code> 都相等，并且都设置了非零值。</li>
+<li>特点：<ul>
+<li>优先级最高，资源得到最强的保障。</li>
+<li>当节点资源不足时，Guaranteed Pod 不会被驱逐，除非是系统保留资源不足。</li>
+</ul>
+</li>
+<li><strong>适用场景：</strong> 对资源要求高且稳定的应用，例如数据库、核心服务等。</li>
+</ul>
+<p><strong>Burstable（可突增型）：</strong></p>
+<ul>
+<li><strong>条件：</strong> Pod 中至少有一个容器的 <code>resources.requests</code> 设置了值，并且 <code>resources.requests</code> 小于 <code>resources.limits</code>。</li>
+<li>特点：<ul>
+<li>优先级中等，可以在 <code>resources.requests</code> 的基础上使用更多资源，但不能超过 <code>resources.limits</code>。</li>
+<li>当节点资源不足时，Burstable Pod 可能被驱逐，优先级低于 Guaranteed Pod。</li>
+</ul>
+</li>
+<li><strong>适用场景：</strong> 对资源需求有波动，但峰值使用不会太高的应用，例如 Web 服务器、API 服务等。</li>
+</ul>
+<p><strong>BestEffort（尽力而为型）：</strong></p>
+<ul>
+<li><strong>条件：</strong> Pod 中所有容器都没有设置 <code>resources.requests</code> 和 <code>resources.limits</code>。</li>
+<li>特点：<ul>
+<li>优先级最低，只能使用节点上剩余的资源。</li>
+<li>当节点资源不足时，BestEffort Pod 会被优先驱逐。</li>
+</ul>
+</li>
+<li><strong>适用场景：</strong> 对资源要求不高，可以容忍被驱逐的应用，例如批处理任务、测试任务等。</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+<h2 id="redis集群"><a href="#redis集群" class="headerlink" title="redis集群"></a>redis集群</h2><p>redis高可用服务一般有三种类型：</p>
+<ol>
+<li><p>Redis replication redis的主从复制 <a target="_blank" rel="noopener" href="https://redis.io/docs/latest/operate/oss_and_stack/management/replication/">Redis replication | Docs</a></p>
+</li>
+<li><p>Redis Sentinel 在redis的主从复制基础上添加了哨兵，确保在redis-master下线了以后，重新从redis-slaver中选举一个新的master出来，保证服务可用，当旧的redis-master上线后就变成redis-slaver。<a target="_blank" rel="noopener" href="https://redis.io/docs/latest/operate/oss_and_stack/management/sentinel/">High availability with Redis Sentinel | Docs</a></p>
+</li>
+<li><p>Redis Cluster 这个是由多个redis主从一起组成的集群，数据会被分散到每个redis主从上面 <a target="_blank" rel="noopener" href="https://redis.io/docs/latest/operate/oss_and_stack/management/scaling/">Scale with Redis Cluster | Docs</a></p>
+</li>
+</ol>
+<blockquote>
+<p>会有16384 hash slots 在 Redis Cluster，它们会被分散到不同的节点上面，读写对应的数据将会在对应的节点中进行</p>
+<p> with Redis Cluster, you get the ability to:</p>
+<ul>
+<li>Automatically split your dataset among multiple nodes.</li>
+<li>Continue operations when a subset of the nodes are experiencing failures or are unable to communicate with the rest of the cluster.</li>
+</ul>
+</blockquote>
+<p>而这次部署的就是3个node的<code>Redis Cluster</code>其中每个node由一个主一个从组成，所以一共有6个redis服务</p>
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment">#configmap</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> ConfigMap
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> redis
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+<span class="token key atrule">data</span><span class="token punctuation">:</span>
+  <span class="token key atrule">redis.conf</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string">
+    port 6379
+    cluster-enabled yes #开启集群模式
+    cluster-node-timeout 5000
+    cluster-config-file /data/nodes.conf
+    appendonly yes</span>
+
+<span class="token comment">#sercet</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Secret
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> redis
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+<span class="token key atrule">type</span><span class="token punctuation">:</span> Opaque
+<span class="token key atrule">data</span><span class="token punctuation">:</span>
+  <span class="token key atrule">pass</span><span class="token punctuation">:</span> ZHFYbkdJNEUxM28zY0d6V3E1QXI= <span class="token comment">#dqXnGI4E13o3cGzWq5Ar</span>
+  
+<span class="token comment">#redis</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> apps/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> StatefulSet
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> redis
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">matchLabels</span><span class="token punctuation">:</span>
+      <span class="token key atrule">app</span><span class="token punctuation">:</span> redis
+      <span class="token key atrule">app.kubernetes.io/name</span><span class="token punctuation">:</span> redis
+  <span class="token key atrule">serviceName</span><span class="token punctuation">:</span> redis<span class="token punctuation">-</span>svc
+  <span class="token key atrule">replicas</span><span class="token punctuation">:</span> <span class="token number">6</span>
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">app</span><span class="token punctuation">:</span> redis
+        <span class="token key atrule">app.kubernetes.io/name</span><span class="token punctuation">:</span> redis
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">initContainers</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> init<span class="token punctuation">-</span>redis  
+          <span class="token key atrule">image</span><span class="token punctuation">:</span> redis<span class="token punctuation">:</span><span class="token number">7.4</span>
+          <span class="token key atrule">env</span><span class="token punctuation">:</span>
+          <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> REDISCLI_AUTH
+            <span class="token key atrule">valueFrom</span><span class="token punctuation">:</span>
+              <span class="token key atrule">secretKeyRef</span><span class="token punctuation">:</span>
+                <span class="token key atrule">name</span><span class="token punctuation">:</span> redis
+                <span class="token key atrule">key</span><span class="token punctuation">:</span> pass
+          <span class="token key atrule">command</span><span class="token punctuation">:</span>
+          <span class="token punctuation">-</span> bash
+          <span class="token punctuation">-</span> <span class="token string">"-c"</span>
+          <span class="token punctuation">-</span> <span class="token punctuation">|</span><span class="token scalar string">
+            set -ex
+            cp /mnt/config-map/redis.conf /mnt/conf.d
+            echo "requirepass $REDISCLI_AUTH" >> /mnt/conf.d/redis.conf
+            echo "masterauth $REDISCLI_AUTH" >> /mnt/conf.d/redis.conf</span>
+          <span class="token key atrule">volumeMounts</span><span class="token punctuation">:</span>
+          <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> conf
+            <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /mnt/conf.d/
+          <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> config<span class="token punctuation">-</span>map
+            <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /mnt/config<span class="token punctuation">-</span>map/
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> redis
+        <span class="token key atrule">image</span><span class="token punctuation">:</span> redis<span class="token punctuation">:</span><span class="token number">7.4</span>
+        <span class="token key atrule">command</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"redis-server"</span><span class="token punctuation">]</span>
+        <span class="token key atrule">args</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> /usr/local/etc/redis/redis.conf
+        <span class="token punctuation">-</span> <span class="token punctuation">-</span><span class="token punctuation">-</span>cluster<span class="token punctuation">-</span>announce<span class="token punctuation">-</span>ip
+        <span class="token punctuation">-</span> <span class="token string">"$(MY_POD_IP)"</span>
+        <span class="token key atrule">volumeMounts</span><span class="token punctuation">:</span>
+          <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> conf
+            <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /usr/local/etc/redis/
+          <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> data
+            <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /data/
+        <span class="token key atrule">env</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> REDISCLI_AUTH
+          <span class="token key atrule">valueFrom</span><span class="token punctuation">:</span>
+            <span class="token key atrule">secretKeyRef</span><span class="token punctuation">:</span>
+              <span class="token key atrule">name</span><span class="token punctuation">:</span> redis
+              <span class="token key atrule">key</span><span class="token punctuation">:</span> pass
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> MY_POD_IP
+          <span class="token key atrule">valueFrom</span><span class="token punctuation">:</span>
+            <span class="token key atrule">fieldRef</span><span class="token punctuation">:</span>
+             <span class="token key atrule">fieldPath</span><span class="token punctuation">:</span> status.podIP
+        <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> redis
+          <span class="token key atrule">containerPort</span><span class="token punctuation">:</span> <span class="token number">6379</span>
+        <span class="token key atrule">resources</span><span class="token punctuation">:</span>
+          <span class="token key atrule">requests</span><span class="token punctuation">:</span>
+            <span class="token key atrule">cpu</span><span class="token punctuation">:</span> <span class="token string">"100m"</span>
+            <span class="token key atrule">memory</span><span class="token punctuation">:</span> <span class="token string">"200Mi"</span>
+          <span class="token key atrule">limits</span><span class="token punctuation">:</span>
+            <span class="token key atrule">cpu</span><span class="token punctuation">:</span> <span class="token string">"100m"</span>
+            <span class="token key atrule">memory</span><span class="token punctuation">:</span> <span class="token string">"200Mi"</span>
+      <span class="token key atrule">volumes</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> config<span class="token punctuation">-</span>map
+        <span class="token key atrule">configMap</span><span class="token punctuation">:</span> 
+          <span class="token key atrule">name</span><span class="token punctuation">:</span> redis
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> conf
+        <span class="token key atrule">emptyDir</span><span class="token punctuation">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+  <span class="token key atrule">volumeClaimTemplates</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">name</span><span class="token punctuation">:</span> data
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">accessModes</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"ReadWriteOnce"</span><span class="token punctuation">]</span>
+      <span class="token key atrule">storageClassName</span><span class="token punctuation">:</span> <span class="token string">"nfs"</span>
+      <span class="token key atrule">resources</span><span class="token punctuation">:</span>
+        <span class="token key atrule">requests</span><span class="token punctuation">:</span>
+          <span class="token key atrule">storage</span><span class="token punctuation">:</span> 2Gi
+
+<span class="token comment">#service</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Service
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> redis<span class="token punctuation">-</span>svc
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> redis
+    <span class="token key atrule">app.kubernetes.io/name</span><span class="token punctuation">:</span> redis
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> redis
+    <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">6379</span>
+  <span class="token key atrule">clusterIP</span><span class="token punctuation">:</span> None <span class="token comment">#这里跟上面的mysql一样，通过redis-index.redis-svc来访问不同的redis节点</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> redis
+
+<span class="token comment">#job</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> batch/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Job
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> redis<span class="token punctuation">-</span>cluster<span class="token punctuation">-</span>create
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> redis<span class="token punctuation">-</span>cli
+        <span class="token key atrule">image</span><span class="token punctuation">:</span> redis<span class="token punctuation">:</span><span class="token number">7.4</span>
+        <span class="token key atrule">env</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> REDISCLI_AUTH
+          <span class="token key atrule">valueFrom</span><span class="token punctuation">:</span>
+            <span class="token key atrule">secretKeyRef</span><span class="token punctuation">:</span>
+              <span class="token key atrule">name</span><span class="token punctuation">:</span> redis
+              <span class="token key atrule">key</span><span class="token punctuation">:</span> pass
+        <span class="token key atrule">command</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"/bin/sh"</span><span class="token punctuation">,</span> <span class="token string">"-c"</span><span class="token punctuation">]</span>
+        <span class="token key atrule">args</span><span class="token punctuation">:</span>
+          <span class="token punctuation">-</span> <span class="token punctuation">|</span><span class="token scalar string">
+            redis-cli --cluster create \
+              redis-0.redis-svc:6379 \
+              redis-1.redis-svc:6379 \
+              redis-2.redis-svc:6379 \
+              redis-3.redis-svc:6379 \
+              redis-4.redis-svc:6379 \
+              redis-5.redis-svc:6379 \
+              --cluster-replicas 1 -a $REDISCLI_AUTH --cluster-yes #cluster-replicas 1 表示为每一个主节点分配一个从节点，这样每个node就有两个redis组成一个主一个从，这样3由个node组成的redis cluster就要6个redis</span>
+      <span class="token key atrule">restartPolicy</span><span class="token punctuation">:</span> Never
+  <span class="token key atrule">backoffLimit</span><span class="token punctuation">:</span> <span class="token number">1</span></code></pre>
+
+<p>这里要注意几点</p>
+<ol>
+<li><p>redis部署完了还要执行创建集群的命令，这里利用了job来完成这个</p>
+</li>
+<li><p>密码配置说明</p>
+<ol>
+<li>requirepass表示redis的密码</li>
+<li>masterauth 表示redis主从时候的密码 两者都要同时设置，不然会存在因密码错误无法同步数据</li>
+<li>如果想更加细致化的控制redis的权限可以新建用户并且使用<code>ACL</code>的功能 <a target="_blank" rel="noopener" href="https://redis.io/docs/latest/operate/oss_and_stack/management/security/acl/">ACL | Docs (redis.io)</a></li>
+</ol>
+</li>
+<li><p>pod的ip问题，在第一次启动redis集群的时候，会把集群信息写入<code>/data/nodes.conf</code>类似</p>
+<blockquote>
+<p>127.0.0.1:6379&gt; CLUSTER NODES<br>171465406d506a29e3bfcd2cf62a578dfe048613 10.42.0.109:6379@16379 master - 0 1723877446841 3 connected 10923-16383<br>6ddad196c4998856d7587a2a31012bd3570342e8 10.42.0.111:6379@16379 myself,slave 50fc764dae51be95e3f24527b2458ceb44533a84 0 0 2 connected<br>e43744bd3bd58f04158ea90bc044b1b200e0b153 10.42.1.40:6379@16379 slave 171465406d506a29e3bfcd2cf62a578dfe048613 0 1723877446842 3 connected<br>2ca5a824b3edca3baaf8caacf6d036061c9cb647 10.42.0.110:6379@16379 slave 5947054d518ac8ed6b1aeb4b378ad50eedd3bcbb 0 1723877445837 1 connected<br>5947054d518ac8ed6b1aeb4b378ad50eedd3bcbb 10.42.0.108:6379@16379 master - 0 1723877445000 1 connected 0-5460<br>50fc764dae51be95e3f24527b2458ceb44533a84 10.42.1.39:6379@16379 master - 0 1723877446000 2 connected 5461-10922</p>
+</blockquote>
+<p>但是在重启redis集群后pod的ip会更改，导致集群状态为<code>failed </code>。解决可以<a target="_blank" rel="noopener" href="https://github.com/redis/redis/issues/4289">参考</a></p>
+</li>
+</ol>
+<h2 id="Gin后端"><a href="#Gin后端" class="headerlink" title="Gin后端"></a>Gin后端</h2><blockquote>
+<p>代码 <a target="_blank" rel="noopener" href="https://github.com/kehaha-5/k8s_demo/tree/main/web/back">k8s_demo&#x2F;web&#x2F;back at main · kehaha-5&#x2F;k8s_demo (github.com)</a></p>
+</blockquote>
+<p>这个gin后端的话，除了提供api服务以外它还而外监听一个端口用来给pod提供健康检测 <a href="%5BKubernetes%5D(https://kubernetes.io/zh-cn/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)">配置存活、就绪和启动探针</a></p>
+<pre class="language-docker" data-language="docker"><code class="language-docker"><span class="token instruction"><span class="token keyword">FROM</span> alpine:3.20.2</span>
+<span class="token instruction"><span class="token keyword">COPY</span> ./k8s_demo /app/k8s_demo</span>
+<span class="token instruction"><span class="token keyword">COPY</span> ./config-prod.yaml /app/config-prod.yaml</span>
+<span class="token instruction"><span class="token keyword">RUN</span> set -eux &amp;&amp; sed -i <span class="token string">'s/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g'</span> /etc/apk/repositories</span>
+<span class="token instruction"><span class="token keyword">RUN</span> apk update &amp;&amp; apk add tzdata</span></code></pre>
+
+<p>我们要把后端代码和所需要的环境打包成镜像，因为我的k3s使用的运行时是<code>containerd</code>，所以这里利用<code>docker</code>进行打包，然后导出镜像再导入到<code>containerd</code>里面</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">docker</span> build <span class="token parameter variable">-t</span> k8s_demo/back:1.0 <span class="token builtin class-name">.</span> <span class="token comment">#注意-t的格式，只有这样的格式导入到ctr中才会保留</span>
+<span class="token function">docker</span> save  k8s_demo/back <span class="token parameter variable">-o</span> k8s_demo_back.tar
+ctr <span class="token parameter variable">-n</span> k8s.io images <span class="token function">import</span> k8s_demo_back.tar <span class="token comment">#导入时，要选择k8s.io的namesapce 不然可能出现pod找不到image</span></code></pre>
+
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment">#k8s-demo-back-end</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> apps/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Deployment
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>end
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>end
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">replicas</span><span class="token punctuation">:</span> <span class="token number">2</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">matchLabels</span><span class="token punctuation">:</span>
+      <span class="token key atrule">app</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>end
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">app</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>end
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">affinity</span><span class="token punctuation">:</span>
+        <span class="token key atrule">podAntiAffinity</span><span class="token punctuation">:</span>
+          <span class="token key atrule">preferredDuringSchedulingIgnoredDuringExecution</span><span class="token punctuation">:</span>
+          <span class="token punctuation">-</span> <span class="token key atrule">weight</span><span class="token punctuation">:</span> <span class="token number">100</span>
+            <span class="token key atrule">podAffinityTerm</span><span class="token punctuation">:</span>
+              <span class="token key atrule">labelSelector</span><span class="token punctuation">:</span>
+                <span class="token key atrule">matchExpressions</span><span class="token punctuation">:</span>
+                <span class="token punctuation">-</span> <span class="token key atrule">key</span><span class="token punctuation">:</span> app
+                  <span class="token key atrule">operator</span><span class="token punctuation">:</span> In
+                  <span class="token key atrule">values</span><span class="token punctuation">:</span>
+                  <span class="token punctuation">-</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>end
+              <span class="token key atrule">topologyKey</span><span class="token punctuation">:</span> kubernetes.io/hostname
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>end
+        <span class="token key atrule">image</span><span class="token punctuation">:</span> docker.io/k8s_demo/back<span class="token punctuation">:</span>1.0@sha256<span class="token punctuation">:</span>bf9041895c649d1a586851e2f2e072fb9680fe134c359ea59a577b010029ba5d
+        <span class="token key atrule">command</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"/app/k8s_demo"</span><span class="token punctuation">]</span>
+        <span class="token key atrule">args</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"-c"</span><span class="token punctuation">,</span><span class="token string">"/app/config-prod.yaml"</span><span class="token punctuation">]</span>
+        <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> api<span class="token punctuation">-</span>port
+          <span class="token key atrule">containerPort</span><span class="token punctuation">:</span> <span class="token number">40814</span>
+        <span class="token key atrule">livenessProbe</span><span class="token punctuation">:</span>
+          <span class="token key atrule">httpGet</span><span class="token punctuation">:</span>
+            <span class="token key atrule">path</span><span class="token punctuation">:</span> /api/health
+            <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">8080</span>
+          <span class="token key atrule">initialDelaySeconds</span><span class="token punctuation">:</span> <span class="token number">30</span>
+          <span class="token key atrule">periodSeconds</span><span class="token punctuation">:</span> <span class="token number">3</span>
+        <span class="token key atrule">env</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> REDIS_PASSWORD
+          <span class="token key atrule">valueFrom</span><span class="token punctuation">:</span>
+            <span class="token key atrule">secretKeyRef</span><span class="token punctuation">:</span>
+              <span class="token key atrule">name</span><span class="token punctuation">:</span> redis
+              <span class="token key atrule">key</span><span class="token punctuation">:</span> pass
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> MYSQL_PASSWORD
+          <span class="token key atrule">valueFrom</span><span class="token punctuation">:</span>
+            <span class="token key atrule">secretKeyRef</span><span class="token punctuation">:</span>
+              <span class="token key atrule">name</span><span class="token punctuation">:</span> mysql
+              <span class="token key atrule">key</span><span class="token punctuation">:</span> pass
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> GIN_MODE
+          <span class="token key atrule">value</span><span class="token punctuation">:</span> <span class="token string">"release"</span>
+        <span class="token key atrule">resources</span><span class="token punctuation">:</span>
+          <span class="token key atrule">requests</span><span class="token punctuation">:</span>
+            <span class="token key atrule">cpu</span><span class="token punctuation">:</span> <span class="token string">"200m"</span>
+            <span class="token key atrule">memory</span><span class="token punctuation">:</span> <span class="token string">"200Mi"</span>
+          <span class="token key atrule">limits</span><span class="token punctuation">:</span>
+            <span class="token key atrule">cpu</span><span class="token punctuation">:</span> <span class="token string">"1000m"</span>
+            <span class="token key atrule">memory</span><span class="token punctuation">:</span> <span class="token string">"500Mi"</span>
+     
+<span class="token comment">#service.yaml</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Service
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>end<span class="token punctuation">-</span>service
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>end<span class="token punctuation">-</span>service
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>end
+  <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">protocol</span><span class="token punctuation">:</span> TCP
+      <span class="token key atrule">name</span><span class="token punctuation">:</span> api<span class="token punctuation">-</span>port
+      <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">40814</span>     
+      <span class="token key atrule">targetPort</span><span class="token punctuation">:</span> <span class="token number">40814</span>  
+  <span class="token key atrule">clusterIP</span><span class="token punctuation">:</span> None</code></pre>
+
+<p>这里要注意一下，因为我一个共有3台服务器，除去一台专门的前端服务器，那我还有两台服务器，所以这里的<code>replicas</code>设置为2，然后我想让每个pod尽量不要调度到同一个节点上面，所以使用了<code>affinity.podAntiAffinity</code>尽量不要调度到已经有<code>app=k8s-demo-back-end</code>的节点上面</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">root@node-m:~/k8s<span class="token comment"># kubectl get pods -n prod -l app=k8s-demo-back-end -o wide</span>
+NAME                   READY   STATUS    RESTARTS   AGE   IP            NODE     NOMINATED NODE   READINESS GATES
+k8s-demo-back-end<span class="token punctuation">..</span>.   <span class="token number">1</span>/1     Running   <span class="token number">0</span>          28s   <span class="token number">10.42</span>.1.42    node-s   <span class="token operator">&lt;</span>none<span class="token operator">></span>           <span class="token operator">&lt;</span>none<span class="token operator">></span>
+k8s-demo-back-end<span class="token punctuation">..</span>.   <span class="token number">1</span>/1     Running   <span class="token number">0</span>          27s   <span class="token number">10.42</span>.0.116   node-m   <span class="token operator">&lt;</span>none<span class="token operator">></span>           <span class="token operator">&lt;</span>none<span class="token operator">></span></code></pre>
+
+<h2 id="前端部署"><a href="#前端部署" class="headerlink" title="前端部署"></a>前端部署</h2><blockquote>
+<p>代码 <a target="_blank" rel="noopener" href="https://github.com/kehaha-5/k8s_demo/tree/main/web/front/k8s_demo">k8s_demo&#x2F;web&#x2F;front&#x2F;k8s_demo at main · kehaha-5&#x2F;k8s_demo (github.com)</a></p>
+</blockquote>
+<p>这里也是要使用docker进行打包</p>
+<pre class="language-docker" data-language="docker"><code class="language-docker"><span class="token instruction"><span class="token keyword">FROM</span>  alpine:3.20.2</span>
+<span class="token instruction"><span class="token keyword">COPY</span> ./dist/ /app/</span></code></pre>
+
+<p>导入到<code>containerd</code></p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">docker</span> build <span class="token parameter variable">-t</span> k8s_demo/front:1.0 <span class="token builtin class-name">.</span>
+<span class="token function">docker</span> save  k8s_demo/front <span class="token parameter variable">-o</span> k8s_demo_front.tar
+ctr <span class="token parameter variable">-n</span> k8s.io images <span class="token function">import</span> k8s_demo_front.tar</code></pre>
+
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment">#configmap.yaml</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> ConfigMap
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> web<span class="token punctuation">-</span>nginx
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+<span class="token key atrule">data</span><span class="token punctuation">:</span>
+  <span class="token key atrule">app.conf</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string">
+    server &#123;
+        listen       80;
+        listen  [::]:80;
+        server_name  localhost;</span>
+
+        <span class="token comment">#access_log  /var/log/nginx/host.access.log  main;</span>
+
+        location / <span class="token punctuation">&#123;</span>
+            root   /usr/share/nginx/html;
+            index  index.html index.htm;
+            try_files $uri $uri/ /index.html; <span class="token comment">#vue3的history模式下的路由配置</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+
+<span class="token comment">#k8s-demo-back-front</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> apps/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Deployment
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>front
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">matchLabels</span><span class="token punctuation">:</span>
+      <span class="token key atrule">app</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>front
+      <span class="token key atrule">app.kubernetes.io/name</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>front
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">app</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>front
+        <span class="token key atrule">app.kubernetes.io/name</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>front
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">tolerations</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">key</span><span class="token punctuation">:</span> <span class="token string">"type"</span>
+          <span class="token key atrule">operator</span><span class="token punctuation">:</span> <span class="token string">"Equal"</span>
+          <span class="token key atrule">value</span><span class="token punctuation">:</span> <span class="token string">"res"</span>
+          <span class="token key atrule">effect</span><span class="token punctuation">:</span> <span class="token string">"NoSchedule"</span>
+      <span class="token key atrule">initContainers</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> init<span class="token punctuation">-</span>nginx
+          <span class="token key atrule">image</span><span class="token punctuation">:</span> docker.io/k8s_demo/front<span class="token punctuation">:</span>1.0@sha256<span class="token punctuation">:</span>fecfc2dc67c49d8ff27a77cff8aee431f9baaee3ffc0fd22da8e8da20caaeddf
+          <span class="token key atrule">command</span><span class="token punctuation">:</span>
+          <span class="token punctuation">-</span> sh
+          <span class="token punctuation">-</span> <span class="token string">"-c"</span>
+          <span class="token punctuation">-</span> <span class="token punctuation">|</span><span class="token scalar string">
+            set -ex
+            cp -r /app/* /mnt/app/</span>
+          <span class="token key atrule">volumeMounts</span><span class="token punctuation">:</span>
+          <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> app
+            <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /mnt/app/
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> app<span class="token punctuation">-</span>nginx
+        <span class="token key atrule">image</span><span class="token punctuation">:</span> nginx<span class="token punctuation">:</span>1.27.1<span class="token punctuation">-</span>alpine3.20
+        <span class="token key atrule">volumeMounts</span><span class="token punctuation">:</span>
+          <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> app
+            <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /usr/share/nginx/html/
+          <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> config<span class="token punctuation">-</span>map
+            <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /etc/nginx/conf.d/
+        <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> app<span class="token punctuation">-</span>nginx
+          <span class="token key atrule">containerPort</span><span class="token punctuation">:</span> <span class="token number">80</span>
+      <span class="token key atrule">volumes</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> app
+        <span class="token key atrule">emptyDir</span><span class="token punctuation">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> config<span class="token punctuation">-</span>map
+        <span class="token key atrule">configMap</span><span class="token punctuation">:</span> 
+          <span class="token key atrule">name</span><span class="token punctuation">:</span> web<span class="token punctuation">-</span>nginx
+      
+<span class="token comment">#service.yaml</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Service
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>front<span class="token punctuation">-</span>service
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>front<span class="token punctuation">-</span>service
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>front
+  <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">protocol</span><span class="token punctuation">:</span> TCP
+      <span class="token key atrule">name</span><span class="token punctuation">:</span> web
+      <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">80</span>     
+      <span class="token key atrule">targetPort</span><span class="token punctuation">:</span> <span class="token number">80</span>  
+  <span class="token key atrule">clusterIP</span><span class="token punctuation">:</span> None
+</code></pre>
+
+<p>这里需要注意一下我使用了<code>tolerations</code>容忍，容忍了节点可以存在<code>type=res</code>的键值对，刚好对应了<code>node-res</code>这个专门用来运行前端的节点</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">root@node-m:~/k8s<span class="token comment"># kubectl get pods -n prod -l app=k8s-demo-back-front -o wide</span>
+NAME                     READY   STATUS    RESTARTS        AGE   IP           NODE       NOMINATED NODE   READINESS GATES
+k8s-demo-back-front<span class="token punctuation">..</span>.   <span class="token number">1</span>/1     Running   <span class="token number">3</span> <span class="token punctuation">(</span>3h10m ago<span class="token punctuation">)</span>   23h   <span class="token number">10.42</span>.2.41   node-res   <span class="token operator">&lt;</span>none<span class="token operator">></span>           <span class="token operator">&lt;</span>none<span class="token operator">></span></code></pre>
+
+<h2 id="ingress"><a href="#ingress" class="headerlink" title="ingress"></a>ingress</h2><p>现在所有的服务都部署了，但是需要把它们统一暴露出去给外部访问，这里就用到了<code>ingress</code>，<code>ingress</code>可以说是管理<code>service</code>的<code>service</code>所以就是它来暴露服务到外部</p>
+<p>为了让<code>ingress</code>可以正常工作，我们必须要有一个可用的<code>ingress</code>控制器 <a target="_blank" rel="noopener" href="https://kubernetes.io/zh-cn/docs/concepts/services-networking/ingress-controllers/">Ingress 控制器 | Kubernetes</a></p>
+<p>这里使用的是k3s默认使用的是<code>Traefik ingress controller</code>的，所以第一步先要部署<code>traefik</code>的<code>dashboard</code></p>
+<h3 id="Traefik-dashboard"><a href="#Traefik-dashboard" class="headerlink" title="Traefik dashboard"></a>Traefik dashboard</h3><pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Namespace
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> traefik<span class="token punctuation">-</span>dashboard
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> traefik<span class="token punctuation">-</span>dashboard
+
+<span class="token punctuation">---</span>
+
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> traefik.io/v1alpha1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> IngressRoute
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> traefik<span class="token punctuation">-</span>dashboard
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> traefik<span class="token punctuation">-</span>dashboard
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">routes</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">match</span><span class="token punctuation">:</span> Host(`traefik.localhost.com`) <span class="token important">&amp;&amp;</span> (PathPrefix(`/api`) <span class="token punctuation">|</span><span class="token punctuation">|</span> PathPrefix(`/dashboard`))
+    <span class="token key atrule">kind</span><span class="token punctuation">:</span> Rule
+    <span class="token key atrule">services</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> api@internal
+      <span class="token key atrule">kind</span><span class="token punctuation">:</span> TraefikService
+    <span class="token key atrule">middlewares</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> auth
+
+<span class="token punctuation">---</span>
+
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> traefik.io/v1alpha1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Middleware
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> auth
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> traefik<span class="token punctuation">-</span>dashboard
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">basicAuth</span><span class="token punctuation">:</span>
+    <span class="token key atrule">secret</span><span class="token punctuation">:</span> authsecret  <span class="token comment"># Kubernetes secret named "secretName"</span>
+
+
+<span class="token punctuation">---</span> 
+
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Secret
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> authsecret
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> traefik<span class="token punctuation">-</span>dashboard
+<span class="token key atrule">data</span><span class="token punctuation">:</span>
+  <span class="token key atrule">users</span><span class="token punctuation">:</span>
+    cm9vdDokYXByMSRibUhSclNOaSQ0L2d4L0xNMmpzVGdBRTUzMTcwSEkuCgo= <span class="token comment">#htpasswd -nb root wwM9yCz52mWpWysVONM0 | base64</span></code></pre>
+
+<p>这个就是部署<code>Traefik dashboard</code>的配置，它就是使用<code>ingress route</code>把服务暴露到了<code>traefik.localhost.com</code>的<code>/dashboard</code>和<code>/api</code>。同时我还使用了中间件来做用户认证，在访问的时候必须输入账号和密码才能正常访问，否则就是401。</p>
+<p>除此之外，我还要修改本地的host文件把<code>traefik.localhost.com</code>这个域名指向我的节点ip。之后访问<code>http://traefik.localhost.com/dashboard/#/</code>即可</p>
+<p><img src="/2024/08/16/%E4%BB%8E%E9%9B%B6%E5%88%B0%E4%B8%80--%E6%90%AD%E5%BB%BAweb%E9%A1%B9%E7%9B%AE%E9%9B%86%E7%BE%A4/2.png" alt="Traefik-dashboard"></p>
+<p>参考:</p>
+<p><a target="_blank" rel="noopener" href="https://doc.traefik.io/traefik/operations/dashboard/">Traefik Dashboard Documentation - Traefik</a>   </p>
+<p><a target="_blank" rel="noopener" href="https://doc.traefik.io/traefik/middlewares/http/basicauth/">Traefik BasicAuth Documentation - Traefik</a></p>
+<h3 id="服务配置"><a href="#服务配置" class="headerlink" title="服务配置"></a>服务配置</h3><pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> traefik.io/v1alpha1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Middleware
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> header
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">headers</span><span class="token punctuation">:</span>
+    <span class="token key atrule">accessControlAllowMethods</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token string">"GET"</span>
+      <span class="token punctuation">-</span> <span class="token string">"OPTIONS"</span>
+      <span class="token punctuation">-</span> <span class="token string">"POST"</span>
+      <span class="token punctuation">-</span> <span class="token string">"PUT"</span>
+    <span class="token key atrule">accessControlAllowHeaders</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token string">"*"</span>
+    <span class="token key atrule">addVaryHeader</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+    <span class="token key atrule">accessControlAllowOriginList</span><span class="token punctuation">:</span> 
+      <span class="token punctuation">-</span> <span class="token string">"*"</span> <span class="token comment">#这里最好设置为前端的域名 web.k8s.demo</span>
+
+<span class="token punctuation">---</span>
+
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> networking.k8s.io/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Ingress
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> web<span class="token punctuation">-</span>ingress
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+  <span class="token key atrule">annotations</span><span class="token punctuation">:</span>
+    <span class="token key atrule">traefik.ingress.kubernetes.io/router.middlewares</span><span class="token punctuation">:</span> prod<span class="token punctuation">-</span>header@kubernetescrd
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">rules</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">host</span><span class="token punctuation">:</span> api.k8s.demo
+    <span class="token key atrule">http</span><span class="token punctuation">:</span>
+      <span class="token key atrule">paths</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">path</span><span class="token punctuation">:</span> /api
+        <span class="token key atrule">pathType</span><span class="token punctuation">:</span> Prefix
+        <span class="token key atrule">backend</span><span class="token punctuation">:</span>
+          <span class="token key atrule">service</span><span class="token punctuation">:</span>
+            <span class="token key atrule">name</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>end<span class="token punctuation">-</span>service
+            <span class="token key atrule">port</span><span class="token punctuation">:</span> 
+              <span class="token key atrule">number</span><span class="token punctuation">:</span> <span class="token number">40814</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">host</span><span class="token punctuation">:</span> web.k8s.demo
+    <span class="token key atrule">http</span><span class="token punctuation">:</span>
+      <span class="token key atrule">paths</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">path</span><span class="token punctuation">:</span> /
+        <span class="token key atrule">pathType</span><span class="token punctuation">:</span> Prefix
+        <span class="token key atrule">backend</span><span class="token punctuation">:</span>
+          <span class="token key atrule">service</span><span class="token punctuation">:</span>
+            <span class="token key atrule">name</span><span class="token punctuation">:</span> k8s<span class="token punctuation">-</span>demo<span class="token punctuation">-</span>back<span class="token punctuation">-</span>front<span class="token punctuation">-</span>service
+            <span class="token key atrule">port</span><span class="token punctuation">:</span> 
+              <span class="token key atrule">number</span><span class="token punctuation">:</span> <span class="token number">80</span></code></pre>
+
+<p>这个就是我的服务配置，这里使用了<code>api.k8s.demo</code>访问后端，<code>web.k8s.demo</code>访问前端，其中<code>web.k8s.demo</code>要把ip绑定到前端节点上面，同时这里还写了一个中间件来解决跨域问题。</p>
+<p><img src="/2024/08/16/%E4%BB%8E%E9%9B%B6%E5%88%B0%E4%B8%80--%E6%90%AD%E5%BB%BAweb%E9%A1%B9%E7%9B%AE%E9%9B%86%E7%BE%A4/3.png" alt="Traefik-ingress1"></p>
+<p><img src="/2024/08/16/%E4%BB%8E%E9%9B%B6%E5%88%B0%E4%B8%80--%E6%90%AD%E5%BB%BAweb%E9%A1%B9%E7%9B%AE%E9%9B%86%E7%BE%A4/4.png" alt="Traefik-ingress1"></p>
+<p>这里需要注意两点：</p>
+<ol>
+<li><p>在<code>Ingress</code>里面使用中间件需要遵循一定的命名规则</p>
+<blockquote>
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> traefik.io/v1alpha1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Middleware
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> stripprefix
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> appspace
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">stripPrefix</span><span class="token punctuation">:</span>
+    <span class="token key atrule">prefixes</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> /stripit
+
+<span class="token punctuation">---</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> networking.k8s.io/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Ingress
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> ingress
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> appspace
+  <span class="token key atrule">annotations</span><span class="token punctuation">:</span>
+    <span class="token comment"># referencing a middleware from Kubernetes CRD provider: </span>
+    <span class="token comment"># &lt;middleware-namespace>-&lt;middleware-name>@kubernetescrd</span>
+    <span class="token key atrule">"traefik.ingress.kubernetes.io/router.middlewares"</span><span class="token punctuation">:</span> appspace<span class="token punctuation">-</span>stripprefix@kubernetescrd
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token comment"># ... regular ingress definition</span></code></pre>
+
+<p><a target="_blank" rel="noopener" href="https://doc.traefik.io/traefik/providers/overview/#provider-namespace">Traefik Configuration Discovery Overview - Traefik</a></p>
+</blockquote>
+</li>
+<li><p>在后面实现的时候发现因为使用了ingress 导致无论是访问前端还是后端流量都会走到节点上面，所以如果真的要把流量分开，最好是不用<code>ingress</code>，使用service中的<code>NodePort</code>公开服务</p>
+</li>
+</ol>
+<p>ok 以上就是<code>从零到一--搭建web项目集群</code>所有内容了</p>
+
+        
+        <br />
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+        <div id="lv-container"></div>
+        <div class="giscus"></div>
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+        <li>
+            <a target="_blank"  href="https://github.com/kehaha-5">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-github"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+    </ul>
+    
+    <p>
+        <span id="busuanzi_container_site_pv">
+            <span id="busuanzi_value_site_pv"></span>PV
+        </span>
+        <span id="busuanzi_container_site_uv">
+            <span id="busuanzi_value_site_uv"></span>UV
+        </span>
+        Created By <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>  Theme <a target="_blank" rel="noopener" href="https://github.com/aircloud/hexo-theme-aircloud">AirCloud</a></p>
+</footer>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = "search.json"
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="/js/index.js"></script>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+</html>
+
+<!-- fancybox support -->
+
+    <!-- for theme: default is false -->
+    <!-- for page: default is true -->
+    
+<script src="/js/fancybox/jquery.fancybox.min.js" key="fancybox_js"></script>
+<script src="/js/fancybox/wrapImage.js" key="wrap_image_js"></script>
+
+        
+<link rel="stylesheet" href="/js/fancybox/jquery.fancybox.min.css" key="fancybox_css">
+
+            

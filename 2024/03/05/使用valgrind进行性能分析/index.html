@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang=zh-CN>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="website">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        valgrind进行性能分析 - kehaha-5
+        
+    </title>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/aircloud.css">
+
+    
+<link rel="stylesheet" href="/css/gitment.css">
+
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_28hi1hpxx24.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i> Just record it ! </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar radius">
+            <img src="/img/avatar.jpg" />
+        </div>
+        <div class="name">
+            <i>kehaha-5</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li >
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li >
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li >
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li >
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+            <li>
+                <a id="search">
+                    <i class="iconfont icon-sousuo1"></i>
+                    <span>搜索</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7"><span class="toc-text">工具</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E8%BF%87%E7%A8%8B"><span class="toc-text">测试过程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%88%86%E6%9E%90"><span class="toc-text">分析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="toc-text">客户端</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF"><span class="toc-text">服务端</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E8%AE%BA"><span class="toc-text">结论</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%8D%E6%AC%A1%E6%B5%8B%E8%AF%95"><span class="toc-text">再次测试</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF-1"><span class="toc-text">客户端</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF-1"><span class="toc-text">服务端</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%BF%98%E8%83%BD%E5%86%8D%E4%BC%98%E5%8C%96%E5%90%97"><span class="toc-text">还能再优化吗</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E6%AC%A1%E5%88%86%E6%9E%90"><span class="toc-text">第二次分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E6%97%B6%E9%97%B4"><span class="toc-text">获取时间</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%8D%E6%AC%A1%E6%B5%8B%E8%AF%95-%F0%9F%A4%A1"><span class="toc-text">再次测试 🤡</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E6%AC%A1%E5%88%86%E5%88%86%E6%9E%90"><span class="toc-text">第三次分分析</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%80%E7%BB%88%E7%BB%93%E6%9E%9C"><span class="toc-text">最终结果</span></a></li></ol>
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-bg" id="search-bg"></div>
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input"/>
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+
+        <div class="index-about-mobile">
+            <i> Just record it ! </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        valgrind进行性能分析
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2024-03-05 14:30:48</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#valgrind" title="valgrind">valgrind</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#性能" title="性能">性能</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+</span>
+    </div>
+    <div class="post-content no-indent">
+        <blockquote>
+<p>最近写了一个<a target="_blank" rel="noopener" href="https://github.com/kehaha-5/udp-transfiler">c++项目</a>来学习，在完成后，我想利用 <code>valgrind</code> 对服务端和客户端进行性能分析</p>
+</blockquote>
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>客户端和服务端都在本地运行</p>
+<p>在未开始优化时，客户端下载速度</p>
+<p><img src="/2024/03/05/%E4%BD%BF%E7%94%A8valgrind%E8%BF%9B%E8%A1%8C%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90/speed1.png" alt="speed1"><br>速度只有13MB</p>
+<h1 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h1><p>本次性能分析利用的是valgrind的<a target="_blank" rel="noopener" href="https://valgrind.org/docs/manual/cl-manual.html#cl-manual.options">callgrind</a>工具</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 分析命令</span>
+ valgrind <span class="token parameter variable">--tool</span><span class="token operator">=</span>callgrind --callgrind-out-file<span class="token operator">=</span>./valgrindCheck/callgrind/client --separate-threads<span class="token operator">=</span>yes ./build/TRANFILER_CLIENT <span class="token comment">#客户端</span>
+ valgrind <span class="token parameter variable">--tool</span><span class="token operator">=</span>callgrind --callgrind-out-file<span class="token operator">=</span>./valgrindCheck/callgrind/server --separate-threads<span class="token operator">=</span>yes ./build/TRANFILER_SERVER <span class="token comment">#服务端</span>
+<span class="token comment">#--separate-threads=&lt;no|yes> [default: no]</span>
+<span class="token comment"># This option specifies whether profile data should be generated separately for every thread. If yes, the file names get "-threadID" appended.</span></code></pre>
+<p>结果分析用的是 <a target="_blank" rel="noopener" href="https://kcachegrind.github.io/">kcachegrind</a></p>
+<h1 id="测试过程"><a href="#测试过程" class="headerlink" title="测试过程"></a>测试过程</h1><p>客户端和服务端分别执行以上命令，然后客户端下载一个文件(大约200M)查看结果（客户端和服务端打包的都是release版本）</p>
+<h1 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h1><h2 id="客户端"><a href="#客户端" class="headerlink" title="客户端"></a>客户端</h2><p>因为是要对下载性能进行检测，因此我挑了下载代码来进行分析</p>
+<p><img src="/2024/03/05/%E4%BD%BF%E7%94%A8valgrind%E8%BF%9B%E8%A1%8C%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90/speed1-client-analysis-sendMsg.png" alt="客户端-下载"><br>上图是客户端的发送消息的代码，从图中可以分析出来 <code>google::protobuf</code> 使用了一半的cpu，另一半是被 <code>setAck()</code>使用了</p>
+<p><img src="/2024/03/05/%E4%BD%BF%E7%94%A8valgrind%E8%BF%9B%E8%A1%8C%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90/speed1-client-analysis-recv.png" alt="客户端-下载"></p>
+<p><img src="/2024/03/05/%E4%BD%BF%E7%94%A8valgrind%E8%BF%9B%E8%A1%8C%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90/speed1-client-analysis-recv2.png" alt="客户端-下载"></p>
+<p>上面两张图都是客户端的接收数据的代码，从图中可以分析出来 <code>google::protobuf</code> 使用了快80%的cpu </p>
+<h2 id="服务端"><a href="#服务端" class="headerlink" title="服务端"></a>服务端</h2><p><img src="/2024/03/05/%E4%BD%BF%E7%94%A8valgrind%E8%BF%9B%E8%A1%8C%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90/speed1-server-analysis-1.png" alt="服务端-下载"><br>从图中可以看出，服务端中获取文件内容 <code>file::server</code> 使用了1.63%的cpu，而处理<code>google::protobuf</code>使用了 17.26%</p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>因此得出导致性能问题的原因大概率是<code>google::protobuf</code>，打开proto文件</p>
+<pre class="language-proto" data-language="proto"><code class="language-proto">syntax &#x3D; &quot;proto2&quot;;
+
+package msg.proto;
+
+option optimize_for &#x3D; CODE_SIZE;
+
+message FileDownMsg&#123;
+    required string hash &#x3D; 1;
+    required uint64 startPos &#x3D;2;
+    required uint64 dataIndex &#x3D; 3;
+    optional int64 size &#x3D; 4;
+    optional bytes data &#x3D; 5;
+&#125;</code></pre>
+<p>发现了问题：optimize_for用的是CODE_SIZE <del>为什么当初会用这个，我也不知道🤡</del>，只要把optimize_for删除了默认使用的就是SPEED <a target="_blank" rel="noopener" href="https://protobuf.dev/programming-guides/proto2/#:~:text=optimize_for%20(file%20option,full%20Message%20interface.">文档</a></p>
+<h1 id="再次测试"><a href="#再次测试" class="headerlink" title="再次测试"></a>再次测试</h1><p><img src="/2024/03/05/%E4%BD%BF%E7%94%A8valgrind%E8%BF%9B%E8%A1%8C%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90/speed2.png" alt="speed2"><br>速度达到23MB，提高了75% 🤞</p>
+<h2 id="客户端-1"><a href="#客户端-1" class="headerlink" title="客户端"></a>客户端</h2><p><img src="/2024/03/05/%E4%BD%BF%E7%94%A8valgrind%E8%BF%9B%E8%A1%8C%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90/speed2-client-recv.png" alt="speed2-客户端-下载"></p>
+<p><img src="/2024/03/05/%E4%BD%BF%E7%94%A8valgrind%E8%BF%9B%E8%A1%8C%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90/speed2-client-sendMsg.png" alt="speed2-客户端-下载"></p>
+<p>由上面两幅图可以知道，经过优化后，接收数据中的 <code>google::protobuf</code> 的性能使用跟 <code>recvfrom</code> 的使用几乎一样了，发送端更是看不到了<code>google::protobuf</code>性能统计</p>
+<h2 id="服务端-1"><a href="#服务端-1" class="headerlink" title="服务端"></a>服务端</h2><p><img src="/2024/03/05/%E4%BD%BF%E7%94%A8valgrind%E8%BF%9B%E8%A1%8C%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90/speed2-server-analysis-1.png" alt="speed2-服务端-下载"><br>由上图也知服务端的<code>google::protobuf</code> 的性能使用也明显下降了</p>
+<h1 id="还能再优化吗"><a href="#还能再优化吗" class="headerlink" title="还能再优化吗"></a>还能再优化吗</h1><h2 id="第二次分析"><a href="#第二次分析" class="headerlink" title="第二次分析"></a>第二次分析</h2><p>但是，在服务端中的处理请求中为什么只使用了26%左右的cpu，那其他cpu性能去哪里捏 🤔</p>
+<p><img src="/2024/03/05/%E4%BD%BF%E7%94%A8valgrind%E8%BF%9B%E8%A1%8C%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90/speed2-server-analysis-2.png" alt="speed2-服务端-下载"></p>
+<p>通过查看整个调用栈我发现了 <code>log</code> 函数使用了40%的cpu，尤其记录log时获取的时间函数</p>
+<h2 id="获取时间"><a href="#获取时间" class="headerlink" title="获取时间"></a>获取时间</h2><p>获取时间的代码如下</p>
+<pre class="language-cpp" data-language="cpp"><code class="language-cpp">std<span class="token double-colon punctuation">::</span>string <span class="token class-name">Log</span><span class="token double-colon punctuation">::</span><span class="token function">getCurrTime</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    std<span class="token double-colon punctuation">::</span>time_t t <span class="token operator">=</span> std<span class="token double-colon punctuation">::</span><span class="token function">time</span><span class="token punctuation">(</span><span class="token constant">NULL</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    std<span class="token double-colon punctuation">::</span>string <span class="token function">mbstr</span><span class="token punctuation">(</span><span class="token number">50</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    std<span class="token double-colon punctuation">::</span><span class="token function">strftime</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>mbstr<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span> mbstr<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"%F-%T"</span><span class="token punctuation">,</span> std<span class="token double-colon punctuation">::</span><span class="token function">localtime</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>t<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> mbstr<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+<p>那么这段代码里面有什么性能问题捏，可以在kcachegrind中点击<code>log</code>函数进行查看</p>
+<p><img src="/2024/03/05/%E4%BD%BF%E7%94%A8valgrind%E8%BF%9B%E8%A1%8C%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90/speed2-server-analysis-3.png" alt="speed2-服务端-下载"></p>
+<p>发现了就是 <code>strftime</code> 和 <code>localtime</code>，那为什么它们执行怎么慢捏，因为它们都进行了<code>syscall</code>（详情请看<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/8174147/strftime-performance-vs-snprintf#:~:text=POSIX%20requires%20strftime%20to%20call%20tzset()%20(or%20act%20as%20if%20it%20did)%2C%20which%20on%20a%20linux%20system%20will%20likely%20stat%20/etc/timezone%20and%20other%20files%2C%20which%20is%20slow%20(compared%20to%20snprintf).%20Setting%20the%20TZ%20environment%20variable%20will%20generally%20give%20it%20a%20great%20boost.">strftime</a>,<a target="_blank" rel="noopener" href="https://en.cppreference.com/w/cpp/chrono/c/localtime#:~:text=Notes-,This%20function%20may%20not%20be%20thread%2Dsafe.,.,-Example">localtime</a>）<br>那如何进行修改<br>第一种方法是：修改代码，代码参考<a target="_blank" rel="noopener" href="https://gist.github.com/felipou/ad107bbb3a91814679beb22c0686fbeb">这里</a><br>第二种方法是：<del>只生产 timeval，在真正进行写入的时候在转换成日期（log线程）但是既然都进行了优化了，肯定是选择第二个方案，并且采用参考代码里面的func3</del>（我都不显示正常请求的log了，详细请看后文）</p>
+<h2 id="再次测试-🤡"><a href="#再次测试-🤡" class="headerlink" title="再次测试 🤡"></a>再次测试 🤡</h2><p><img src="/2024/03/05/%E4%BD%BF%E7%94%A8valgrind%E8%BF%9B%E8%A1%8C%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90/speed3.png" alt="speed3"></p>
+<p>??? 为什么速度基本上跟上次一样，速速打开kcachegrind进行分析 🤺🤺🤺</p>
+<h2 id="第三次分分析"><a href="#第三次分分析" class="headerlink" title="第三次分分析"></a>第三次分分析</h2><p><img src="/2024/03/05/%E4%BD%BF%E7%94%A8valgrind%E8%BF%9B%E8%A1%8C%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90/speed3-server-analysis-1.png" alt="speed2-服务端-下载"></p>
+<p>可以看到<code>log</code>的cpu占用确实变少了，但还是占用了27%的cpu，所以不如点进去仔细分析一下那行代码占用大量cpu</p>
+<p><img src="/2024/03/05/%E4%BD%BF%E7%94%A8valgrind%E8%BF%9B%E8%A1%8C%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90/speed3-server-analysis-2.png" alt="speed2-服务端-下载"><br>进入<code>log</code>后，可以看到在<code>Callee Map</code>中，最大的两块分别是 <code>sprintf</code> <code>vsprintf</code></p>
+<p><img src="/2024/03/05/%E4%BD%BF%E7%94%A8valgrind%E8%BF%9B%E8%A1%8C%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90/speed3-server-analysis-3.png" alt="speed2-服务端-下载"><br>查看到对应的代码就是输出时的格式化（要在debug模式下才可以看到源码），那这个真的没有办法优化了吗，其实还是有的，就是关闭正常请求时的log显示。因为一个请求就会输出两个log信息</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token number">2024</span>-03-xx 09:03:44.975857 INFO <span class="token number">63</span> <span class="token operator">|</span> udp recvfrom data to <span class="token function">ip</span> <span class="token number">127.0</span>.0.1 prot <span class="token number">35512</span> ack is <span class="token number">1315955221</span>
+<span class="token number">2024</span>-03-xx 09:03:44.975940 INFO <span class="token number">63</span> <span class="token operator">|</span> udp recvfrom data to <span class="token function">ip</span> <span class="token number">127.0</span>.0.1 prot <span class="token number">35512</span> ack is <span class="token number">508775843</span>
+<span class="token number">2024</span>-03-xx 09:03:44.975978 INFO <span class="token number">90</span> <span class="token operator">|</span> udp send data to <span class="token function">ip</span> <span class="token number">127.0</span>.0.1 prot <span class="token number">35512</span> ack is <span class="token number">3372925139</span>
+<span class="token number">2024</span>-03-xx 09:03:44.976044 INFO <span class="token number">90</span> <span class="token operator">|</span> udp send data to <span class="token function">ip</span> <span class="token number">127.0</span>.0.1 prot <span class="token number">35512</span> ack is <span class="token number">508775843</span></code></pre>
+<p>而在下载文件的时候一秒钟会传输大量的数据包<br><img src="/2024/03/05/%E4%BD%BF%E7%94%A8valgrind%E8%BF%9B%E8%A1%8C%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90/speed3-server-analysis-4.png" alt="speed2-服务端-下载"><br>这就会大量调用log函数，从而影响性能。但是为了调试方便，可以把这个是否显示正常请求的log写入到配置文件中，根据实际进行配置</p>
+<h1 id="最终结果"><a href="#最终结果" class="headerlink" title="最终结果"></a>最终结果</h1><p>经过了上述<code>log</code>模块的修改，以下就是最终结果，从刚开始的13M提升到35M 🤞🤞<br><img src="/2024/03/05/%E4%BD%BF%E7%94%A8valgrind%E8%BF%9B%E8%A1%8C%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90/speed4.png" alt="speed4"></p>
+
+        
+        <br />
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+        <div id="lv-container"></div>
+        <div class="giscus"></div>
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+        <li>
+            <a target="_blank"  href="https://github.com/kehaha-5">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-github"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+    </ul>
+    
+    <p>
+        <span id="busuanzi_container_site_pv">
+            <span id="busuanzi_value_site_pv"></span>PV
+        </span>
+        <span id="busuanzi_container_site_uv">
+            <span id="busuanzi_value_site_uv"></span>UV
+        </span>
+        Created By <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>  Theme <a target="_blank" rel="noopener" href="https://github.com/aircloud/hexo-theme-aircloud">AirCloud</a></p>
+</footer>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = "search.json"
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="/js/index.js"></script>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+</html>
+
+<!-- fancybox support -->
+
+    <!-- for theme: default is false -->
+    <!-- for page: default is true -->
+    
+<script src="/js/fancybox/jquery.fancybox.min.js" key="fancybox_js"></script>
+<script src="/js/fancybox/wrapImage.js" key="wrap_image_js"></script>
+
+        
+<link rel="stylesheet" href="/js/fancybox/jquery.fancybox.min.css" key="fancybox_css">
+
+            

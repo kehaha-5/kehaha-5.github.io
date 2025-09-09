@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang=zh-CN>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="website">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        Mysql执行过长排查 - kehaha-5
+        
+    </title>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/aircloud.css">
+
+    
+<link rel="stylesheet" href="/css/gitment.css">
+
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_28hi1hpxx24.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i> Just record it ! </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar radius">
+            <img src="/img/avatar.jpg" />
+        </div>
+        <div class="name">
+            <i>kehaha-5</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li >
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li >
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li >
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li >
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+            <li>
+                <a id="search">
+                    <i class="iconfont icon-sousuo1"></i>
+                    <span>搜索</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%8E%92%E6%9F%A5"><span class="toc-text">排查</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#sql%E4%BC%98%E5%8C%96"><span class="toc-text">sql优化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E6%8E%92%E6%9F%A5"><span class="toc-text">网络排查</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%89%A9%E5%B1%95"><span class="toc-text">扩展</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%9C%E7%94%A8"><span class="toc-text">作用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%81%E7%A8%8B"><span class="toc-text">流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-text">最后</span></a></li></ol></li></ol>
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-bg" id="search-bg"></div>
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input"/>
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+
+        <div class="index-about-mobile">
+            <i> Just record it ! </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        Mysql执行过长排查
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2025-01-05 21:51:00</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#mysql" title="mysql">mysql</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#排障" title="排障">排障</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+</span>
+    </div>
+    <div class="post-content no-indent">
+        <blockquote>
+<p>开发反应说应用的某个接口返回过慢，查看日志后发现确实有一个接口的sql执行了20s</p>
+</blockquote>
+<p><img src="/2025/01/05/Mysql%E6%89%A7%E8%A1%8C%E8%BF%87%E9%95%BF%E6%8E%92%E6%9F%A5/log.jpg" alt="log"></p>
+<h1 id="排查"><a href="#排查" class="headerlink" title="排查"></a>排查</h1><h2 id="sql优化"><a href="#sql优化" class="headerlink" title="sql优化"></a>sql优化</h2><p>输入sql执行发现执行时间很短而且整个数据库的数据量不是很大，所以可以排查sql优化的问题</p>
+<h2 id="网络排查"><a href="#网络排查" class="headerlink" title="网络排查"></a>网络排查</h2><p>环境：应用在143上面，数据库在142上面，数据库端口13360</p>
+<p>利用tcpdump+wireshark 进行抓包</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">tcpdump <span class="token parameter variable">-i</span> bond4.128 port <span class="token number">13360</span> <span class="token parameter variable">-w</span> ./mysql_cap</code></pre>
+
+<p>使用wireshark打开选中可用的数据流，找到对应的sql数据tcp流</p>
+<p><img src="/2025/01/05/Mysql%E6%89%A7%E8%A1%8C%E8%BF%87%E9%95%BF%E6%8E%92%E6%9F%A5/cap.jpg" alt="cap"></p>
+<p>分析发现从tcp握手到数据库密码认证，经历了20秒(52-105)，后面执行数据库用的时间并不多(105-116)</p>
+<p><img src="/2025/01/05/Mysql%E6%89%A7%E8%A1%8C%E8%BF%87%E9%95%BF%E6%8E%92%E6%9F%A5/cap1.jpg" alt="cap1"></p>
+<p>可以断定是数据库初始化连接的问题，查询相关信息发现有一个相关配置</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>mysqld<span class="token punctuation">]</span>
+skip-name-resolve</code></pre>
+
+<p>修改该配置后，数据访问正常了</p>
+<h1 id="扩展"><a href="#扩展" class="headerlink" title="扩展"></a>扩展</h1><h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><p>那个这个 <code>skip-name-resolve</code>的配置有什么作用 为什么会导致链接超时</p>
+<p>这个主要作用是把ip变成host 或者 host映射成ip的功能，然后放到一个host cache里面 <a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.4/en/host-cache.html">相关文档</a></p>
+<p>那Mysql为什么要这样做捏？</p>
+<p>因为Mysql会用这个host cache来追踪这个host的错误情况，对应的相关配置 <code>max_connect_errors</code> </p>
+<p><img src="/2025/01/05/Mysql%E6%89%A7%E8%A1%8C%E8%BF%87%E9%95%BF%E6%8E%92%E6%9F%A5/doc.png" alt="doc"></p>
+<h2 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h2><p>详细的数据库连接和对应的host cache建立 也在文档里面有说明</p>
+<p>大概流程</p>
+<ul>
+<li>第一次tcp clinet连接到达的时候，Mysql就会初始化对应的cache实例</li>
+<li>server就会尝试去把 IP to host 或者 name to host 使用 DNS 解析</li>
+<li>如果该连接发生错误 就会把数据记录下来</li>
+</ul>
+<p><img src="/2025/01/05/Mysql%E6%89%A7%E8%A1%8C%E8%BF%87%E9%95%BF%E6%8E%92%E6%9F%A5/doc1.png" alt="doc"></p>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>这就是为什么在tcp三次握手后会等待大概20秒左右，就是mysql尝试把连接ip解析host的行为</p>
+<p>当然了，这个ip是解析不到host的所以就会出现错误，在docker log 可以看到对应错误</p>
+<p><img src="/2025/01/05/Mysql%E6%89%A7%E8%A1%8C%E8%BF%87%E9%95%BF%E6%8E%92%E6%9F%A5/mysql-log.png" alt="mysql-log"><br>为什么说是<code>172.17.0.1</code>这个ip解析错误捏，不是上述的143这个ip？</p>
+<p>那是因为mysql是跑在docker上面的 而流量会经过docker的网卡再到容器里面，而docker的网卡就是<code>172.17.0.1</code></p>
+<p><img src="/2025/01/05/Mysql%E6%89%A7%E8%A1%8C%E8%BF%87%E9%95%BF%E6%8E%92%E6%9F%A5/docker-bridge.png" alt="docker-bridge"></p>
+
+        
+        <br />
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+        <div id="lv-container"></div>
+        <div class="giscus"></div>
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+        <li>
+            <a target="_blank"  href="https://github.com/kehaha-5">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-github"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+    </ul>
+    
+    <p>
+        <span id="busuanzi_container_site_pv">
+            <span id="busuanzi_value_site_pv"></span>PV
+        </span>
+        <span id="busuanzi_container_site_uv">
+            <span id="busuanzi_value_site_uv"></span>UV
+        </span>
+        Created By <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>  Theme <a target="_blank" rel="noopener" href="https://github.com/aircloud/hexo-theme-aircloud">AirCloud</a></p>
+</footer>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = "search.json"
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="/js/index.js"></script>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+</html>
+
+<!-- fancybox support -->
+
+    <!-- for theme: default is false -->
+    <!-- for page: default is true -->
+    
+<script src="/js/fancybox/jquery.fancybox.min.js" key="fancybox_js"></script>
+<script src="/js/fancybox/wrapImage.js" key="wrap_image_js"></script>
+
+        
+<link rel="stylesheet" href="/js/fancybox/jquery.fancybox.min.css" key="fancybox_css">
+
+            

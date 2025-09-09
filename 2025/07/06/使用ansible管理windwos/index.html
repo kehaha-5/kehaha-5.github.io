@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang=zh-CN>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="website">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        使用ansible管理windwos - kehaha-5
+        
+    </title>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/aircloud.css">
+
+    
+<link rel="stylesheet" href="/css/gitment.css">
+
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_28hi1hpxx24.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i> Just record it ! </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar radius">
+            <img src="/img/avatar.jpg" />
+        </div>
+        <div class="name">
+            <i>kehaha-5</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li >
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li >
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li >
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li >
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+            <li>
+                <a id="search">
+                    <i class="iconfont icon-sousuo1"></i>
+                    <span>搜索</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%89%E8%A3%85ansible"><span class="toc-text">安装ansible</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%85%8D%E7%BD%AEwindwos"><span class="toc-text">配置windwos</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%85%8D%E7%BD%AEansible"><span class="toc-text">配置ansible</span></a></li></ol>
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-bg" id="search-bg"></div>
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input"/>
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+
+        <div class="index-about-mobile">
+            <i> Just record it ! </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        使用ansible管理windwos
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2025-07-06 23:43:10</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#边做边学" title="边做边学">边做边学</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#windows" title="windows">windows</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#ansible" title="ansible">ansible</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+</span>
+    </div>
+    <div class="post-content no-indent">
+        <blockquote>
+<p>最近要对20多台windows主机进行管理（启动进程、挂载网络硬盘和修改环境变量），所以使用了ansible做管理工具</p>
+</blockquote>
+<h1 id="安装ansible"><a href="#安装ansible" class="headerlink" title="安装ansible"></a>安装ansible</h1><p>在使用absible时，只需要在集群中的一台选择任意一台服务器(linux系统)在上面安装ansible即可</p>
+<p>但是集群中是windwos系统， 所以要在windwos上面安装wsl，先要在系统功能里面开启wsl功能，然后安装wsl2程序</p>
+<p><a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-cn/windows/wsl/install">安装 WSL | Microsoft Learn</a></p>
+<pre class="language-powershell" data-language="powershell"><code class="language-powershell">wsl <span class="token operator">--</span>list <span class="token operator">--</span>online <span class="token comment"># 查询可以按照的linux版本</span>
+wsl <span class="token operator">--</span>install <span class="token operator">-</span>d &lt;Distribution Name> <span class="token comment"># 安装对应的linux系统</span></code></pre>
+
+<p>安装完成后在wsl中安装ansible，我的系统是使用dnf进行安装</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># dnf install ansible-core</span></code></pre>
+
+<h1 id="配置windwos"><a href="#配置windwos" class="headerlink" title="配置windwos"></a>配置windwos</h1><p>ansible要控制windwos的话，windwos需要进行配置，要开启windwos的wrm（Windows Remote Management）或者配置ssh服务</p>
+<p><a target="_blank" rel="noopener" href="https://docs.ansible.com/ansible/latest/os_guide/windows_winrm.html">https://docs.ansible.com/ansible/latest/os_guide&#x2F;windows_winrm.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://docs.ansible.com/ansible/latest/os_guide/windows_ssh.html">https://docs.ansible.com/ansible/latest/os_guide&#x2F;windows_ssh.html</a></p>
+<p>这里配置ssh，因为它功能更好，但是要注意版本</p>
+<blockquote>
+<p><font style="color:rgb(64, 64, 64);background-color:rgb(252, 252, 252);">Microsoft provides an OpenSSH implementation with Windows since Windows Server 2019 as a Windows capability. It can also be installed through an upstream package under </font><a target="_blank" rel="noopener" href="https://github.com/PowerShell/Win32-OpenSSH"><font style="color:rgb(41, 128, 185);">Win32-OpenSSH</font></a><font style="color:rgb(64, 64, 64);background-color:rgb(252, 252, 252);">. Ansible officially only supports the OpenSSH implementation shipped with Windows, not the upstream package. The OpenSSH version must be version </font> <code>7.9.0.0</code> <font style="color:rgb(64, 64, 64);background-color:rgb(252, 252, 252);"> at a minimum. This effectively means official support starts with Windows Server 2022 because Server 2019 ships with version <code>7.7.2.1</code> <font style="color:rgb(64, 64, 64);background-color:rgb(252, 252, 252);">. Using older Windows versions or the upstream package might work but is not supported.</font></p>
+</blockquote>
+<p><font style="color:rgb(64, 64, 64);background-color:rgb(252, 252, 252);">配置ssh的话可以根据文档进行安装</font></p>
+<pre class="language-powershell" data-language="powershell"><code class="language-powershell"><span class="token function">Get-WindowsCapability</span> <span class="token operator">-</span>Name OpenSSH<span class="token punctuation">.</span>Server* <span class="token operator">-</span>Online <span class="token punctuation">|</span>
+    <span class="token function">Add-WindowsCapability</span> <span class="token operator">-</span>Online
+<span class="token function">Set-Service</span> <span class="token operator">-</span>Name sshd <span class="token operator">-</span>StartupType Automatic <span class="token operator">-</span>Status Running
+
+<span class="token variable">$firewallParams</span> = @<span class="token punctuation">&#123;</span>
+    Name        = <span class="token string">'sshd-Server-In-TCP'</span>
+    DisplayName = <span class="token string">'Inbound rule for OpenSSH Server (sshd) on TCP port 22'</span>
+    Action      = <span class="token string">'Allow'</span>
+    Direction   = <span class="token string">'Inbound'</span>
+    Enabled     = <span class="token string">'True'</span>  <span class="token comment"># This is not a boolean but an enum</span>
+    Profile     = <span class="token string">'Any'</span>
+    Protocol    = <span class="token string">'TCP'</span>
+    LocalPort   = 22
+<span class="token punctuation">&#125;</span>
+<span class="token function">New-NetFirewallRule</span> @firewallParams
+
+<span class="token variable">$shellParams</span> = @<span class="token punctuation">&#123;</span>
+    Path         = <span class="token string">'HKLM:\SOFTWARE\OpenSSH'</span>
+    Name         = <span class="token string">'DefaultShell'</span>
+    Value        = <span class="token string">'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe'</span>
+    PropertyType = <span class="token string">'String'</span>
+    Force        = <span class="token boolean">$true</span>
+<span class="token punctuation">&#125;</span>
+<span class="token function">New-ItemProperty</span> @shellParams</code></pre>
+
+<p>指定登录后的shell为powershell</p>
+<pre class="language-powershell" data-language="powershell"><code class="language-powershell"><span class="token comment"># Set default to powershell.exe</span>
+<span class="token variable">$shellParams</span> = @<span class="token punctuation">&#123;</span>
+    Path         = <span class="token string">'HKLM:\SOFTWARE\OpenSSH'</span>
+    Name         = <span class="token string">'DefaultShell'</span>
+    Value        = <span class="token string">'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe'</span>
+    PropertyType = <span class="token string">'String'</span>
+    Force        = <span class="token boolean">$true</span>
+<span class="token punctuation">&#125;</span>
+<span class="token function">New-ItemProperty</span> @shellParams
+
+<span class="token comment"># Set default back to cmd.exe</span>
+<span class="token function">Remove-ItemProperty</span> <span class="token operator">-</span>Path HKLM:\SOFTWARE\OpenSSH <span class="token operator">-</span>Name DefaultShell</code></pre>
+
+<p>配置好后，可以通过ssh windows用户名@地址 登录到系统</p>
+<h1 id="配置ansible"><a href="#配置ansible" class="headerlink" title="配置ansible"></a>配置ansible</h1><p>首先要对我们将要管理的资产写一个ansible的资产文件里面</p>
+<pre class="language-powershell" data-language="powershell"><code class="language-powershell">win:
+  hosts:
+   10<span class="token punctuation">.</span>88<span class="token punctuation">.</span>128<span class="token punctuation">.</span>xxx:
+   10<span class="token punctuation">.</span>88<span class="token punctuation">.</span>128<span class="token punctuation">.</span>xxx:
+  vars:
+    ansible_user: <span class="token string">"xxx"</span> <span class="token comment"># Windows上的SSH用户名</span>
+    ansible_password: <span class="token string">"xxx"</span> <span class="token comment"># Windows SSH用户的密码 (或者配置SSH Key)</span>
+    ansible_port: 22 <span class="token comment"># SSH默认端口</span>
+    ansible_connection: ssh <span class="token comment"># 指定使用SSH连接</span>
+    ansible_shell_type: powershell <span class="token comment"># 指定Windows上的Shell类型，Powershell是常见的选择</span></code></pre>
+
+<p>配置好后可以进行测试</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@Server-68ca6f1e-6023-4e99-9051-10e3746df9bb ~<span class="token punctuation">]</span><span class="token comment"># ansible -i /etc/ansible/win_inventory.yml all -m win_ping </span>
+<span class="token punctuation">[</span>WARNING<span class="token punctuation">]</span>: Collection ansible.windows does not support Ansible version <span class="token number">2.14</span>.18
+<span class="token punctuation">[</span>WARNING<span class="token punctuation">]</span>: Collection ansible.windows does not support Ansible version <span class="token number">2.14</span>.18
+<span class="token punctuation">[</span>WARNING<span class="token punctuation">]</span>: Collection ansible.windows does not support Ansible version <span class="token number">2.14</span>.18
+<span class="token punctuation">[</span>WARNING<span class="token punctuation">]</span>: Collection ansible.windows does not support Ansible version <span class="token number">2.14</span>.18
+<span class="token punctuation">[</span>WARNING<span class="token punctuation">]</span>: Collection ansible.windows does not support Ansible version <span class="token number">2.14</span>.18
+<span class="token number">10.88</span>.128.xx <span class="token operator">|</span> SUCCESS <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">&#123;</span>
+    <span class="token string">"changed"</span><span class="token builtin class-name">:</span> false,
+    <span class="token string">"ping"</span><span class="token builtin class-name">:</span> <span class="token string">"pong"</span>
+<span class="token punctuation">&#125;</span>
+<span class="token punctuation">[</span>WARNING<span class="token punctuation">]</span>: Collection ansible.windows does not support Ansible version <span class="token number">2.14</span>.18
+<span class="token number">10.88</span>.128.xxx <span class="token operator">|</span> SUCCESS <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">&#123;</span>
+    <span class="token string">"changed"</span><span class="token builtin class-name">:</span> false,
+    <span class="token string">"ping"</span><span class="token builtin class-name">:</span> <span class="token string">"pong"</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>如果报win模块没有的话要进行安装</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">ansible-galaxy collection <span class="token function">install</span> ansible.windows</code></pre>
+
+<p>如果使用win_pong发现结果是乱码的话，可以到windows上面重新安装一下ssh</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">Remove-WindowsCapability <span class="token parameter variable">-Online</span> <span class="token parameter variable">-Name</span> OpenSSH.Client <span class="token comment"># 卸载open-ssh</span>
+<span class="token comment"># 重新执行上面的脚本安装open-ssh</span></code></pre>
+
+<p>后面就可以根据实际情况编写playbook了</p>
+<p>ansible中win相关的命令文档</p>
+<p><a target="_blank" rel="noopener" href="https://docs.ansible.com/ansible/latest/collections/ansible/windows/index.html#plugins-in-ansible-windows">https://docs.ansible.com/ansible/latest/collections/ansible/windows/index.html#plugins-in-ansible-windows</a></p>
+
+        
+        <br />
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+        <div id="lv-container"></div>
+        <div class="giscus"></div>
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+        <li>
+            <a target="_blank"  href="https://github.com/kehaha-5">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-github"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+    </ul>
+    
+    <p>
+        <span id="busuanzi_container_site_pv">
+            <span id="busuanzi_value_site_pv"></span>PV
+        </span>
+        <span id="busuanzi_container_site_uv">
+            <span id="busuanzi_value_site_uv"></span>UV
+        </span>
+        Created By <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>  Theme <a target="_blank" rel="noopener" href="https://github.com/aircloud/hexo-theme-aircloud">AirCloud</a></p>
+</footer>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = "search.json"
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="/js/index.js"></script>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+</html>
+
+<!-- fancybox support -->
+
+    <!-- for theme: default is false -->
+    <!-- for page: default is true -->
+    
+<script src="/js/fancybox/jquery.fancybox.min.js" key="fancybox_js"></script>
+<script src="/js/fancybox/wrapImage.js" key="wrap_image_js"></script>
+
+        
+<link rel="stylesheet" href="/js/fancybox/jquery.fancybox.min.css" key="fancybox_css">
+
+            

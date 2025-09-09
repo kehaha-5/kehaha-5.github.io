@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang=zh-CN>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="website">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        k8s中为Pod配置自签证书以访问HTTPS服务 - kehaha-5
+        
+    </title>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/aircloud.css">
+
+    
+<link rel="stylesheet" href="/css/gitment.css">
+
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_28hi1hpxx24.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i> Just record it ! </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar radius">
+            <img src="/img/avatar.jpg" />
+        </div>
+        <div class="name">
+            <i>kehaha-5</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li >
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li >
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li >
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li >
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+            <li>
+                <a id="search">
+                    <i class="iconfont icon-sousuo1"></i>
+                    <span>搜索</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%A6%82%E5%BF%B5"><span class="toc-text">概念</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Https%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5"><span class="toc-text">Https相关概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%9E%E8%B7%B5"><span class="toc-text">实践</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%81%E4%B9%A6%E7%9A%84%E7%94%9F%E6%88%90%E5%92%8C%E5%AE%89%E8%A3%85"><span class="toc-text">证书的生成和安装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%9F%E6%88%90%E8%87%AA%E7%AD%BE%E8%AF%81%E4%B9%A6"><span class="toc-text">生成自签证书</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E7%B3%BB%E7%BB%9F%E5%AE%89%E8%A3%85%E8%87%AA%E7%AD%BE%E8%AF%81%E4%B9%A6"><span class="toc-text">为系统安装自签证书</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BAPod%E9%85%8D%E7%BD%AE%E8%AF%81%E4%B9%A6"><span class="toc-text">为Pod配置证书</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8%E9%95%9C%E5%83%8F%E7%B3%BB%E7%BB%9F%E4%B8%AD%E5%AE%89%E8%A3%85%E8%AF%81%E4%B9%A6"><span class="toc-text">在镜像系统中安装证书</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8trust-manager"><span class="toc-text">使用trust-manager</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-text">最后</span></a></li></ol>
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-bg" id="search-bg"></div>
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input"/>
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+
+        <div class="index-about-mobile">
+            <i> Just record it ! </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        k8s中为Pod配置自签证书以访问HTTPS服务
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2025-03-22 10:00:19</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#k8s" title="k8s">k8s</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#certs" title="certs">certs</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#边做边学" title="边做边学">边做边学</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+</span>
+    </div>
+    <div class="post-content no-indent">
+        <blockquote>
+<p>最近在部署一套系统的其它环境时，遇到了自签https证书和应用自签证书到k8s中的问题，故此记录一下。</p>
+<p>在部署的应用中，有一个需要使用Standard OIDC Client所有必须要https，而且要认证的服务不是部署在本集群中</p>
+</blockquote>
+<h1 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h1><h2 id="Https相关概念"><a href="#Https相关概念" class="headerlink" title="Https相关概念"></a>Https相关概念</h2><p>什么是https，https证书的种类，如何自签https这些内容这里就不做展开了仅作一个自己的总结。因为网上的文章和视频太多了，这里推荐一下几位大佬的文章。</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.kawabangga.com/posts/5330">有关 TLS&#x2F;SSL 证书的一切 | 卡瓦邦噶！</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.laisky.com/p/https-in-action/#gsc.tab=0">HTTPS 隐私安全的一些实践</a></li>
+<li><a target="_blank" rel="noopener" href="https://thiscute.world/posts/about-tls-cert/">写给开发人员的实用密码学（八）—— 数字证书与 TLS 协议 - This Cute World</a></li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><strong>以下总结部分摘抄与上述文章中</strong></p>
+<ul>
+<li><strong>HTTPS是HTTP+TLS</strong>，其中的TLS就是为了向客户端证明服务端自己的身份，避免别人伪造自己的身份对客户端造成影响。</li>
+<li><strong>CA、客户端、网站</strong>之间的关系<ul>
+<li>客户端信任 CA 机构；</li>
+<li>CA 机构给网站签发证书；</li>
+<li>客户端在访问网站的时候，网站出示自己的证书，由于客户端信任 CA 机构，也就信任 CA 机构签发的证书；</li>
+</ul>
+</li>
+<li>PKI 架构使用「<strong>数字证书链</strong>（也叫做<strong>信任链</strong>）」的机制来解决这个问题: <ul>
+<li>CA 机构首先生成自己的根证书与私钥，并使用私钥给根证书签名<ul>
+<li>因为私钥跟证书本身就是一对，因此根证书也被称作「自签名证书」</li>
+</ul>
+</li>
+<li>CA 根证书被直接交付给各大软硬件厂商，内置在主流的操作系统与浏览器中</li>
+<li>然后 CA 机构再使用私钥签发一些所谓的「中间证书」，之后就把私钥雪藏了，非必要不会再拿出来使用。<ul>
+<li>根证书的私钥通常<strong>离线存储</strong>在安全地点</li>
+<li>中间证书的有效期通常会比根证书短一些</li>
+<li>部分中间证书会被作为备份使用，平常不会启用</li>
+</ul>
+</li>
+<li>CA 机构使用这些中间证书的私钥，为用户提交的所有 CSR 请求签名</li>
+<li>CA 机构也可能会在经过严格审核后，为其他机构签发中间证书，这样就能赋予其他机构签发证书的权利，而且根证书的安全性不受影响。</li>
+<li>客户端要相信这个证书，最终的目的一定是验证到一个自己信任的 <strong>CA Root</strong> 上去。一旦验证了 <strong>CA Root</strong>，客户端就信任了 <strong>Root</strong> 签发的证书，也就信任了他们的证书。</li>
+</ul>
+</li>
+<li>交叉签名<ul>
+<li>实际上在 PKI 体系中，一些证书链上的中间证书会被使用多个根证书进行签名——我们称这为交叉签名。交叉签名的主要目的是提升证书的兼容性——客户端只要安装有其中任何一个根证书，就能正常验证这个中间证书。</li>
+<li>从而使中间证书在较老的设备也能顺利通过证书验证。</li>
+</ul>
+</li>
+<li>证书状态认证 <strong>OCSP协议</strong><ul>
+<li>为了在私钥泄漏的情况下，能够吊销对应的证书，PKI 公钥基础设施还提供了 OCSP（Online Certificate Status Protocol）证书状态查询协议。</li>
+<li>Chrome&#x2F;Firefox 等浏览器都会定期通过 OCSP 协议去请求 CA 机构的 OCSP 服务器验证证书状态， 这可能会拖慢 HTTPS 协议的响应速度。</li>
+<li>因为客户端直接去请求 CA 机构的 OCSP 地址获取证书状态，这就导致 CA 机构可以获取到一些对应站点的用户信息（IP 地址、网络状态等）。</li>
+<li>为了解决这两个问题，<a target="_blank" rel="noopener" href="https://www.rfc-editor.org/rfc/rfc6066">rfc6066</a> 定义了 OCSP stapling 功能，它使服务器可以提前访问 OCSP 获取证书状态信息并缓存到本地，基本 Nginx&#x2F;Caddy 等各大 Web 服务器或网关，都支持 OCSP stapling 协议。</li>
+</ul>
+</li>
+</ul>
+<h1 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h1><h2 id="证书的生成和安装"><a href="#证书的生成和安装" class="headerlink" title="证书的生成和安装"></a>证书的生成和安装</h2><h3 id="生成自签证书"><a href="#生成自签证书" class="headerlink" title="生成自签证书"></a>生成自签证书</h3><p>流程 </p>
+<ul>
+<li>生成私钥 key</li>
+<li>生成<strong>证书生成请求csr</strong>，可以在<strong>csr</strong>中配置要生成的证书的信息，如<strong>countryName、stateOrProvinceName、organizationName、CA、SAN</strong><ul>
+<li><strong>SAN (Subject Alternative Name):</strong> 可选字段，用于指定证书可以使用的其他域名或主机名。<ul>
+<li>可以通过配置这个来让证书保护多个域名，例如 <code>example.com</code>、<code>www.example.com</code>、<code>*.example.com</code>。</li>
+<li>可以使用这个配置来对对应的IP进行保护，即把SAN配置为对应的IP地址</li>
+</ul>
+</li>
+<li><strong>CA</strong>：配置为 <code>TRUE</code> 或 <code>FALSE</code>，它指示该证书是否可以作为证书颁发机构 (CA) 证书。<ul>
+<li>**<code>CA:TRUE</code>**：表明该证书可以用于签署其他证书。 也就是说，这个证书可以作为一个 CA 证书，颁发下级证书，用于创建根 CA 证书或中间 CA 证书。 只有 CA 证书才能签署其他证书，建立信任链。</li>
+<li>**<code>CA=FALSE</code>**：表明该证书不能用于签署其他证书。 也就是说，这个证书是一个终端实体证书，只能用于身份验证、加密等目的，不能颁发下级证书，用于创建服务器证书、客户端证书、代码签名证书等。 这些证书用于保护特定的服务或应用程序，而不是用于颁发其他证书。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>通过<code>key+csr</code>生成对应的<code>crt</code>证书</li>
+</ul>
+<p>本文通过<code>openssl</code>来生成自签证书，以下是生成证书的脚本</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token shebang important">#!/bin/bash</span>
+
+<span class="token comment"># Check if domain name is provided</span>
+<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token parameter variable">-z</span> <span class="token string">"<span class="token variable">$1</span>"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    <span class="token builtin class-name">echo</span> <span class="token string">"Usage: <span class="token variable">$0</span> &lt;domain>"</span>
+    <span class="token builtin class-name">exit</span> <span class="token number">1</span>
+<span class="token keyword">fi</span>
+
+<span class="token assign-left variable">DOMAIN</span><span class="token operator">=</span><span class="token variable">$1</span>
+<span class="token comment"># 证书过期日期</span>
+<span class="token assign-left variable">DAYS</span><span class="token operator">=</span><span class="token number">3650</span>
+<span class="token assign-left variable">COUNTRY</span><span class="token operator">=</span><span class="token string">"CN"</span>
+<span class="token assign-left variable">STATE</span><span class="token operator">=</span><span class="token string">"GZ"</span>
+<span class="token assign-left variable">CERT_DIR</span><span class="token operator">=</span><span class="token string">"./certs"</span>
+<span class="token assign-left variable">CONFIG_FILE</span><span class="token operator">=</span><span class="token string">"<span class="token variable">$CERT_DIR</span>/openssl.cnf"</span>
+
+<span class="token comment"># Create directory for certificates if it doesn't exist</span>
+<span class="token function">mkdir</span> <span class="token parameter variable">-p</span> <span class="token variable">$CERT_DIR</span>
+
+<span class="token comment"># 生成 private key</span>
+openssl genrsa <span class="token parameter variable">-out</span> <span class="token variable">$CERT_DIR</span>/<span class="token variable">$&#123;DOMAIN&#125;</span>.key <span class="token number">2048</span>
+
+<span class="token comment"># Create OpenSSL configuration file 通过该配置文件生成对应的csr</span>
+<span class="token function">cat</span> <span class="token operator">></span> <span class="token variable">$CONFIG_FILE</span> <span class="token operator">&lt;&lt;</span><span class="token string">EOL
+[ req ]
+distinguished_name = req_distinguished_name
+prompt = no
+default_bits = 2048
+req_extensions = cert_ext
+
+[ req_distinguished_name ]
+countryName         = <span class="token variable">$COUNTRY</span>
+stateOrProvinceName = <span class="token variable">$STATE</span>
+localityName        = <span class="token variable">$STATE</span>
+organizationName    = <span class="token variable">$STATE</span>
+commonName          = <span class="token variable">$DOMAIN</span>
+
+[ cert_ext ]
+basicConstraints = CA:TRUE # CA配置 
+keyUsage = digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth, clientAuth
+subjectAltName = @alt_names
+# SAN配置
+[ alt_names ]
+DNS.1 = <span class="token variable">$DOMAIN</span>
+DNS.2 = *.<span class="token variable">$DOMAIN</span>
+
+EOL</span>
+
+<span class="token comment"># Generate CSR with extensions 生成csr</span>
+openssl req <span class="token parameter variable">-new</span> <span class="token parameter variable">-key</span> <span class="token variable">$CERT_DIR</span>/<span class="token variable">$&#123;DOMAIN&#125;</span>.key <span class="token parameter variable">-out</span> <span class="token variable">$CERT_DIR</span>/<span class="token variable">$&#123;DOMAIN&#125;</span>.csr <span class="token parameter variable">-config</span> <span class="token variable">$CONFIG_FILE</span>
+
+<span class="token comment"># Generate self-signed certificate with both extensions 生成crt</span>
+openssl x509 <span class="token parameter variable">-req</span> <span class="token parameter variable">-days</span> <span class="token variable">$DAYS</span> <span class="token punctuation">\</span>
+    <span class="token parameter variable">-in</span> <span class="token variable">$CERT_DIR</span>/<span class="token variable">$&#123;DOMAIN&#125;</span>.csr <span class="token punctuation">\</span>
+    <span class="token parameter variable">-signkey</span> <span class="token variable">$CERT_DIR</span>/<span class="token variable">$&#123;DOMAIN&#125;</span>.key <span class="token punctuation">\</span>
+    <span class="token parameter variable">-out</span> <span class="token variable">$CERT_DIR</span>/<span class="token variable">$&#123;DOMAIN&#125;</span>.crt <span class="token punctuation">\</span>
+    <span class="token parameter variable">-extensions</span> cert_ext <span class="token punctuation">\</span>
+    <span class="token parameter variable">-extfile</span> <span class="token variable">$CONFIG_FILE</span>
+
+<span class="token builtin class-name">echo</span> <span class="token string">"Certificate and key have been generated in the <span class="token variable">$CERT_DIR</span> directory."</span></code></pre>
+
+<p>对应生成出来的证书，可以使用以下命令来进行查看</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 查看证书(crt)信息</span>
+openssl x509 <span class="token parameter variable">-noout</span> <span class="token parameter variable">-text</span> <span class="token parameter variable">-in</span> server.crt
+
+<span class="token comment"># 查看证书请求(csr)信息</span>
+openssl req <span class="token parameter variable">-noout</span> <span class="token parameter variable">-text</span> <span class="token parameter variable">-in</span> server.csr
+
+<span class="token comment"># 查看 RSA 私钥(key)信息</span>
+openssl rsa <span class="token parameter variable">-noout</span> <span class="token parameter variable">-text</span> <span class="token parameter variable">-in</span> server.key
+
+<span class="token comment"># 验证证书是否可信</span>
+<span class="token comment">## 1. 使用系统的证书链进行验证</span>
+openssl verify server.crt
+<span class="token comment">## 2. 使用指定的 CA 证书进行验证</span>
+openssl verify <span class="token parameter variable">-CAfile</span> ca.crt server.crt</code></pre>
+
+<h3 id="为系统安装自签证书"><a href="#为系统安装自签证书" class="headerlink" title="为系统安装自签证书"></a>为系统安装自签证书</h3><p>这里只介绍 RockyLinux9.3 和 Debain12 。因为我的系统是<code>RockyLinux9.3</code>，pod的镜像是 <code>Debain12</code>其它的大差不差。</p>
+<p>RockyLinux9.3</p>
+<ul>
+<li>为RockyLinux安装自签证书要有一个注意点，既要把证书中的 <strong>CA</strong> 设置为 <strong>TRUE</strong></li>
+<li>复制证书到 <code>/etc/pki/ca-trust/source/anchors/</code> 执行 <code>update-ca-trust </code></li>
+<li>就会生成包含私有证书的<code>ca-bundle.crt</code>到<code>/etc/pki/tls/certs/</code>中</li>
+</ul>
+<p>Debain12</p>
+<ul>
+<li>复制证书到 <code>/usr/local/share/ca-certificates/</code> 执行 <code>update-ca-certificates --fresh</code></li>
+<li>就会生包含私有证书的<code>ca-certificates.crt</code> 到 <code>/etc/ssl/certs/</code>中</li>
+</ul>
+<p>安装完成以后，就可以使用<code>curl</code>命令对证书进行验证</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 在把证书配置到web服务后，可以使用curl命令来查看证书是否匹配</span>
+<span class="token function">curl</span> <span class="token parameter variable">-v</span> https://xxx.test.com <span class="token parameter variable">--cacert</span> /etc/ssl/certs/xxx.test.com.crt </code></pre>
+
+<h2 id="为Pod配置证书"><a href="#为Pod配置证书" class="headerlink" title="为Pod配置证书"></a>为Pod配置证书</h2><ul>
+<li><p>本次将会使用两种方式来进行配置，一种是通过<code>init-container</code>的方式来安装证书，另一种是使用<code>certs-manager</code>中的<code>trust-manager</code>来自动管理pod的证书</p>
+</li>
+<li><p>应用部署环境：项目使用的是<code>Kustomize</code>来部署不同的环境。项目中的代码：<a target="_blank" rel="noopener" href="https://github.com/kehaha-5/k8s_demo/tree/main/certs/app">k8s_demo&#x2F;certs&#x2F;app at main · kehaha-5&#x2F;k8s_demo</a></p>
+</li>
+</ul>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@rocky-testing app<span class="token punctuation">]</span><span class="token comment"># tree -L 3</span>
+<span class="token builtin class-name">.</span>
+├── debianupcaDockerfile
+├── deploy
+│   ├── base
+│   │   ├── deployment.yaml
+│   │   └── kustomization.yaml
+│   └── overlays
+│       ├── prod <span class="token comment"># 生成环境用的是CA的证书</span>
+│       ├── uat <span class="token comment"># 使用init-container安装证书</span>
+│       └── uat-trust <span class="token comment"># 使用trust-manager</span>
+├── Dockerfile
+├── go.mod
+├── go.sum
+├── main.go
+└── makefile
+
+<span class="token number">6</span> directories, <span class="token number">8</span> files</code></pre>
+
+<h3 id="在镜像系统中安装证书"><a href="#在镜像系统中安装证书" class="headerlink" title="在镜像系统中安装证书"></a>在镜像系统中安装证书</h3><p>根据上述的为系统安装证书的步骤，我们可以使用 <code>init-container</code> 把证书安装到应用的<code>pod</code>中。注意一些镜像是没有默认安装<code>ca-certificates </code> 需要额外安装或者把物理机的证书<code>COPY</code>到镜像内</p>
+<ol>
+<li>首先先把证书crt apply到k8s的secret中</li>
+</ol>
+<pre class="language-bash" data-language="bash"><code class="language-bash">kubectl create secret generic ssl-test-web-crt --from-file<span class="token operator">=</span>./ssl.test.com.crt --dry-run<span class="token operator">=</span>client  <span class="token parameter variable">-o</span> yaml  <span class="token operator">|</span> kubectl apply <span class="token parameter variable">-f</span> -</code></pre>
+
+<ol start="2">
+<li>使用<code>init-container</code> 把证书生成到<code>ca-certificates.crt</code>中，同时把新的证书挂载到应用的<code>Pod</code>中</li>
+</ol>
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> kustomize.config.k8s.io/v1beta1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Kustomization
+
+<span class="token punctuation">...</span>.
+
+<span class="token key atrule">patchesJson6902</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">target</span><span class="token punctuation">:</span>
+      <span class="token key atrule">group</span><span class="token punctuation">:</span> apps
+      <span class="token key atrule">version</span><span class="token punctuation">:</span> v1
+      <span class="token key atrule">kind</span><span class="token punctuation">:</span> Deployment
+      <span class="token key atrule">name</span><span class="token punctuation">:</span> https<span class="token punctuation">-</span>client
+    <span class="token key atrule">patch</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token punctuation">-</span>
+    <span class="token punctuation">...</span>..
+      <span class="token punctuation">-</span> <span class="token key atrule">op</span><span class="token punctuation">:</span> add
+      <span class="token comment"># 把包含证书的secret挂载到volumes中</span>
+        <span class="token key atrule">path</span><span class="token punctuation">:</span> /spec/template/spec/volumes/<span class="token punctuation">-</span>
+        <span class="token key atrule">value</span><span class="token punctuation">:</span>
+          <span class="token key atrule">name</span><span class="token punctuation">:</span> ssl<span class="token punctuation">-</span>test<span class="token punctuation">-</span>web<span class="token punctuation">-</span>crt
+          <span class="token key atrule">secret</span><span class="token punctuation">:</span>
+            <span class="token key atrule">secretName</span><span class="token punctuation">:</span> ssl<span class="token punctuation">-</span>test<span class="token punctuation">-</span>web<span class="token punctuation">-</span>crt
+      <span class="token punctuation">-</span> <span class="token key atrule">op</span><span class="token punctuation">:</span> add
+      <span class="token comment"># 把生成好的ca-certificates.crt挂载到应用上</span>
+        <span class="token key atrule">path</span><span class="token punctuation">:</span> /spec/template/spec/containers/0/volumeMounts/<span class="token punctuation">-</span>
+        <span class="token key atrule">value</span><span class="token punctuation">:</span>
+          <span class="token key atrule">name</span><span class="token punctuation">:</span> ssl<span class="token punctuation">-</span>certs
+          <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /etc/ssl/certs/
+      <span class="token punctuation">-</span> <span class="token key atrule">op</span><span class="token punctuation">:</span> add
+      <span class="token comment"># 使用emptyDir来临时保存生成的ca-certificates.crt</span>
+        <span class="token key atrule">path</span><span class="token punctuation">:</span> /spec/template/spec/volumes/<span class="token punctuation">-</span>
+        <span class="token key atrule">value</span><span class="token punctuation">:</span>
+          <span class="token key atrule">name</span><span class="token punctuation">:</span> ssl<span class="token punctuation">-</span>certs
+          <span class="token key atrule">emptyDir</span><span class="token punctuation">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">op</span><span class="token punctuation">:</span> add
+        <span class="token key atrule">path</span><span class="token punctuation">:</span> /spec/template/spec/initContainers
+        <span class="token key atrule">value</span><span class="token punctuation">:</span>
+          <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> init<span class="token punctuation">-</span>container
+            <span class="token key atrule">image</span><span class="token punctuation">:</span> debian
+            <span class="token key atrule">command</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"/bin/sh"</span><span class="token punctuation">,</span> <span class="token string">"-c"</span><span class="token punctuation">,</span> <span class="token string">"update-ca-certificates --fresh &amp;&amp; cp -r /etc/ssl/certs/* /mnt/ssl-certs/"</span> <span class="token punctuation">]</span>
+            <span class="token key atrule">volumeMounts</span><span class="token punctuation">:</span>
+              <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> ssl<span class="token punctuation">-</span>test<span class="token punctuation">-</span>web<span class="token punctuation">-</span>crt
+                <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /usr/local/share/ca<span class="token punctuation">-</span>certificates/
+              <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> ssl<span class="token punctuation">-</span>certs
+                <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /mnt/ssl<span class="token punctuation">-</span>certs</code></pre>
+
+<ol start="3">
+<li>使用 <code>kubectl apply -k ./deploy/overlays/uat/</code>部署该环境</li>
+</ol>
+<p>查看日志对应的日志，发现<code>init-container</code>生成新证书，并且应用https访问成功</p>
+<p><img src="/2025/03/22/k8s%E4%B8%AD%E4%B8%BAPod%E9%85%8D%E7%BD%AE%E8%87%AA%E7%AD%BE%E8%AF%81%E4%B9%A6%E4%BB%A5%E8%AE%BF%E9%97%AEHTTPS%E6%9C%8D%E5%8A%A1/uat-log.png" alt="log"></p>
+<h3 id="使用trust-manager"><a href="#使用trust-manager" class="headerlink" title="使用trust-manager"></a>使用trust-manager</h3><p>在<code>certs-manager</code>的文档中有一个叫<code>trust-manager</code>的组件<a target="_blank" rel="noopener" href="https://cert-manager.io/docs/trust/trust-manager/">trust-manager - cert-manager Documentation</a></p>
+<blockquote>
+<p>trust-manager is the easiest way to manage trust bundles in Kubernetes and OpenShift clusters.</p>
+<p>It orchestrates bundles of trusted X.509 certificates which are primarily used for validating certificates during a TLS handshake but can be used in other situations, too.</p>
+</blockquote>
+<ul>
+<li><p>你可以单独安装<code>trust-manager</code>，使用里面的<code>bundles</code>来配置证书<a target="_blank" rel="noopener" href="https://cert-manager.io/docs/trust/trust-manager/installation/#installing-trust-manager-without-cert-manager">https://cert-manager.io/docs/trust/trust-manager/installation/#installing-trust-manager-without-cert-manager</a></p>
+</li>
+<li><p>也可以安装<code>certs-manager</code>和<code>trust-manager</code>，使用<code>certs-manager</code>生成自签证书，然后配置到<code>trust-manager</code>中 <a target="_blank" rel="noopener" href="https://cert-manager.io/docs/trust/trust-manager/#quick-start-example">https://cert-manager.io/docs/trust/trust-manager/#quick-start-example</a></p>
+</li>
+</ul>
+<p>我这里直接只安装<code>trust-manager</code>使用<code>bundles</code>来配置证书</p>
+<ul>
+<li>先通过<code>helm</code>安装<code>trust-manager</code><ul>
+<li>注意安装的时候有一个<code>app.trust.namespace</code>的配置(默认值为cert-manager)，这个配置定义了那些<code>namespace</code>下的<code>Secret</code>可以被读取，这样保证了应用的安全 <a target="_blank" rel="noopener" href="https://cert-manager.io/docs/trust/trust-manager/installation/#trust-namespace">https://cert-manager.io/docs/trust/trust-manager/installation/#trust-namespace</a></li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>By default, the trust namespace is the only namespace where<code>Secret</code>s will be read. This restriction is in place for security reasons - we don’t want to give trust-manager the permission to read all <code>Secret</code>s in all namespaces. With additional configuration, secrets may be read from or written to other namespaces.</p>
+</blockquote>
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml">helm repo add jetstack https<span class="token punctuation">:</span>//charts.jetstack.io <span class="token punctuation">-</span><span class="token punctuation">-</span>force<span class="token punctuation">-</span>update
+helm upgrade trust<span class="token punctuation">-</span>manager jetstack/trust<span class="token punctuation">-</span>manager \
+  <span class="token punctuation">-</span><span class="token punctuation">-</span>install \
+  <span class="token punctuation">-</span><span class="token punctuation">-</span>namespace cert<span class="token punctuation">-</span>manager \
+  <span class="token punctuation">-</span><span class="token punctuation">-</span>wait
+<span class="token comment"># 可以利用 helm template 命令生成对应的helm value </span>
+helm template \
+  trust<span class="token punctuation">-</span>manager jetstack/cert<span class="token punctuation">-</span>manager \
+  <span class="token punctuation">-</span><span class="token punctuation">-</span>namespace cert<span class="token punctuation">-</span>manager 
+  <span class="token punctuation">></span> cert<span class="token punctuation">-</span>manager.custom.yaml</code></pre>
+
+<ul>
+<li>先把证书导入到<code>trust-namespace</code>的</li>
+</ul>
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml">kubectl create secret generic ssl<span class="token punctuation">-</span>test<span class="token punctuation">-</span>web<span class="token punctuation">-</span>crt <span class="token punctuation">-</span><span class="token punctuation">-</span>from<span class="token punctuation">-</span>file=./ssl.test.com.crt <span class="token punctuation">-</span><span class="token punctuation">-</span>dry<span class="token punctuation">-</span>run=client <span class="token punctuation">-</span>n cert<span class="token punctuation">-</span>manager  <span class="token punctuation">-</span>o yaml  <span class="token punctuation">|</span> kubectl apply <span class="token punctuation">-</span>f <span class="token punctuation">-</span>   </code></pre>
+
+<ul>
+<li>编写对应的<code>Bundle</code><ul>
+<li><code>Bundle</code>会自己在对应的<code>namespcae</code>下面生成一个 <code>public-bundle</code> 的 <code>configMap</code></li>
+</ul>
+</li>
+</ul>
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> trust.cert<span class="token punctuation">-</span>manager.io/v1alpha1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Bundle
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> public<span class="token punctuation">-</span>bundle
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">sources</span><span class="token punctuation">:</span>
+<span class="token comment"># 为true会帮你更新对应容器中的CA证书</span>
+<span class="token comment"># https://cert-manager.io/docs/trust/trust-manager/#securely-maintaining-a-trust-manager-installation</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">useDefaultCAs</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">secret</span><span class="token punctuation">:</span>
+      <span class="token key atrule">name</span><span class="token punctuation">:</span> <span class="token string">"ssl-test-web-crt"</span>
+      <span class="token key atrule">key</span><span class="token punctuation">:</span> <span class="token string">"ssl.test.com.crt"</span>
+  <span class="token key atrule">target</span><span class="token punctuation">:</span>
+    <span class="token key atrule">configMap</span><span class="token punctuation">:</span>
+      <span class="token key atrule">key</span><span class="token punctuation">:</span> <span class="token string">"ca-certificates.crt"</span>
+<span class="token comment"># 这里要给对应要生成 public-bundle configMap 的namespace 打上label</span>
+<span class="token comment"># kubectl label ns default trust=enabled</span>
+    <span class="token key atrule">namespaceSelector</span><span class="token punctuation">:</span>
+      <span class="token key atrule">matchLabels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">trust</span><span class="token punctuation">:</span> enabled</code></pre>
+
+<ul>
+<li>我们只需要在对应的容器中挂载<code>public-bundle</code>到<code>/etc/ssl/certs</code></li>
+</ul>
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> kustomize.config.k8s.io/v1beta1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Kustomization
+
+<span class="token key atrule">resources</span><span class="token punctuation">:</span>
+<span class="token punctuation">-</span> ../../base
+
+<span class="token punctuation">...</span>..
+
+<span class="token key atrule">patchesJson6902</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">target</span><span class="token punctuation">:</span>
+      <span class="token key atrule">group</span><span class="token punctuation">:</span> apps
+      <span class="token key atrule">version</span><span class="token punctuation">:</span> v1
+      <span class="token key atrule">kind</span><span class="token punctuation">:</span> Deployment
+      <span class="token key atrule">name</span><span class="token punctuation">:</span> https<span class="token punctuation">-</span>client
+    <span class="token key atrule">patch</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token punctuation">-</span>
+<span class="token punctuation">...</span>..
+      <span class="token punctuation">-</span> <span class="token key atrule">op</span><span class="token punctuation">:</span> add
+        <span class="token key atrule">path</span><span class="token punctuation">:</span> /spec/template/spec/volumes/<span class="token punctuation">-</span>
+        <span class="token key atrule">value</span><span class="token punctuation">:</span>
+        <span class="token comment">#声明Volumes</span>
+          <span class="token key atrule">name</span><span class="token punctuation">:</span> public<span class="token punctuation">-</span>bundle
+          <span class="token key atrule">configMap</span><span class="token punctuation">:</span>
+            <span class="token key atrule">name</span><span class="token punctuation">:</span> public<span class="token punctuation">-</span>bundle
+            <span class="token key atrule">defaultMode</span><span class="token punctuation">:</span> <span class="token number">0644</span>
+            <span class="token key atrule">optional</span><span class="token punctuation">:</span> <span class="token boolean important">false</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">op</span><span class="token punctuation">:</span> add
+        <span class="token key atrule">path</span><span class="token punctuation">:</span> /spec/template/spec/containers/0/volumeMounts/<span class="token punctuation">-</span>
+        <span class="token key atrule">value</span><span class="token punctuation">:</span>
+        <span class="token comment"># VolumeMounts 挂载到/etc/ssl/certs/</span>
+          <span class="token key atrule">name</span><span class="token punctuation">:</span> public<span class="token punctuation">-</span>bundle
+          <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /etc/ssl/certs/
+          <span class="token key atrule">readOnly</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+
+<span class="token key atrule">images</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> https<span class="token punctuation">-</span>client
+    <span class="token key atrule">newTag</span><span class="token punctuation">:</span> v1.0
+    <span class="token key atrule">newName</span><span class="token punctuation">:</span> https<span class="token punctuation">-</span>client</code></pre>
+
+<ul>
+<li>如果成功了，在容器中就会如下显示</li>
+</ul>
+<pre class="language-bash" data-language="bash"><code class="language-bash">root@https-client-6b74cfbddd-2nw2r:/app<span class="token comment"># ls -ltr /etc/ssl/certs/ca-certificates.crt              </span>
+lrwxrwxrwx. <span class="token number">1</span> root root <span class="token number">26</span> Mar <span class="token number">23</span> 06:26 /etc/ssl/certs/ca-certificates.crt -<span class="token operator">></span> <span class="token punctuation">..</span>data/ca-certificates.crt</code></pre>
+
+<h1 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h1><p>对比上述的两种方法</p>
+<p>第一种方法我觉得比较简单，无须额外安装其它组件，但是对配置的入侵性比较高，需要额外配置一个有<code>ca-certificates</code>的<code>init-container</code></p>
+<p>第二种方法需要额外安装多一个<code>trust-manager</code>，但是落实到具体的<code>Pod</code>配置只需要额外挂载一个 <code>ConfigMap</code> 到对应的证书路径即可，同时对应的<code>bundle/public-bundle</code>也是支持自动更新的，即你的<code>secret</code>更新了，它也会自动同步。</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@rocky-testing ~<span class="token punctuation">]</span><span class="token comment"># kubectl get events</span>
+LAST SEEN   TYPE     REASON              OBJECT                               MESSAGE
+52m         Normal   Synced              bundle/public-bundle                 Successfully synced Bundle to namespaces that match this label selector: <span class="token assign-left variable">trust</span><span class="token operator">=</span>enabled</code></pre>
+
+<p>当然除了上述两种方法，还有没有<strong>更简单的方法，甚至不需要额外的配置</strong>🤔</p>
+<p>有的！如果你公司有一份支持多域名的证书，就可以直接使用该 crt(一般叫做xxx_chain.crt或者.pem) 和 key</p>
+<p>如何查看？使用 <code>openssl x509 -noout -text -in server.crt</code> 查看证书信息 类似如下</p>
+<pre class="language-text" data-language="text"><code class="language-text">           ·······
+# 如果 SAN (Subject Alternative Name) 中包含多个域名 或者 通配符 *.test.com 
+           X509v3 Subject Alternative Name: 
+               DNS:*.test.com, DNS:test.com, DNS:abc.test.com
+   Signature Algorithm: sha256WithRSAEncryption
+   Signature Value:
+   ······</code></pre>
+
+<p>这样你就可以用 <code>abc.test.com</code> 等类似的<code>xxx.test.com</code> 的二级域名 (注意三级不行 如 <code>xxx.adb.test.com</code>)</p>
+<p>再通过修改hosts或者k8s中的coredns，就可以使用不需要额外配置使用<code>Https</code>了 😊</p>
+
+        
+        <br />
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+        <div id="lv-container"></div>
+        <div class="giscus"></div>
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+        <li>
+            <a target="_blank"  href="https://github.com/kehaha-5">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-github"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+    </ul>
+    
+    <p>
+        <span id="busuanzi_container_site_pv">
+            <span id="busuanzi_value_site_pv"></span>PV
+        </span>
+        <span id="busuanzi_container_site_uv">
+            <span id="busuanzi_value_site_uv"></span>UV
+        </span>
+        Created By <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>  Theme <a target="_blank" rel="noopener" href="https://github.com/aircloud/hexo-theme-aircloud">AirCloud</a></p>
+</footer>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = "search.json"
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="/js/index.js"></script>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+</html>
+
+<!-- fancybox support -->
+
+    <!-- for theme: default is false -->
+    <!-- for page: default is true -->
+    
+<script src="/js/fancybox/jquery.fancybox.min.js" key="fancybox_js"></script>
+<script src="/js/fancybox/wrapImage.js" key="wrap_image_js"></script>
+
+        
+<link rel="stylesheet" href="/js/fancybox/jquery.fancybox.min.css" key="fancybox_css">
+
+            

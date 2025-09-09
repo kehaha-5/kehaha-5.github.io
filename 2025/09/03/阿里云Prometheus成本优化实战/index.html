@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang=zh-CN>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="website">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        阿里云Prometheus成本优化实战 - kehaha-5
+        
+    </title>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/aircloud.css">
+
+    
+<link rel="stylesheet" href="/css/gitment.css">
+
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_28hi1hpxx24.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i> Just record it ! </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar radius">
+            <img src="/img/avatar.jpg" />
+        </div>
+        <div class="name">
+            <i>kehaha-5</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li >
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li >
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li >
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li >
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+            <li>
+                <a id="search">
+                    <i class="iconfont icon-sousuo1"></i>
+                    <span>搜索</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E8%AF%8A%E6%96%AD"><span class="toc-text">问题诊断</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88"><span class="toc-text">优化方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE"><span class="toc-text">配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%AA%8C%E8%AF%81"><span class="toc-text">验证</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E6%95%88%E6%9E%9C"><span class="toc-text">优化效果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-bg" id="search-bg"></div>
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input"/>
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+
+        <div class="index-about-mobile">
+            <i> Just record it ! </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        阿里云Prometheus成本优化实战
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2025-09-03 00:00:13</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#优化" title="优化">优化</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#Prometheus" title="Prometheus">Prometheus</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+</span>
+    </div>
+    <div class="post-content no-indent">
+        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><blockquote>
+<p>近日，团队发现阿里云上某个项目的Prometheus监控实例成本异常高昂，月均费用达到2-3千元，而其他类似规模的项目仅需几百元。我对此进行了成本优化。</p>
+</blockquote>
+<p>架构</p>
+<p>在我们项目的集群中是有自建的Prometheus实例的，同时采用了混合监控方案：</p>
+<ul>
+<li>集群内部署了自建Prometheus实例，负责基础监控数据的采集和存储</li>
+<li>通过Prometheus的remote_write功能，将监控数据同步至阿里云ARMS Prometheus</li>
+<li>告警功能完全依赖阿里云Prometheus的高级规则配置实现</li>
+</ul>
+<p>这种架构设计初衷是为了利用阿里云Prometheus更强大的告警管理能力，但同时也带来了额外的成本。</p>
+<p><img src="/2025/09/03/%E9%98%BF%E9%87%8C%E4%BA%91Prometheus%E6%88%90%E6%9C%AC%E4%BC%98%E5%8C%96%E5%AE%9E%E6%88%98/%E6%9E%B6%E6%9E%84%E5%9B%BE.png" alt="降本-Prometheus-架构图.drawio.png"></p>
+<h2 id="问题诊断"><a href="#问题诊断" class="headerlink" title="问题诊断"></a>问题诊断</h2><p>首先，我登录阿里云控制台查看该Prometheus实例的指标数据，发现基础指标和自定义指标数量均异常高。然而，当我检查集群内自建Prometheus的数据存储量时，仅显示400多GB，与阿里云上显示的规模明显不符。</p>
+<p><img src="/2025/09/03/%E9%98%BF%E9%87%8C%E4%BA%91Prometheus%E6%88%90%E6%9C%AC%E4%BC%98%E5%8C%96%E5%AE%9E%E6%88%98/before.png" alt="image.png"></p>
+<p>因此直接给阿里云提上工单询问为什么本地看的Prometheus存储数据和阿里云上面看到的不一致。</p>
+<p>在客服询问后得知，阿里云上面的指标数据是未经过压缩的，而Prometheus本地查看的数据是经过了压缩的，所以存储占用看起来会少很多。</p>
+<p>看来只能做相关远程写的指标优化，首先要确定阿里云Prometheus的收费标准</p>
+<p>在查询文档和询问客服后得知得知阿里云Prometheus的收费是分两种，计费方式为里面任意一种。</p>
+<ul>
+<li>按写入量收费，分为基础指标（免费）和自定义指标（收费）</li>
+<li>按上报量收费，也是分为基础指标（免费）和自定义指标（收费）</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://help.aliyun.com/zh/arms/prometheus-monitoring/product-overview/billing-description/?spm=a2c4g.11186623.0.0.460f611641GFxf">Prometheus 实例的计费方式、计费项、计费单价和开通方式_应用实时监控服务(ARMS)-阿里云帮助中心</a></p>
+<p>并且远程写里面也是可以区分基础指标（免费）和自定义指标（收费）</p>
+<p>特别关键的是，通过remote_write同步的数据也可以区分基础指标和自定义指标。这意味着我们可以通过配置relabel规则，精确控制哪些指标需要同步到阿里云，从而大幅降低费用。</p>
+<p><img src="/2025/09/03/%E9%98%BF%E9%87%8C%E4%BA%91Prometheus%E6%88%90%E6%9C%AC%E4%BC%98%E5%8C%96%E5%AE%9E%E6%88%98/%E5%8F%82%E8%80%83.png" alt="image.png"></p>
+<h2 id="优化方案"><a href="#优化方案" class="headerlink" title="优化方案"></a>优化方案</h2><p>基于以上分析，我制定了以下优化策略：</p>
+<ol>
+<li><strong>保留所有免费的基础指标</strong>：确保Kubernetes核心组件监控不受影响</li>
+<li><strong>精简自定义指标</strong>：仅保留需要告警的关键业务指标</li>
+<li><strong>停用阿里云Grafana</strong>：改用集群内自建的Grafana实例，避免额外费用</li>
+</ol>
+<h3 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h3><p>集群中使用的Prometheus安装方的是 <a target="_blank" rel="noopener" href="https://github.com/prometheus-operator/prometheus-operator">prometheus-operator</a> </p>
+<p>所以可以按照文档里面的方式对remove wirte配置进行修改 <a target="_blank" rel="noopener" href="https://github.com/prometheus-operator/prometheus-operator/blob/v0.79.2/Documentation/api.md">相关文档</a> </p>
+<p>这里是直接修改集群中Prometheus对象</p>
+<p>在spec.remoteWrite.writeRelabelConfigs 中进行配置</p>
+<p>这里我配置是以job为最小单位，虽然告警用的是特定的指标数据，但是在查看相关自定义job的数据后，发现它们的占用并不高，同时因为每次修改完后remoteWrite的相关配置后，都要重启Prometheus，所以也是为了避免后续因调整告警规则而不断重启Prometheus，所以考虑使用了job的范围来做relabel的配置</p>
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml">remoteWrite
+  <span class="token key atrule">writeRelabelConfigs</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">sourceLabels</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>job<span class="token punctuation">]</span>
+      <span class="token key atrule">regex</span><span class="token punctuation">:</span> <span class="token string">'^(apiserver|node-exporter|kube-state-metrics|kubelet|metallb-metrics|kube-dns|xxx-.*|ceph-.*|.*etcd.*)$'</span>
+      <span class="token key atrule">action</span><span class="token punctuation">:</span> keep</code></pre>
+
+<p>配置好后，重启对应的statefulset</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">Kubectl rollout restart statefulsets.apps prometheus-k8s <span class="token parameter variable">-n</span> monitoring</code></pre>
+
+<h3 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h3><p>在配置好后，到指标中心查看up的job</p>
+<pre class="language-promql" data-language="promql"><code class="language-promql"><span class="token keyword">sum</span><span class="token punctuation">(</span>up<span class="token context-labels"><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span></span><span class="token punctuation">)</span> <span class="token keyword">by</span> <span class="token vector-match"><span class="token punctuation">(</span><span class="token label-key attr-name">job</span><span class="token punctuation">)</span></span></code></pre>
+
+<p>同时逐一验证每个告警规则的PromQL表达式，确保所有关键告警仍能正常触发</p>
+<h2 id="优化效果"><a href="#优化效果" class="headerlink" title="优化效果"></a>优化效果</h2><p>在配置好并过了一天后查看对应数据</p>
+<p><img src="/2025/09/03/%E9%98%BF%E9%87%8C%E4%BA%91Prometheus%E6%88%90%E6%9C%AC%E4%BC%98%E5%8C%96%E5%AE%9E%E6%88%98/before.png" alt="image.png"></p>
+<p><img src="/2025/09/03/%E9%98%BF%E9%87%8C%E4%BA%91Prometheus%E6%88%90%E6%9C%AC%E4%BC%98%E5%8C%96%E5%AE%9E%E6%88%98/after.png" alt="image.png"></p>
+<p>从上面可以看出对应的自定义指标数据有大幅下降，同时在查看成本后，发现对应的Prometheus的成本也是下降了。</p>
+<p>原先是每天160G x 0.4(我们的Prometheus是0.4每G) &#x3D; 64 下降成 9G x 0.4 &#x3D; 3.6 </p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>通过合理配置Prometheus的remote wirte规则，成功将阿里云Prometheus实例的成本降低了90%以上，同时完整保留了告警功能。唯一的变动是将Grafana查看地址切换回集群内部署的实例。</p>
+<p>这次优化实践表明，云服务的成本控制不仅需要关注资源规格，更需要深入理解服务的计费模型，通过技术手段精准控制资源消耗。</p>
+<p>对于使用阿里云Prometheus的团队，建议定期审查指标摄入情况，避免不必要的费用支出。</p>
+
+        
+        <br />
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+        <div id="lv-container"></div>
+        <div class="giscus"></div>
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+        <li>
+            <a target="_blank"  href="https://github.com/kehaha-5">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-github"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+    </ul>
+    
+    <p>
+        <span id="busuanzi_container_site_pv">
+            <span id="busuanzi_value_site_pv"></span>PV
+        </span>
+        <span id="busuanzi_container_site_uv">
+            <span id="busuanzi_value_site_uv"></span>UV
+        </span>
+        Created By <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>  Theme <a target="_blank" rel="noopener" href="https://github.com/aircloud/hexo-theme-aircloud">AirCloud</a></p>
+</footer>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = "search.json"
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="/js/index.js"></script>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+</html>
+
+<!-- fancybox support -->
+
+    <!-- for theme: default is false -->
+    <!-- for page: default is true -->
+    
+<script src="/js/fancybox/jquery.fancybox.min.js" key="fancybox_js"></script>
+<script src="/js/fancybox/wrapImage.js" key="wrap_image_js"></script>
+
+        
+<link rel="stylesheet" href="/js/fancybox/jquery.fancybox.min.css" key="fancybox_css">
+
+            

@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang=zh-CN>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="website">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        casdoor服务启动却无法访问排障 - kehaha-5
+        
+    </title>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/aircloud.css">
+
+    
+<link rel="stylesheet" href="/css/gitment.css">
+
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_28hi1hpxx24.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i> Just record it ! </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar radius">
+            <img src="/img/avatar.jpg" />
+        </div>
+        <div class="name">
+            <i>kehaha-5</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li >
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li >
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li >
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li >
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+            <li>
+                <a id="search">
+                    <i class="iconfont icon-sousuo1"></i>
+                    <span>搜索</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83"><span class="toc-text">环境</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%8E%92%E6%9F%A5"><span class="toc-text">排查</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AB%AF%E5%8F%A3%E8%BD%AC%E5%8F%91"><span class="toc-text">端口转发</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#strace-pstack%E6%9F%A5%E7%9C%8B%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8"><span class="toc-text">strace\pstack查看系统调用</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%F0%9F%A4%94"><span class="toc-text">问题🤔</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88casdoor%E5%90%AF%E5%8A%A8%E6%97%B6%E8%A6%81%E5%8E%BB%E8%AE%BF%E9%97%AEsession%E6%96%87%E4%BB%B6"><span class="toc-text">为什么casdoor启动时要去访问session文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%9C%8D%E5%8A%A1%E6%97%A5%E5%BF%97%E9%83%BD%E6%98%BE%E7%A4%BA%E7%AB%AF%E5%8F%A3%E5%B7%B2%E7%BB%8F%E7%9B%91%E5%90%AC%E4%BA%86%EF%BC%8C%E4%BD%86%E6%98%AFcurl%E8%AF%A5%E6%9C%8D%E5%8A%A1%E8%BF%98%E6%98%AF%E4%B8%8D%E8%83%BD%E9%A9%AC%E4%B8%8A%E8%BF%94%E5%9B%9E%E8%AF%B7%E6%B1%82"><span class="toc-text">为什么服务日志都显示端口已经监听了，但是curl该服务还是不能马上返回请求</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E4%BA%A7%E7%94%9F%E8%BF%99%E4%B9%88%E5%A4%9Atmp%E6%96%87%E4%BB%B6"><span class="toc-text">为什么会产生这么多tmp文件</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-bg" id="search-bg"></div>
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input"/>
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+
+        <div class="index-about-mobile">
+            <i> Just record it ! </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        casdoor服务启动却无法访问排障
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2025-04-03 14:45:03</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#排障" title="排障">排障</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#casdoor" title="casdoor">casdoor</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+</span>
+    </div>
+    <div class="post-content no-indent">
+        <blockquote>
+<p>最近，我们团队在生产环境中遇到了一个问题，就是casdoor服务重启后，日志也显示出来了，但是就是无法访问，使用curl在本地访问也是不通。</p>
+</blockquote>
+<p>日志：</p>
+<p><img src="/2025/04/03/casdoor%E6%9C%8D%E5%8A%A1%E5%90%AF%E5%8A%A8%E5%8D%B4%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E6%8E%92%E9%9A%9C/casdoor-log.png" alt="log"></p>
+<p>首先先简绍一下casdoor是什么<a target="_blank" rel="noopener" href="https://casdoor.org/zh/docs/overview">概述 | Casdoor · An open-source UI-first Identity and Access Management (IAM) &#x2F; Single-Sign-On (SSO) platform with web UI supporting OAuth 2.0, OIDC, SAML, CAS, LDAP, SCIM, WebAuthn, TOTP, MFA, RADIUS, Google Workspace, Active Directory and Kerberos</a></p>
+<p>简单点理解就是它是一个实现了<code>OAuth 2.0</code>认证的一个服务，我们可以利用它来完成一个账号对多个应用进行无感登录，同时可以把用户数据放到<code>casdoor</code>中，其它应用的数据库可以只用来存放业务数据。</p>
+<h1 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h1><p>根据相关同学的描述，生产环境的<code>casdoor</code>环境如下。</p>
+<ul>
+<li>3台服务器使用<code>docker</code>或<code>podman</code>启动了一个<code>casdoor</code>服务，实现高可用</li>
+<li>3台服务器同时使用同一个数据库(<code>mysql</code>)</li>
+<li>使用nfs来同步<code>casdoor</code>中的<code>tmp</code>文件，该文件为<code>casdoor</code>的默认<code>session</code>保存位置<ul>
+<li><a target="_blank" rel="noopener" href="https://casdoor.org/zh/docs/basic/server-installation/#%E9%80%9A%E8%BF%87-ini-%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE:~:text=redisEndpoint%20%E5%90%8E%E5%A1%AB%E5%86%99,provider%2Dconfig%E3%80%82">session配置的相关文档</a></li>
+<li>当时该 tmp 文件大小至少有40G，但是我们环境当前的用户数量不至于会有这么多的<code>session</code>缓存</li>
+<li><code>nfs</code>对应挂载服务的进程占用过高的<code>cpu</code></li>
+</ul>
+</li>
+<li><code>casdoor</code>的版本为1.814，其中的<code>beego</code>版本为1.12.3</li>
+</ul>
+<h1 id="排查"><a href="#排查" class="headerlink" title="排查"></a>排查</h1><p>后续的排查环境是在测试环境中搭建的，并且复刻了对应的问题。环境如下</p>
+<ul>
+<li>使用<code>dcoker-compose</code>启动了3个<code>casdoor</code>和一个<code>mysql</code></li>
+<li>宿主机的<code>8001</code>,<code>8002</code>,<code>8003</code>分别映射3个<code>casdoor</code>的8000端口</li>
+<li>使用了 docker 的挂载把tmp文件同时挂载到了每个<code>casdoor</code>的目录（模拟<code>nfs</code>）</li>
+<li><code>tmp</code>的文件大小为<code>31G</code></li>
+</ul>
+<h2 id="端口转发"><a href="#端口转发" class="headerlink" title="端口转发"></a>端口转发</h2><p>因为服务是使用docker启动的，并且使用的网络模式为<code>Bridge</code>，所以我们先排查<code>docker</code>网络相关的问题。</p>
+<p>先 <code>curl</code> <code>docker</code>的网卡(<code>docker0</code>)的<code>ip</code>地址，但是还是 <code>curl</code> 不通相关服务。</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@rocky-testing casdoor<span class="token punctuation">]</span><span class="token comment"># ss -anpl | grep 8001 # 查看端口监听情况</span>
+tcp   LISTEN <span class="token number">0</span>      <span class="token number">4096</span>  <span class="token number">0.0</span>.0.0:8001             <span class="token number">0.0</span>.0.0:*    users:<span class="token variable"><span class="token punctuation">((</span>"docker<span class="token operator">-</span>proxy"<span class="token punctuation">,</span>pid<span class="token operator">=</span><span class="token number">1456272</span><span class="token punctuation">,</span>fd<span class="token operator">=</span><span class="token number">7</span><span class="token punctuation">))</span></span> 
+tcp   LISTEN <span class="token number">0</span>      <span class="token number">4096</span> <span class="token punctuation">[</span>::<span class="token punctuation">]</span>:8001                <span class="token punctuation">[</span>::<span class="token punctuation">]</span>:*    users:<span class="token variable"><span class="token punctuation">((</span>"docker<span class="token operator">-</span>proxy"<span class="token punctuation">,</span>pid<span class="token operator">=</span><span class="token number">1456280</span><span class="token punctuation">,</span>fd<span class="token operator">=</span><span class="token number">7</span><span class="token punctuation">))</span></span>     
+<span class="token punctuation">[</span>root@rocky-testing casdoor<span class="token punctuation">]</span><span class="token comment"># ifconfig docker0 #获取docker的网卡</span>
+docker0: <span class="token assign-left variable">flags</span><span class="token operator">=</span><span class="token number">409</span><span class="token operator"><span class="token file-descriptor important">9</span>&lt;</span>UP,BROADCAST,MULTICAST<span class="token operator">></span>  mtu <span class="token number">1500</span>
+        inet <span class="token number">172.17</span>.0.1  netmask <span class="token number">255.255</span>.0.0  broadcast <span class="token number">172.17</span>.255.255
+        inet6 fe80::1469:daff:febf:1315  prefixlen <span class="token number">64</span>  scopeid 0x2<span class="token operator"><span class="token file-descriptor important">0</span>&lt;</span>link<span class="token operator">></span>
+        ether <span class="token number">16</span>:69:da:bf:13:15  txqueuelen <span class="token number">0</span>  <span class="token punctuation">(</span>Ethernet<span class="token punctuation">)</span>
+        RX packets <span class="token number">32519</span>  bytes <span class="token number">2160933</span> <span class="token punctuation">(</span><span class="token number">2.0</span> MiB<span class="token punctuation">)</span>
+        RX errors <span class="token number">0</span>  dropped <span class="token number">0</span>  overruns <span class="token number">0</span>  frame <span class="token number">0</span>
+        TX packets <span class="token number">37734</span>  bytes <span class="token number">94754551</span> <span class="token punctuation">(</span><span class="token number">90.3</span> MiB<span class="token punctuation">)</span>
+        TX errors <span class="token number">0</span>  dropped <span class="token number">0</span> overruns <span class="token number">0</span>  carrier <span class="token number">0</span>  collisions <span class="token number">0</span>
+
+<span class="token punctuation">[</span>root@rocky-testing casdoor<span class="token punctuation">]</span><span class="token comment"># curl 172.17.0.1:8001 # curl 对应的网卡ip 8001为casdoor启动的端口</span></code></pre>
+
+<p>使用<code>nsenter </code> 进入对应服务的<code>network ns</code>，并尝试<code>curl</code>访问服务，但还是无法访问</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@rocky-testing casdoor<span class="token punctuation">]</span><span class="token comment"># docker compose top casdoor-1 # 获取应用的pid</span>
+WARN<span class="token punctuation">[</span>0000<span class="token punctuation">]</span> /root/test/casdoor/docker-compose.yaml: the attribute <span class="token variable"><span class="token variable">`</span>version<span class="token variable">`</span></span> is obsolete, it will be ignored, please remove it to avoid potential confusion 
+casdoor-1
+<span class="token environment constant">UID</span>    PID       <span class="token environment constant">PPID</span>      C    STIME   TTY   TIME       CMD
+<span class="token number">1000</span>   <span class="token number">1456231</span>   <span class="token number">1456210</span>   <span class="token number">4</span>    <span class="token number">14</span>:58   ?     00:01:21   /server   
+<span class="token punctuation">[</span>root@rocky-testing casdoor<span class="token punctuation">]</span><span class="token comment"># nsenter -n --target 1456231 # 进入对应的 ns</span>
+<span class="token punctuation">[</span>root@rocky-testing casdoor<span class="token punctuation">]</span><span class="token comment"># ip link # 查看网卡，跟宿主机的网卡不一致，只剩下lo和eth0网卡，说明进入了容器的ns中</span>
+<span class="token number">1</span>: lo: <span class="token operator">&lt;</span>LOOPBACK,UP,LOWER_UP<span class="token operator">></span> mtu <span class="token number">65536</span> qdisc noqueue state UNKNOWN mode DEFAULT group default qlen <span class="token number">1000</span>
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+<span class="token number">2</span>: eth0@if898: <span class="token operator">&lt;</span>BROADCAST,MULTICAST,UP,LOWER_UP<span class="token operator">></span> mtu <span class="token number">1500</span> qdisc noqueue state UP mode DEFAULT group default 
+    link/ether <span class="token number">82</span>:2e:b0:c9:cc:00 brd ff:ff:ff:ff:ff:ff link-netnsid <span class="token number">0</span>
+<span class="token punctuation">[</span>root@rocky-testing casdoor<span class="token punctuation">]</span><span class="token comment"># ss -anlp | grep 8000 # 查看端口占用，确实服务已经启动 </span>
+tcp   LISTEN <span class="token number">0</span>      <span class="token number">4096</span>               *:8000               *:*    users:<span class="token variable"><span class="token punctuation">((</span>"server"<span class="token punctuation">,</span>pid<span class="token operator">=</span><span class="token number">1456231</span><span class="token punctuation">,</span>fd<span class="token operator">=</span><span class="token number">13</span><span class="token punctuation">))</span></span>
+<span class="token punctuation">[</span>root@rocky-testing casdoor<span class="token punctuation">]</span><span class="token comment"># curl 0.0.0.0:8000 # 无法curl通服务</span>
+<span class="token punctuation">[</span>root@rocky-testing casdoor<span class="token punctuation">]</span><span class="token comment"># exit # 退出对应ns</span>
+<span class="token builtin class-name">logout</span></code></pre>
+
+<h2 id="strace-pstack查看系统调用"><a href="#strace-pstack查看系统调用" class="headerlink" title="strace\pstack查看系统调用"></a>strace\pstack查看系统调用</h2><p>在上述的两步操作后，还是<code>curl</code>不通，说明服务虽然日志已经打印了，但是服务还未可用。</p>
+<p>使用<code>strace</code>和<code>pstack</code>命令查看对应应用的系统调用，查看casdoor的启动后的行为</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">strace</span> <span class="token parameter variable">-p</span> <span class="token number">1456231</span> <span class="token parameter variable">-f</span> <span class="token parameter variable">-o</span> ./strace-casdoor-1.log 
+pstack <span class="token number">1456231</span> <span class="token operator">></span> ./pstack-casdoor-1.log</code></pre>
+
+<p>查看其日志，以下日志内容为生产环境中获取的<code>strace</code>和<code>pstack</code>日志</p>
+<pre class="language-log" data-language="log"><code class="language-log"><span class="token operator">#</span> 分析strace的日志，发现程序是有规律的执行以下系统调用
+<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> 都是nanosleep<span class="token operator">(</span><span class="token operator">&#123;</span>tv_sec<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> tv_nsec<span class="token operator">=</span><span class="token number">20000</span><span class="token operator">&#125;</span><span class="token punctuation">,</span> <span class="token boolean">NULL</span><span class="token operator">)</span> <span class="token operator">=</span> <span class="token number">0</span> 的调用
+<span class="token number">1146720</span> nanosleep<span class="token operator">(</span><span class="token operator">&#123;</span>tv_sec<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> tv_nsec<span class="token operator">=</span><span class="token number">20000</span><span class="token operator">&#125;</span><span class="token punctuation">,</span> <span class="token boolean">NULL</span><span class="token operator">)</span> <span class="token operator">=</span> <span class="token number">0</span>
+<span class="token number">1146720</span> futex<span class="token operator">(</span><span class="token number">0x45252c0</span><span class="token punctuation">,</span> FUTEX_WAIT_PRIVATE<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token operator">&#123;</span>tv_sec<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> tv_nsec<span class="token operator">=</span><span class="token number">103439635</span><span class="token operator">&#125;</span> <span class="token operator">&lt;</span>unfinished <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token operator">></span>
+<span class="token number">1146729</span> <span class="token operator">&lt;</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> newfstatat resumed<span class="token operator">></span><span class="token operator">&#123;</span>st_mode<span class="token operator">=</span>S_IFREG<span class="token operator">|</span><span class="token number">0644</span><span class="token punctuation">,</span> st_size<span class="token operator">=</span><span class="token number">20</span><span class="token punctuation">,</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token operator">&#125;</span><span class="token punctuation">,</span> AT_SYMLINK_NOFOLLOW<span class="token operator">)</span> <span class="token operator">=</span> <span class="token number">0</span>
+<span class="token number">1146729</span> <span class="token separator comment">---</span> SIGURG <span class="token operator">&#123;</span>si_signo<span class="token operator">=</span>SIGURG<span class="token punctuation">,</span> si_code<span class="token operator">=</span>SI_TKILL<span class="token punctuation">,</span> si_pid<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">,</span> si_uid<span class="token operator">=</span><span class="token number">1000</span><span class="token operator">&#125;</span> <span class="token separator comment">---</span>
+<span class="token number">1146729</span> rt_sigreturn<span class="token operator">(</span><span class="token operator">&#123;</span>mask<span class="token operator">=</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token operator">&#125;</span><span class="token operator">)</span>         <span class="token operator">=</span> <span class="token number">0</span>
+<span class="token number">1146729</span> futex<span class="token operator">(</span><span class="token number">0x45252c0</span><span class="token punctuation">,</span> FUTEX_WAKE_PRIVATE<span class="token punctuation">,</span> <span class="token number">1</span><span class="token operator">)</span> <span class="token operator">=</span> <span class="token number">1</span>
+<span class="token number">1146720</span> <span class="token operator">&lt;</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> futex resumed<span class="token operator">></span><span class="token operator">)</span>            <span class="token operator">=</span> <span class="token number">0</span>
+<span class="token number">1146729</span> newfstatat<span class="token operator">(</span>AT_FDCWD<span class="token punctuation">,</span> <span class="token string">"tmp/0/0/001575f66990e62d6ed701f24599e1ca"</span><span class="token punctuation">,</span>  <span class="token operator">&lt;</span>unfinished <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token operator">></span>
+<span class="token number">1146720</span> nanosleep<span class="token operator">(</span><span class="token operator">&#123;</span>tv_sec<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> tv_nsec<span class="token operator">=</span><span class="token number">20000</span><span class="token operator">&#125;</span><span class="token punctuation">,</span> <span class="token boolean">NULL</span><span class="token operator">)</span> <span class="token operator">=</span> <span class="token number">0</span>
+<span class="token number">1146720</span> futex<span class="token operator">(</span><span class="token number">0x45252c0</span><span class="token punctuation">,</span> FUTEX_WAIT_PRIVATE<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token operator">&#123;</span>tv_sec<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> tv_nsec<span class="token operator">=</span><span class="token number">43396353</span><span class="token operator">&#125;</span> <span class="token operator">&lt;</span>unfinished <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token operator">></span>
+<span class="token number">1146704</span> <span class="token operator">&lt;</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> epoll_pwait resumed<span class="token operator">></span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token number">128</span><span class="token punctuation">,</span> <span class="token number">998</span><span class="token punctuation">,</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token operator">)</span> <span class="token operator">=</span> <span class="token number">0</span>
+<span class="token number">1146704</span> epoll_pwait<span class="token operator">(</span><span class="token number">4</span><span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token number">128</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token operator">)</span> <span class="token operator">=</span> <span class="token number">0</span>
+<span class="token number">1146704</span> epoll_pwait<span class="token operator">(</span><span class="token number">4</span><span class="token punctuation">,</span>  <span class="token operator">&lt;</span>unfinished <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token operator">></span>
+<span class="token number">1146720</span> <span class="token operator">&lt;</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> futex resumed<span class="token operator">></span><span class="token operator">)</span>            <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span> ETIMEDOUT <span class="token operator">(</span>Connection timed out<span class="token operator">)</span>
+<span class="token number">1146720</span> nanosleep<span class="token operator">(</span><span class="token operator">&#123;</span>tv_sec<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> tv_nsec<span class="token operator">=</span><span class="token number">20000</span><span class="token operator">&#125;</span><span class="token punctuation">,</span> <span class="token boolean">NULL</span><span class="token operator">)</span> <span class="token operator">=</span> <span class="token number">0</span>
+<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> 都是nanosleep<span class="token operator">(</span><span class="token operator">&#123;</span>tv_sec<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span> tv_nsec<span class="token operator">=</span><span class="token number">20000</span><span class="token operator">&#125;</span><span class="token punctuation">,</span> <span class="token boolean">NULL</span><span class="token operator">)</span> <span class="token operator">=</span> <span class="token number">0</span> 的调用
+<span class="token operator">#</span> 分析pstack日志，程序也是不停地执行以下方法
+ <span class="token number">37028.625</span> <span class="token operator">(</span><span class="token number">47.259</span> ms<span class="token operator">)</span><span class="token operator">:</span> server<span class="token operator">/</span><span class="token number">1146720</span>  <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token punctuation">[</span>continued<span class="token punctuation">]</span><span class="token operator">:</span> futex<span class="token operator">(</span><span class="token operator">)</span><span class="token operator">)</span>                                            <span class="token operator">=</span> <span class="token number">0</span>
+ <span class="token number">37075.871</span> <span class="token operator">(</span>         <span class="token operator">)</span><span class="token operator">:</span> server<span class="token operator">/</span><span class="token number">1146729</span> newfstatat<span class="token operator">(</span>dfd<span class="token operator">:</span> CWD<span class="token punctuation">,</span> filename<span class="token operator">:</span> <span class="token number">0xb77bf0</span><span class="token punctuation">,</span> statbuf<span class="token operator">:</span> <span class="token number">0xc000adced8</span><span class="token punctuation">,</span> flag<span class="token operator">:</span> SYMLINK_NOFOLLOW<span class="token operator">)</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+ <span class="token number">37075.900</span> <span class="token operator">(</span> <span class="token number">0.058</span> ms<span class="token operator">)</span><span class="token operator">:</span> server<span class="token operator">/</span><span class="token number">1146720</span> nanosleep<span class="token operator">(</span>rqtp<span class="token operator">:</span> <span class="token number">0xc00008ff10</span><span class="token operator">)</span>                                         <span class="token operator">=</span> <span class="token number">0</span>
+ <span class="token number">37075.871</span> <span class="token operator">(</span><span class="token number">62.859</span> ms<span class="token operator">)</span><span class="token operator">:</span> server<span class="token operator">/</span><span class="token number">1146729</span>  <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token punctuation">[</span>continued<span class="token punctuation">]</span><span class="token operator">:</span> newfstatat<span class="token operator">(</span><span class="token operator">)</span><span class="token operator">)</span>                                       <span class="token operator">=</span> <span class="token number">0</span>
+ <span class="token number">37075.965</span> <span class="token operator">(</span>         <span class="token operator">)</span><span class="token operator">:</span> server<span class="token operator">/</span><span class="token number">1146720</span> futex<span class="token operator">(</span>uaddr<span class="token operator">:</span> <span class="token number">0x45252c0</span><span class="token punctuation">,</span> op<span class="token operator">:</span> WAIT<span class="token operator">|</span>PRIVATE_FLAG<span class="token punctuation">,</span> utime<span class="token operator">:</span> <span class="token number">0xc00008feb0</span><span class="token operator">)</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+ <span class="token number">37138.754</span> <span class="token operator">(</span> <span class="token number">0.012</span> ms<span class="token operator">)</span><span class="token operator">:</span> server<span class="token operator">/</span><span class="token number">1146729</span> futex<span class="token operator">(</span>uaddr<span class="token operator">:</span> <span class="token number">0x45252c0</span><span class="token punctuation">,</span> op<span class="token operator">:</span> WAKE<span class="token operator">|</span>PRIVATE_FLAG<span class="token punctuation">,</span> val<span class="token operator">:</span> <span class="token number">1</span><span class="token operator">)</span>                <span class="token operator">=</span> <span class="token number">1</span>
+ <span class="token number">37075.965</span> <span class="token operator">(</span><span class="token number">62.898</span> ms<span class="token operator">)</span><span class="token operator">:</span> server<span class="token operator">/</span><span class="token number">1146720</span>  <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token punctuation">[</span>continued<span class="token punctuation">]</span><span class="token operator">:</span> futex<span class="token operator">(</span><span class="token operator">)</span><span class="token operator">)</span>                                            <span class="token operator">=</span> <span class="token number">0</span>
+ <span class="token number">37138.781</span> <span class="token operator">(</span>         <span class="token operator">)</span><span class="token operator">:</span> server<span class="token operator">/</span><span class="token number">1146729</span> newfstatat<span class="token operator">(</span>dfd<span class="token operator">:</span> CWD<span class="token punctuation">,</span> filename<span class="token operator">:</span> <span class="token number">0xb77c50</span><span class="token punctuation">,</span> statbuf<span class="token operator">:</span> <span class="token number">0xc000adcfa8</span><span class="token punctuation">,</span> flag<span class="token operator">:</span> SYMLINK_NOFOLLOW<span class="token operator">)</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+ <span class="token number">37138.881</span> <span class="token operator">(</span> <span class="token number">0.067</span> ms<span class="token operator">)</span><span class="token operator">:</span> server<span class="token operator">/</span><span class="token number">1146720</span> nanosleep<span class="token operator">(</span>rqtp<span class="token operator">:</span> <span class="token number">0xc00008ff10</span><span class="token operator">)</span>                                         <span class="token operator">=</span> <span class="token number">0</span>
+ <span class="token number">37138.954</span> <span class="token operator">(</span><span class="token number">25.650</span> ms<span class="token operator">)</span><span class="token operator">:</span> server<span class="token operator">/</span><span class="token number">1146720</span> futex<span class="token operator">(</span>uaddr<span class="token operator">:</span> <span class="token number">0x45252c0</span><span class="token punctuation">,</span> op<span class="token operator">:</span> WAIT<span class="token operator">|</span>PRIVATE_FLAG<span class="token punctuation">,</span> utime<span class="token operator">:</span> <span class="token number">0xc00008feb0</span><span class="token operator">)</span>   <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span> ETIMEDOUT <span class="token operator">(</span>Connection timed out<span class="token operator">)</span>
+ <span class="token number">37164.628</span> <span class="token operator">(</span> <span class="token number">0.088</span> ms<span class="token operator">)</span><span class="token operator">:</span> server<span class="token operator">/</span><span class="token number">1146720</span> nanosleep<span class="token operator">(</span>rqtp<span class="token operator">:</span> <span class="token number">0xc00008ff10</span><span class="token operator">)</span>                                         <span class="token operator">=</span> <span class="token number">0</span>
+ <span class="token number">37164.724</span> <span class="token operator">(</span> <span class="token number">0.110</span> ms<span class="token operator">)</span><span class="token operator">:</span> server<span class="token operator">/</span><span class="token number">1146720</span> nanosleep<span class="token operator">(</span>rqtp<span class="token operator">:</span> <span class="token number">0xc00008ff10</span><span class="token operator">)</span>                                         <span class="token operator">=</span> <span class="token number">0</span>
+ <span class="token number">37164.845</span> <span class="token operator">(</span> <span class="token number">0.085</span> ms<span class="token operator">)</span><span class="token operator">:</span> server<span class="token operator">/</span><span class="token number">1146720</span> nanosleep<span class="token operator">(</span>rqtp<span class="token operator">:</span> <span class="token number">0xc00008ff10</span><span class="token operator">)</span>                                         <span class="token operator">=</span> <span class="token number">0</span></code></pre>
+
+<p>通过上述的分析，可以发现<code>casdoor</code>程序在启动后，一直读取<code>tmp</code>目录下的文件信息(并且其中还有一个锁)，结合前面的信息可以得出<code>casdoor</code>在启动的时候会一直读取<code>tmp</code>里面的<code>session</code>信息，导致<code>nfs</code>的进程的<code>cpu</code>使用率过高。</p>
+<p>所以后面在生产环境中把<code>nfs</code>的挂载给取消了(<code>tmp</code>中的<code>session</code>文件就会被清空，变成一个空文件夹)，后面再启动，就可以正常访问服务了，后续可能会考虑把<code>session</code>放到<code>redis</code>中进行处理。</p>
+<h1 id="问题🤔"><a href="#问题🤔" class="headerlink" title="问题🤔"></a>问题🤔</h1><p>虽然服务可以启动了但是留下了3个问题：</p>
+<ul>
+<li><strong>为什么casdoor启动的时候要去访问session文件(tmp目录下的文件)</strong></li>
+<li><strong>为什么casdoor的日志都显示服务的端口已经监听了，但是curl该服务还是不能马上返回请求</strong></li>
+<li><strong>同学反映该tmp文件之前已经清理过一次了，但是一天左右磁盘占用率又上来了这是为什么</strong></li>
+</ul>
+<p>针对上面的3个问题，我选择 <code>源码</code> 启动👀</p>
+<h2 id="为什么casdoor启动时要去访问session文件"><a href="#为什么casdoor启动时要去访问session文件" class="headerlink" title="为什么casdoor启动时要去访问session文件"></a>为什么casdoor启动时要去访问session文件</h2><p>为什么casdoor启动要去访问session文件</p>
+<p>首先找到对应的<a target="_blank" rel="noopener" href="https://github.dev/casdoor/casdoor/tree/v1.814.0">github.dev&#x2F;casdoor&#x2F;casdoor&#x2F;tree&#x2F;v1.814.0</a>版本，查看其<code>main.go</code></p>
+<pre class="language-go" data-language="go"><code class="language-go">https<span class="token punctuation">:</span><span class="token operator">/</span><span class="token operator">/</span>github<span class="token punctuation">.</span>dev<span class="token operator">/</span>casdoor<span class="token operator">/</span>casdoor<span class="token operator">/</span>blob<span class="token operator">/</span>a5a627f92efd3cc3f3613ca119b340b66258ce64<span class="token operator">/</span>main<span class="token punctuation">.</span><span class="token keyword">go</span>#L65<span class="token operator">-</span>L95
+	<span class="token operator">...</span><span class="token punctuation">.</span>
+	beego<span class="token punctuation">.</span>BConfig<span class="token punctuation">.</span>WebConfig<span class="token punctuation">.</span>Session<span class="token punctuation">.</span>SessionOn <span class="token operator">=</span> <span class="token boolean">true</span>
+	beego<span class="token punctuation">.</span>BConfig<span class="token punctuation">.</span>WebConfig<span class="token punctuation">.</span>Session<span class="token punctuation">.</span>SessionName <span class="token operator">=</span> <span class="token string">"casdoor_session_id"</span>
+	<span class="token keyword">if</span> conf<span class="token punctuation">.</span><span class="token function">GetConfigString</span><span class="token punctuation">(</span><span class="token string">"redisEndpoint"</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token string">""</span> <span class="token punctuation">&#123;</span>
+		beego<span class="token punctuation">.</span>BConfig<span class="token punctuation">.</span>WebConfig<span class="token punctuation">.</span>Session<span class="token punctuation">.</span>SessionProvider <span class="token operator">=</span> <span class="token string">"file"</span>
+		beego<span class="token punctuation">.</span>BConfig<span class="token punctuation">.</span>WebConfig<span class="token punctuation">.</span>Session<span class="token punctuation">.</span>SessionProviderConfig <span class="token operator">=</span> <span class="token string">"./tmp"</span>
+	<span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+		beego<span class="token punctuation">.</span>BConfig<span class="token punctuation">.</span>WebConfig<span class="token punctuation">.</span>Session<span class="token punctuation">.</span>SessionProvider <span class="token operator">=</span> <span class="token string">"redis"</span>
+		beego<span class="token punctuation">.</span>BConfig<span class="token punctuation">.</span>WebConfig<span class="token punctuation">.</span>Session<span class="token punctuation">.</span>SessionProviderConfig <span class="token operator">=</span> conf<span class="token punctuation">.</span><span class="token function">GetConfigString</span><span class="token punctuation">(</span><span class="token string">"redisEndpoint"</span><span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+	beego<span class="token punctuation">.</span>BConfig<span class="token punctuation">.</span>WebConfig<span class="token punctuation">.</span>Session<span class="token punctuation">.</span>SessionCookieLifeTime <span class="token operator">=</span> <span class="token number">3600</span> <span class="token operator">*</span> <span class="token number">24</span> <span class="token operator">*</span> <span class="token number">30</span> <span class="token comment">//30天的缓存时间</span>
+	beego<span class="token punctuation">.</span>BConfig<span class="token punctuation">.</span>WebConfig<span class="token punctuation">.</span>Session<span class="token punctuation">.</span>SessionGCMaxLifetime <span class="token operator">=</span> <span class="token number">3600</span> <span class="token operator">*</span> <span class="token number">24</span> <span class="token operator">*</span> <span class="token number">30</span> <span class="token comment">//30天的缓存时间</span>
+	<span class="token comment">// beego.BConfig.WebConfig.Session.SessionCookieSameSite = http.SameSiteNoneMode</span>
+
+	err <span class="token operator">:=</span> logs<span class="token punctuation">.</span><span class="token function">SetLogger</span><span class="token punctuation">(</span>logs<span class="token punctuation">.</span>AdapterFile<span class="token punctuation">,</span> conf<span class="token punctuation">.</span><span class="token function">GetConfigString</span><span class="token punctuation">(</span><span class="token string">"logConfig"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		<span class="token function">panic</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+	port <span class="token operator">:=</span> beego<span class="token punctuation">.</span>AppConfig<span class="token punctuation">.</span><span class="token function">DefaultInt</span><span class="token punctuation">(</span><span class="token string">"httpport"</span><span class="token punctuation">,</span> <span class="token number">8000</span><span class="token punctuation">)</span>
+	<span class="token comment">// logs.SetLevel(logs.LevelInformational)</span>
+	logs<span class="token punctuation">.</span><span class="token function">SetLogFuncCall</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span>
+
+	err <span class="token operator">=</span> util<span class="token punctuation">.</span><span class="token function">StopOldInstance</span><span class="token punctuation">(</span>port<span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		<span class="token function">panic</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+
+	<span class="token keyword">go</span> ldap<span class="token punctuation">.</span><span class="token function">StartLdapServer</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">go</span> radius<span class="token punctuation">.</span><span class="token function">StartRadiusServer</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">go</span> object<span class="token punctuation">.</span><span class="token function">ClearThroughputPerSecond</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+	beego<span class="token punctuation">.</span><span class="token function">Run</span><span class="token punctuation">(</span>fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">":%v"</span><span class="token punctuation">,</span> port<span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+
+<p>在上面的代码里面，我们可以看到默认情况下<code>casdoor</code>使用了<code>SessionProvider</code>为<code>file</code>，并且目录配置到了<code>./tmp</code>下面，后面启动的就是<code>beego</code>的服务了，所以后面查看的是对应版本<a target="_blank" rel="noopener" href="https://github.dev/beego/beego/tree/v1.12.11">beego</a>的源码。</p>
+<p>首先从<code>beego.go</code>开始启动服务</p>
+<pre class="language-go" data-language="go"><code class="language-go">https<span class="token punctuation">:</span><span class="token operator">/</span><span class="token operator">/</span>github<span class="token punctuation">.</span>com<span class="token operator">/</span>beego<span class="token operator">/</span>beego<span class="token operator">/</span>blob<span class="token operator">/</span>c280209bf5b94cf31094a200b166c97eb3898851<span class="token operator">/</span>beego<span class="token punctuation">.</span><span class="token keyword">go</span>#L51<span class="token operator">-</span>L73
+<span class="token comment">// Run beego application.</span>
+<span class="token comment">// beego.Run() default run on HttpPort</span>
+<span class="token comment">// beego.Run("localhost")</span>
+<span class="token comment">// beego.Run(":8089")</span>
+<span class="token comment">// beego.Run("127.0.0.1:8089")</span>
+<span class="token keyword">func</span> <span class="token function">Run</span><span class="token punctuation">(</span>params <span class="token operator">...</span><span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token function">initBeforeHTTPRun</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">//这里再程序启动前，调用了initBeforeHTTPRun这个方法</span>
+	<span class="token keyword">if</span> <span class="token function">len</span><span class="token punctuation">(</span>params<span class="token punctuation">)</span> <span class="token operator">></span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span> params<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">!=</span> <span class="token string">""</span> <span class="token punctuation">&#123;</span>
+		strs <span class="token operator">:=</span> strings<span class="token punctuation">.</span><span class="token function">Split</span><span class="token punctuation">(</span>params<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token string">":"</span><span class="token punctuation">)</span>
+		<span class="token keyword">if</span> <span class="token function">len</span><span class="token punctuation">(</span>strs<span class="token punctuation">)</span> <span class="token operator">></span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span> strs<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">!=</span> <span class="token string">""</span> <span class="token punctuation">&#123;</span>
+			BConfig<span class="token punctuation">.</span>Listen<span class="token punctuation">.</span>HTTPAddr <span class="token operator">=</span> strs<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+		<span class="token punctuation">&#125;</span>
+		<span class="token keyword">if</span> <span class="token function">len</span><span class="token punctuation">(</span>strs<span class="token punctuation">)</span> <span class="token operator">></span> <span class="token number">1</span> <span class="token operator">&amp;&amp;</span> strs<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">!=</span> <span class="token string">""</span> <span class="token punctuation">&#123;</span>
+			BConfig<span class="token punctuation">.</span>Listen<span class="token punctuation">.</span>HTTPPort<span class="token punctuation">,</span> <span class="token boolean">_</span> <span class="token operator">=</span> strconv<span class="token punctuation">.</span><span class="token function">Atoi</span><span class="token punctuation">(</span>strs<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+		<span class="token punctuation">&#125;</span>
+
+		BConfig<span class="token punctuation">.</span>Listen<span class="token punctuation">.</span>Domains <span class="token operator">=</span> params
+	<span class="token punctuation">&#125;</span>
+
+	BeeApp<span class="token punctuation">.</span><span class="token function">Run</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+<span class="token operator">...</span><span class="token punctuation">.</span>
+https<span class="token punctuation">:</span><span class="token operator">/</span><span class="token operator">/</span>github<span class="token punctuation">.</span>com<span class="token operator">/</span>beego<span class="token operator">/</span>beego<span class="token operator">/</span>blob<span class="token operator">/</span>c280209bf5b94cf31094a200b166c97eb3898851<span class="token operator">/</span>beego<span class="token punctuation">.</span><span class="token keyword">go</span>#L91<span class="token operator">-</span>L107
+<span class="token keyword">func</span> <span class="token function">initBeforeHTTPRun</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token comment">//init hooks 在这个方法中注册了Session服务</span>
+	<span class="token function">AddAPPStartHook</span><span class="token punctuation">(</span>
+		registerMime<span class="token punctuation">,</span>
+		registerDefaultErrorHandler<span class="token punctuation">,</span>
+		registerSession<span class="token punctuation">,</span>
+		registerTemplate<span class="token punctuation">,</span>
+		registerAdmin<span class="token punctuation">,</span>
+		registerGzip<span class="token punctuation">,</span>
+	<span class="token punctuation">)</span>
+
+	<span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span> hk <span class="token operator">:=</span> <span class="token keyword">range</span> hooks <span class="token punctuation">&#123;</span>
+		<span class="token keyword">if</span> err <span class="token operator">:=</span> <span class="token function">hk</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span> <span class="token comment">//在这里执行了注册的session服务</span>
+			<span class="token function">panic</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+		<span class="token punctuation">&#125;</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>查看对应的<code>registerSession</code>的代码实现，在<code>hook.go</code>中</p>
+<pre class="language-go" data-language="go"><code class="language-go">https<span class="token punctuation">:</span><span class="token operator">/</span><span class="token operator">/</span>github<span class="token punctuation">.</span>com<span class="token operator">/</span>beego<span class="token operator">/</span>beego<span class="token operator">/</span>blob<span class="token operator">/</span>c280209bf5b94cf31094a200b166c97eb3898851<span class="token operator">/</span>hooks<span class="token punctuation">.</span><span class="token keyword">go</span>#L47<span class="token operator">-</span>L76
+<span class="token keyword">func</span> <span class="token function">registerSession</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">if</span> BConfig<span class="token punctuation">.</span>WebConfig<span class="token punctuation">.</span>Session<span class="token punctuation">.</span>SessionOn <span class="token punctuation">&#123;</span>
+		<span class="token keyword">var</span> err <span class="token builtin">error</span>
+		sessionConfig <span class="token operator">:=</span> AppConfig<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token string">"sessionConfig"</span><span class="token punctuation">)</span>
+		conf <span class="token operator">:=</span> <span class="token function">new</span><span class="token punctuation">(</span>session<span class="token punctuation">.</span>ManagerConfig<span class="token punctuation">)</span>
+		<span class="token keyword">if</span> sessionConfig <span class="token operator">==</span> <span class="token string">""</span> <span class="token punctuation">&#123;</span>
+			<span class="token operator">...</span><span class="token punctuation">.</span>
+            conf<span class="token punctuation">.</span>Gclifetime <span class="token operator">=</span> BConfig<span class="token punctuation">.</span>WebConfig<span class="token punctuation">.</span>Session<span class="token punctuation">.</span>SessionGCMaxLifetime <span class="token comment">//定义了session的存活时间</span>
+			conf<span class="token punctuation">.</span>ProviderConfig <span class="token operator">=</span> filepath<span class="token punctuation">.</span><span class="token function">ToSlash</span><span class="token punctuation">(</span>BConfig<span class="token punctuation">.</span>WebConfig<span class="token punctuation">.</span>Session<span class="token punctuation">.</span>SessionProviderConfig<span class="token punctuation">)</span> <span class="token comment">//在这里tmp的配置变成了文件路径配置</span>
+			<span class="token operator">...</span><span class="token punctuation">.</span>
+		<span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+			<span class="token keyword">if</span> err <span class="token operator">=</span> json<span class="token punctuation">.</span><span class="token function">Unmarshal</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token function">byte</span><span class="token punctuation">(</span>sessionConfig<span class="token punctuation">)</span><span class="token punctuation">,</span> conf<span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+				<span class="token keyword">return</span> err
+			<span class="token punctuation">&#125;</span>
+		<span class="token punctuation">&#125;</span>
+		<span class="token keyword">if</span> GlobalSessions<span class="token punctuation">,</span> err <span class="token operator">=</span> session<span class="token punctuation">.</span><span class="token function">NewManager</span><span class="token punctuation">(</span>BConfig<span class="token punctuation">.</span>WebConfig<span class="token punctuation">.</span>Session<span class="token punctuation">.</span>SessionProvider<span class="token punctuation">,</span> conf<span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+			<span class="token keyword">return</span> err
+		<span class="token punctuation">&#125;</span>
+		<span class="token keyword">go</span> GlobalSessions<span class="token punctuation">.</span><span class="token function">GC</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">//这里使用了GO协程启动了一个CG服务，该操作不会阻塞主协程</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">return</span> <span class="token boolean">nil</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>进入<code>GlobalSessions.GC() </code>函数查看对应实现，在<code>session.go</code>中</p>
+<pre class="language-go" data-language="go"><code class="language-go">https<span class="token punctuation">:</span><span class="token operator">/</span><span class="token operator">/</span>github<span class="token punctuation">.</span>com<span class="token operator">/</span>beego<span class="token operator">/</span>beego<span class="token operator">/</span>blob<span class="token operator">/</span>c280209bf5b94cf31094a200b166c97eb3898851<span class="token operator">/</span>session<span class="token operator">/</span>session<span class="token punctuation">.</span><span class="token keyword">go</span>#L290<span class="token operator">-</span>L295
+<span class="token comment">// GC Start session gc process.</span>
+<span class="token comment">// it can do gc in times after gc lifetime.</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span>manager <span class="token operator">*</span>Manager<span class="token punctuation">)</span> <span class="token function">GC</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	manager<span class="token punctuation">.</span>provider<span class="token punctuation">.</span><span class="token function">SessionGC</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">//启动时先执行一次SessionCG 然后再使用time.AfterFunc来定时执行</span>
+	time<span class="token punctuation">.</span><span class="token function">AfterFunc</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span><span class="token function">Duration</span><span class="token punctuation">(</span>manager<span class="token punctuation">.</span>config<span class="token punctuation">.</span>Gclifetime<span class="token punctuation">)</span><span class="token operator">*</span>time<span class="token punctuation">.</span>Second<span class="token punctuation">,</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> manager<span class="token punctuation">.</span><span class="token function">GC</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>进入<code>manager.provider.SessionGC() </code>函数查看其实现，因为我们使用的<code>sessionProvider</code>为<code>file</code>，所以要在<code>session/sess_file.go</code>中查看其实现</p>
+<pre class="language-go" data-language="go"><code class="language-go"><span class="token comment">// filepder的定义</span>
+https<span class="token punctuation">:</span><span class="token operator">/</span><span class="token operator">/</span>github<span class="token punctuation">.</span>com<span class="token operator">/</span>beego<span class="token operator">/</span>beego<span class="token operator">/</span>blob<span class="token operator">/</span>c280209bf5b94cf31094a200b166c97eb3898851<span class="token operator">/</span>session<span class="token operator">/</span>sess_file<span class="token punctuation">.</span><span class="token keyword">go</span>#L30<span class="token operator">-</span>L33
+<span class="token keyword">var</span> <span class="token punctuation">(</span>
+	filepder      <span class="token operator">=</span> <span class="token operator">&amp;</span>FileProvider<span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+	gcmaxlifetime <span class="token builtin">int64</span>
+<span class="token punctuation">)</span>
+https<span class="token punctuation">:</span><span class="token operator">/</span><span class="token operator">/</span>github<span class="token punctuation">.</span>com<span class="token operator">/</span>beego<span class="token operator">/</span>beego<span class="token operator">/</span>blob<span class="token operator">/</span>c280209bf5b94cf31094a200b166c97eb3898851<span class="token operator">/</span>session<span class="token operator">/</span>sess_file<span class="token punctuation">.</span><span class="token keyword">go</span>#L113<span class="token operator">-</span>L118
+<span class="token comment">// FileProvider File session provider</span>
+<span class="token keyword">type</span> FileProvider <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+	lock        sync<span class="token punctuation">.</span>RWMutex
+	maxlifetime <span class="token builtin">int64</span>
+	savePath    <span class="token builtin">string</span>
+<span class="token punctuation">&#125;</span>
+https<span class="token punctuation">:</span><span class="token operator">/</span><span class="token operator">/</span>github<span class="token punctuation">.</span>com<span class="token operator">/</span>beego<span class="token operator">/</span>beego<span class="token operator">/</span>blob<span class="token operator">/</span>c280209bf5b94cf31094a200b166c97eb3898851<span class="token operator">/</span>session<span class="token operator">/</span>sess_file<span class="token punctuation">.</span><span class="token keyword">go</span>#L200<span class="token operator">-</span>L207
+<span class="token comment">// SessionGC Recycle files in save path</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span>fp <span class="token operator">*</span>FileProvider<span class="token punctuation">)</span> <span class="token function">SessionGC</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	filepder<span class="token punctuation">.</span>lock<span class="token punctuation">.</span><span class="token function">Lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">//这里先锁住了filepder 这个锁很关键</span>
+	<span class="token keyword">defer</span> filepder<span class="token punctuation">.</span>lock<span class="token punctuation">.</span><span class="token function">Unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+	gcmaxlifetime <span class="token operator">=</span> fp<span class="token punctuation">.</span>maxlifetime <span class="token comment">//获取gc超时时间</span>
+	filepath<span class="token punctuation">.</span><span class="token function">Walk</span><span class="token punctuation">(</span>fp<span class="token punctuation">.</span>savePath<span class="token punctuation">,</span> gcpath<span class="token punctuation">)</span> <span class="token comment">//这里使用walk来浏览session文件目录下的文件，并且执行gcpath的回调</span>
+<span class="token punctuation">&#125;</span>
+<span class="token operator">...</span><span class="token punctuation">.</span>
+https<span class="token punctuation">:</span><span class="token operator">/</span><span class="token operator">/</span>github<span class="token punctuation">.</span>com<span class="token operator">/</span>beego<span class="token operator">/</span>beego<span class="token operator">/</span>blob<span class="token operator">/</span>c280209bf5b94cf31094a200b166c97eb3898851<span class="token operator">/</span>session<span class="token operator">/</span>sess_file<span class="token punctuation">.</span><span class="token keyword">go</span>#L284<span class="token operator">-</span>L296
+<span class="token comment">// remove file in save path if expired</span>
+<span class="token keyword">func</span> <span class="token function">gcpath</span><span class="token punctuation">(</span>path <span class="token builtin">string</span><span class="token punctuation">,</span> info os<span class="token punctuation">.</span>FileInfo<span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">return</span> err
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">if</span> info<span class="token punctuation">.</span><span class="token function">IsDir</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">return</span> <span class="token boolean">nil</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">if</span> <span class="token punctuation">(</span>info<span class="token punctuation">.</span><span class="token function">ModTime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Unix</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> gcmaxlifetime<span class="token punctuation">)</span> <span class="token operator">&lt;</span> time<span class="token punctuation">.</span><span class="token function">Now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Unix</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		os<span class="token punctuation">.</span><span class="token function">Remove</span><span class="token punctuation">(</span>path<span class="token punctuation">)</span> <span class="token comment">//如果该文件的修改时间加上超时时间大于当前时间则进行删除</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">return</span> <span class="token boolean">nil</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>到此第一个问题已经解决了，就是因为<code>beego.go</code>启动的时候会执行session的GC，而程序配置为利用<code>file</code>保存<code>session</code>，所以就解释了为什么查看<code>strace</code>和<code>pstack</code>的日志时会有锁<code>futex</code> 和文件读取的<code>newfstatat</code>的系统调用</p>
+<h2 id="为什么服务日志都显示端口已经监听了，但是curl该服务还是不能马上返回请求"><a href="#为什么服务日志都显示端口已经监听了，但是curl该服务还是不能马上返回请求" class="headerlink" title="为什么服务日志都显示端口已经监听了，但是curl该服务还是不能马上返回请求"></a>为什么服务日志都显示端口已经监听了，但是curl该服务还是不能马上返回请求</h2><p>为什么日志已经显示了端口绑定了，但是<code>curl</code>对应服务还是不通</p>
+<p>在上面我们得知我们的服务是在<code>beego.go</code>中启动的，所以先查看其源码</p>
+<pre class="language-go" data-language="go"><code class="language-go">https<span class="token punctuation">:</span><span class="token operator">/</span><span class="token operator">/</span>github<span class="token punctuation">.</span>com<span class="token operator">/</span>beego<span class="token operator">/</span>beego<span class="token operator">/</span>blob<span class="token operator">/</span>c280209bf5b94cf31094a200b166c97eb3898851<span class="token operator">/</span>beego<span class="token punctuation">.</span><span class="token keyword">go</span>#L51<span class="token operator">-</span>L73
+<span class="token comment">// Run beego application.</span>
+<span class="token comment">// beego.Run() default run on HttpPort</span>
+<span class="token comment">// beego.Run("localhost")</span>
+<span class="token comment">// beego.Run(":8089")</span>
+<span class="token comment">// beego.Run("127.0.0.1:8089")</span>
+<span class="token keyword">func</span> <span class="token function">Run</span><span class="token punctuation">(</span>params <span class="token operator">...</span><span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token function">initBeforeHTTPRun</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">//这里再程序启动前，调用了initBeforeHTTPRun这个方法</span>
+	<span class="token keyword">if</span> <span class="token function">len</span><span class="token punctuation">(</span>params<span class="token punctuation">)</span> <span class="token operator">></span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span> params<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">!=</span> <span class="token string">""</span> <span class="token punctuation">&#123;</span>
+		strs <span class="token operator">:=</span> strings<span class="token punctuation">.</span><span class="token function">Split</span><span class="token punctuation">(</span>params<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token string">":"</span><span class="token punctuation">)</span>
+		<span class="token keyword">if</span> <span class="token function">len</span><span class="token punctuation">(</span>strs<span class="token punctuation">)</span> <span class="token operator">></span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span> strs<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">!=</span> <span class="token string">""</span> <span class="token punctuation">&#123;</span>
+			BConfig<span class="token punctuation">.</span>Listen<span class="token punctuation">.</span>HTTPAddr <span class="token operator">=</span> strs<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+		<span class="token punctuation">&#125;</span>
+		<span class="token keyword">if</span> <span class="token function">len</span><span class="token punctuation">(</span>strs<span class="token punctuation">)</span> <span class="token operator">></span> <span class="token number">1</span> <span class="token operator">&amp;&amp;</span> strs<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">!=</span> <span class="token string">""</span> <span class="token punctuation">&#123;</span>
+			BConfig<span class="token punctuation">.</span>Listen<span class="token punctuation">.</span>HTTPPort<span class="token punctuation">,</span> <span class="token boolean">_</span> <span class="token operator">=</span> strconv<span class="token punctuation">.</span><span class="token function">Atoi</span><span class="token punctuation">(</span>strs<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+		<span class="token punctuation">&#125;</span>
+
+		BConfig<span class="token punctuation">.</span>Listen<span class="token punctuation">.</span>Domains <span class="token operator">=</span> params
+	<span class="token punctuation">&#125;</span>
+
+	BeeApp<span class="token punctuation">.</span><span class="token function">Run</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">//正式启动服务</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>我们这里直接查看<code>BeeApp.Run()</code>的实现</p>
+<pre class="language-go" data-language="go"><code class="language-go">https<span class="token punctuation">:</span><span class="token operator">/</span><span class="token operator">/</span>github<span class="token punctuation">.</span>com<span class="token operator">/</span>beego<span class="token operator">/</span>beego<span class="token operator">/</span>blob<span class="token operator">/</span>c280209bf5b94cf31094a200b166c97eb3898851<span class="token operator">/</span>app<span class="token punctuation">.</span><span class="token keyword">go</span>#L62<span class="token operator">-</span>L239
+<span class="token comment">// Run beego application.</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span>app <span class="token operator">*</span>App<span class="token punctuation">)</span> <span class="token function">Run</span><span class="token punctuation">(</span>mws <span class="token operator">...</span>MiddleWare<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	addr <span class="token operator">:=</span> BConfig<span class="token punctuation">.</span>Listen<span class="token punctuation">.</span>HTTPAddr
+
+	<span class="token keyword">if</span> BConfig<span class="token punctuation">.</span>Listen<span class="token punctuation">.</span>HTTPPort <span class="token operator">!=</span> <span class="token number">0</span> <span class="token punctuation">&#123;</span>
+		addr <span class="token operator">=</span> fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"%s:%d"</span><span class="token punctuation">,</span> BConfig<span class="token punctuation">.</span>Listen<span class="token punctuation">.</span>HTTPAddr<span class="token punctuation">,</span> BConfig<span class="token punctuation">.</span>Listen<span class="token punctuation">.</span>HTTPPort<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+	app<span class="token punctuation">.</span>Server<span class="token punctuation">.</span>Handler <span class="token operator">=</span> app<span class="token punctuation">.</span>Handlers <span class="token comment">//这里的app.Handlers就是定义好的路由和服务，把它注册到http服务的回调里面</span>
+	<span class="token comment">// run cgi server</span>
+	<span class="token keyword">if</span> BConfig<span class="token punctuation">.</span>Listen<span class="token punctuation">.</span>EnableFcgi <span class="token punctuation">&#123;</span>
+		<span class="token operator">...</span><span class="token punctuation">.</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token operator">...</span><span class="token punctuation">.</span>
+	<span class="token comment">// run graceful mode</span>
+	<span class="token keyword">if</span> BConfig<span class="token punctuation">.</span>Listen<span class="token punctuation">.</span>Graceful <span class="token punctuation">&#123;</span>
+        <span class="token operator">...</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token comment">// run normal mode</span>
+	<span class="token keyword">if</span> BConfig<span class="token punctuation">.</span>Listen<span class="token punctuation">.</span>EnableHTTPS <span class="token operator">||</span> BConfig<span class="token punctuation">.</span>Listen<span class="token punctuation">.</span>EnableMutualHTTPS <span class="token punctuation">&#123;</span>
+		<span class="token operator">...</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">if</span> BConfig<span class="token punctuation">.</span>Listen<span class="token punctuation">.</span>EnableHTTP <span class="token punctuation">&#123;</span>
+		<span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+			app<span class="token punctuation">.</span>Server<span class="token punctuation">.</span>Addr <span class="token operator">=</span> addr
+			logs<span class="token punctuation">.</span><span class="token function">Info</span><span class="token punctuation">(</span><span class="token string">"http server Running on http://%s"</span><span class="token punctuation">,</span> app<span class="token punctuation">.</span>Server<span class="token punctuation">.</span>Addr<span class="token punctuation">)</span> <span class="token comment">//对应的casdoor日志打印的地方</span>
+			<span class="token keyword">if</span> BConfig<span class="token punctuation">.</span>Listen<span class="token punctuation">.</span>ListenTCP4 <span class="token punctuation">&#123;</span>
+                <span class="token operator">...</span>
+			<span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+				<span class="token keyword">if</span> err <span class="token operator">:=</span> app<span class="token punctuation">.</span>Server<span class="token punctuation">.</span><span class="token function">ListenAndServe</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span> <span class="token comment">//服务启动了</span>
+					logs<span class="token punctuation">.</span><span class="token function">Critical</span><span class="token punctuation">(</span><span class="token string">"ListenAndServe: "</span><span class="token punctuation">,</span> err<span class="token punctuation">)</span>
+					time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">100</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Microsecond<span class="token punctuation">)</span>
+					endRunning <span class="token operator">&lt;-</span> <span class="token boolean">true</span>
+				<span class="token punctuation">&#125;</span>
+			<span class="token punctuation">&#125;</span>
+		<span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token operator">&lt;-</span>endRunning
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>那么当有请求过来的时候，就会调用<code>app.Handlers</code>中的<code>ServeHTTP</code>来处理(必须实现<a target="_blank" rel="noopener" href="https://cs.opensource.google/go/go/+/go1.24.2:src/net/http/server.go;l=2290">HandlerFunc</a> )，<code>app.Handlers</code>就在<code>route.go</code>里面</p>
+<pre class="language-go" data-language="go"><code class="language-go">https<span class="token punctuation">:</span><span class="token operator">/</span><span class="token operator">/</span>github<span class="token punctuation">.</span>com<span class="token operator">/</span>beego<span class="token operator">/</span>beego<span class="token operator">/</span>blob<span class="token operator">/</span>c280209bf5b94cf31094a200b166c97eb3898851<span class="token operator">/</span>router<span class="token punctuation">.</span><span class="token keyword">go</span>#L693<span class="token operator">-</span>L975
+<span class="token comment">// Implement http.Handler interface.</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span>p <span class="token operator">*</span>ControllerRegister<span class="token punctuation">)</span> <span class="token function">ServeHTTP</span><span class="token punctuation">(</span>rw http<span class="token punctuation">.</span>ResponseWriter<span class="token punctuation">,</span> r <span class="token operator">*</span>http<span class="token punctuation">.</span>Request<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	startTime <span class="token operator">:=</span> time<span class="token punctuation">.</span><span class="token function">Now</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token operator">...</span><span class="token punctuation">.</span>
+    https<span class="token punctuation">:</span><span class="token operator">/</span><span class="token operator">/</span>github<span class="token punctuation">.</span>com<span class="token operator">/</span>beego<span class="token operator">/</span>beego<span class="token operator">/</span>blob<span class="token operator">/</span>c280209bf5b94cf31094a200b166c97eb3898851<span class="token operator">/</span>router<span class="token punctuation">.</span><span class="token keyword">go</span>#L756<span class="token operator">-</span>L770
+	<span class="token comment">// session init 在这里将会处理请求中的session</span>
+	<span class="token keyword">if</span> BConfig<span class="token punctuation">.</span>WebConfig<span class="token punctuation">.</span>Session<span class="token punctuation">.</span>SessionOn <span class="token punctuation">&#123;</span>
+		<span class="token keyword">var</span> err <span class="token builtin">error</span>
+		context<span class="token punctuation">.</span>Input<span class="token punctuation">.</span>CruSession<span class="token punctuation">,</span> err <span class="token operator">=</span> GlobalSessions<span class="token punctuation">.</span><span class="token function">SessionStart</span><span class="token punctuation">(</span>rw<span class="token punctuation">,</span> r<span class="token punctuation">)</span> <span class="token comment">//通过rw和r获取对应的session信息</span>
+		<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+			logs<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+			<span class="token function">exception</span><span class="token punctuation">(</span><span class="token string">"503"</span><span class="token punctuation">,</span> context<span class="token punctuation">)</span>
+			<span class="token keyword">goto</span> Admin
+		<span class="token punctuation">&#125;</span>
+		<span class="token keyword">defer</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+			<span class="token keyword">if</span> context<span class="token punctuation">.</span>Input<span class="token punctuation">.</span>CruSession <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+				context<span class="token punctuation">.</span>Input<span class="token punctuation">.</span>CruSession<span class="token punctuation">.</span><span class="token function">SessionRelease</span><span class="token punctuation">(</span>rw<span class="token punctuation">)</span>
+			<span class="token punctuation">&#125;</span>
+		<span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token operator">...</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p><code>GlobalSessions.SessionStart</code>其实现的方法在<code>session/session.go</code>中</p>
+<pre class="language-go" data-language="go"><code class="language-go">https<span class="token punctuation">:</span><span class="token operator">/</span><span class="token operator">/</span>github<span class="token punctuation">.</span>com<span class="token operator">/</span>beego<span class="token operator">/</span>beego<span class="token operator">/</span>blob<span class="token operator">/</span>c280209bf5b94cf31094a200b166c97eb3898851<span class="token operator">/</span>session<span class="token operator">/</span>session<span class="token punctuation">.</span><span class="token keyword">go</span>#L207<span class="token operator">-</span>L253
+<span class="token comment">// SessionStart generate or read the session id from http request.</span>
+<span class="token comment">// if session id exists, return SessionStore with this id.</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span>manager <span class="token operator">*</span>Manager<span class="token punctuation">)</span> <span class="token function">SessionStart</span><span class="token punctuation">(</span>w http<span class="token punctuation">.</span>ResponseWriter<span class="token punctuation">,</span> r <span class="token operator">*</span>http<span class="token punctuation">.</span>Request<span class="token punctuation">)</span> <span class="token punctuation">(</span>session Store<span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    sid<span class="token punctuation">,</span> errs <span class="token operator">:=</span> manager<span class="token punctuation">.</span><span class="token function">getSid</span><span class="token punctuation">(</span>r<span class="token punctuation">)</span> <span class="token comment">// 在请求中获取sid (sessionId)</span>
+	<span class="token keyword">if</span> errs <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">return</span> <span class="token boolean">nil</span><span class="token punctuation">,</span> errs
+	<span class="token punctuation">&#125;</span>
+
+	<span class="token keyword">if</span> sid <span class="token operator">!=</span> <span class="token string">""</span> <span class="token operator">&amp;&amp;</span> manager<span class="token punctuation">.</span>provider<span class="token punctuation">.</span><span class="token function">SessionExist</span><span class="token punctuation">(</span>sid<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token comment">// 如果获取到就用id来查看对应的sessionStore，可以通过sessionStore来管理sessoin</span>
+		<span class="token keyword">return</span> manager<span class="token punctuation">.</span>provider<span class="token punctuation">.</span><span class="token function">SessionRead</span><span class="token punctuation">(</span>sid<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+
+	<span class="token comment">// Generate a new session 如果获取不到session就重新生成session</span>
+	sid<span class="token punctuation">,</span> errs <span class="token operator">=</span> manager<span class="token punctuation">.</span><span class="token function">sessionID</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">if</span> errs <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">return</span> <span class="token boolean">nil</span><span class="token punctuation">,</span> errs
+	<span class="token punctuation">&#125;</span>
+
+	session<span class="token punctuation">,</span> err <span class="token operator">=</span> manager<span class="token punctuation">.</span>provider<span class="token punctuation">.</span><span class="token function">SessionRead</span><span class="token punctuation">(</span>sid<span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">return</span> <span class="token boolean">nil</span><span class="token punctuation">,</span> err
+	<span class="token punctuation">&#125;</span>
+    <span class="token comment">// 设置一个cookie，把sid放到cookie中，下次即可在请求中获取对应的sid，从而获取session</span>
+	cookie <span class="token operator">:=</span> <span class="token operator">&amp;</span>http<span class="token punctuation">.</span>Cookie<span class="token punctuation">&#123;</span>
+		Name<span class="token punctuation">:</span>     manager<span class="token punctuation">.</span>config<span class="token punctuation">.</span>CookieName<span class="token punctuation">,</span>
+		Value<span class="token punctuation">:</span>    url<span class="token punctuation">.</span><span class="token function">QueryEscape</span><span class="token punctuation">(</span>sid<span class="token punctuation">)</span><span class="token punctuation">,</span>
+		Path<span class="token punctuation">:</span>     <span class="token string">"/"</span><span class="token punctuation">,</span>
+		HttpOnly<span class="token punctuation">:</span> <span class="token operator">!</span>manager<span class="token punctuation">.</span>config<span class="token punctuation">.</span>DisableHTTPOnly<span class="token punctuation">,</span>
+		Secure<span class="token punctuation">:</span>   manager<span class="token punctuation">.</span><span class="token function">isSecure</span><span class="token punctuation">(</span>r<span class="token punctuation">)</span><span class="token punctuation">,</span>
+		Domain<span class="token punctuation">:</span>   manager<span class="token punctuation">.</span>config<span class="token punctuation">.</span>Domain<span class="token punctuation">,</span>
+		SameSite<span class="token punctuation">:</span> manager<span class="token punctuation">.</span>config<span class="token punctuation">.</span>CookieSameSite<span class="token punctuation">,</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">if</span> manager<span class="token punctuation">.</span>config<span class="token punctuation">.</span>CookieLifeTime <span class="token operator">></span> <span class="token number">0</span> <span class="token punctuation">&#123;</span>
+		cookie<span class="token punctuation">.</span>MaxAge <span class="token operator">=</span> manager<span class="token punctuation">.</span>config<span class="token punctuation">.</span>CookieLifeTime
+		cookie<span class="token punctuation">.</span>Expires <span class="token operator">=</span> time<span class="token punctuation">.</span><span class="token function">Now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span><span class="token function">Duration</span><span class="token punctuation">(</span>manager<span class="token punctuation">.</span>config<span class="token punctuation">.</span>CookieLifeTime<span class="token punctuation">)</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">if</span> manager<span class="token punctuation">.</span>config<span class="token punctuation">.</span>EnableSetCookie <span class="token punctuation">&#123;</span>
+		http<span class="token punctuation">.</span><span class="token function">SetCookie</span><span class="token punctuation">(</span>w<span class="token punctuation">,</span> cookie<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+	r<span class="token punctuation">.</span><span class="token function">AddCookie</span><span class="token punctuation">(</span>cookie<span class="token punctuation">)</span>
+
+	<span class="token keyword">if</span> manager<span class="token punctuation">.</span>config<span class="token punctuation">.</span>EnableSidInHTTPHeader <span class="token punctuation">&#123;</span>
+		r<span class="token punctuation">.</span>Header<span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span>manager<span class="token punctuation">.</span>config<span class="token punctuation">.</span>SessionNameInHTTPHeader<span class="token punctuation">,</span> sid<span class="token punctuation">)</span>
+		w<span class="token punctuation">.</span><span class="token function">Header</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Set</span><span class="token punctuation">(</span>manager<span class="token punctuation">.</span>config<span class="token punctuation">.</span>SessionNameInHTTPHeader<span class="token punctuation">,</span> sid<span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+
+	<span class="token keyword">return</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>在上述的源码中，我们应该要关注里面的<code>SessionExist</code>、<code>SessionRead</code> 的实现，所以我们查看对应的源码，在<code>session/sess_file.go</code>中</p>
+<pre class="language-go" data-language="go"><code class="language-go">https<span class="token punctuation">:</span><span class="token operator">/</span><span class="token operator">/</span>github<span class="token punctuation">.</span>com<span class="token operator">/</span>beego<span class="token operator">/</span>beego<span class="token operator">/</span>blob<span class="token operator">/</span>c280209bf5b94cf31094a200b166c97eb3898851<span class="token operator">/</span>session<span class="token operator">/</span>sess_file<span class="token punctuation">.</span><span class="token keyword">go</span>#L176<span class="token operator">-</span>L190
+<span class="token comment">// SessionExist Check file session exist.</span>
+<span class="token comment">// it checks the file named from sid exist or not.</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span>fp <span class="token operator">*</span>FileProvider<span class="token punctuation">)</span> <span class="token function">SessionExist</span><span class="token punctuation">(</span>sid <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token builtin">bool</span> <span class="token punctuation">&#123;</span>
+	filepder<span class="token punctuation">.</span>lock<span class="token punctuation">.</span><span class="token function">Lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// 这里跟上面的sessionCG一样，上锁了</span>
+	<span class="token keyword">defer</span> filepder<span class="token punctuation">.</span>lock<span class="token punctuation">.</span><span class="token function">Unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+	<span class="token keyword">if</span> <span class="token function">len</span><span class="token punctuation">(</span>sid<span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">2</span> <span class="token punctuation">&#123;</span>
+		SLogger<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"min length of session id is 2"</span><span class="token punctuation">,</span> sid<span class="token punctuation">)</span>
+		<span class="token keyword">return</span> <span class="token boolean">false</span>
+	<span class="token punctuation">&#125;</span>
+
+	<span class="token boolean">_</span><span class="token punctuation">,</span> err <span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">Stat</span><span class="token punctuation">(</span>path<span class="token punctuation">.</span><span class="token function">Join</span><span class="token punctuation">(</span>fp<span class="token punctuation">.</span>savePath<span class="token punctuation">,</span> <span class="token function">string</span><span class="token punctuation">(</span>sid<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token function">string</span><span class="token punctuation">(</span>sid<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">,</span> sid<span class="token punctuation">)</span><span class="token punctuation">)</span>
+	<span class="token keyword">return</span> err <span class="token operator">==</span> <span class="token boolean">nil</span>
+<span class="token punctuation">&#125;</span>
+
+https<span class="token punctuation">:</span><span class="token operator">/</span><span class="token operator">/</span>github<span class="token punctuation">.</span>com<span class="token operator">/</span>beego<span class="token operator">/</span>beego<span class="token operator">/</span>blob<span class="token operator">/</span>c280209bf5b94cf31094a200b166c97eb3898851<span class="token operator">/</span>session<span class="token operator">/</span>sess_file<span class="token punctuation">.</span><span class="token keyword">go</span>#L128<span class="token operator">-</span>L176
+<span class="token comment">// SessionRead Read file session by sid.</span>
+<span class="token comment">// if file is not exist, create it.</span>
+<span class="token comment">// the file path is generated from sid string.</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span>fp <span class="token operator">*</span>FileProvider<span class="token punctuation">)</span> <span class="token function">SessionRead</span><span class="token punctuation">(</span>sid <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>Store<span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	invalidChars <span class="token operator">:=</span> <span class="token string">"./"</span>
+	<span class="token operator">...</span>
+	filepder<span class="token punctuation">.</span>lock<span class="token punctuation">.</span><span class="token function">Lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// 这里跟上面的sessionCG一样，上锁了</span>
+	<span class="token keyword">defer</span> filepder<span class="token punctuation">.</span>lock<span class="token punctuation">.</span><span class="token function">Unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+	err <span class="token operator">:=</span> os<span class="token punctuation">.</span><span class="token function">MkdirAll</span><span class="token punctuation">(</span>path<span class="token punctuation">.</span><span class="token function">Join</span><span class="token punctuation">(</span>fp<span class="token punctuation">.</span>savePath<span class="token punctuation">,</span> <span class="token function">string</span><span class="token punctuation">(</span>sid<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token function">string</span><span class="token punctuation">(</span>sid<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">0755</span><span class="token punctuation">)</span> <span class="token comment">//创建对应的文件夹</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		SLogger<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>err<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span>
+    <span class="token comment">// 获取文件并写入session信息或者创建对应的文件并写入session信息</span>
+	<span class="token boolean">_</span><span class="token punctuation">,</span> err <span class="token operator">=</span> os<span class="token punctuation">.</span><span class="token function">Stat</span><span class="token punctuation">(</span>path<span class="token punctuation">.</span><span class="token function">Join</span><span class="token punctuation">(</span>fp<span class="token punctuation">.</span>savePath<span class="token punctuation">,</span> <span class="token function">string</span><span class="token punctuation">(</span>sid<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token function">string</span><span class="token punctuation">(</span>sid<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">,</span> sid<span class="token punctuation">)</span><span class="token punctuation">)</span> 
+	<span class="token keyword">var</span> f <span class="token operator">*</span>os<span class="token punctuation">.</span>File
+	<span class="token keyword">if</span> err <span class="token operator">==</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		f<span class="token punctuation">,</span> err <span class="token operator">=</span> os<span class="token punctuation">.</span><span class="token function">OpenFile</span><span class="token punctuation">(</span>path<span class="token punctuation">.</span><span class="token function">Join</span><span class="token punctuation">(</span>fp<span class="token punctuation">.</span>savePath<span class="token punctuation">,</span> <span class="token function">string</span><span class="token punctuation">(</span>sid<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token function">string</span><span class="token punctuation">(</span>sid<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">,</span> sid<span class="token punctuation">)</span><span class="token punctuation">,</span> os<span class="token punctuation">.</span>O_RDWR<span class="token punctuation">,</span> <span class="token number">0777</span><span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token keyword">if</span> os<span class="token punctuation">.</span><span class="token function">IsNotExist</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		f<span class="token punctuation">,</span> err <span class="token operator">=</span> os<span class="token punctuation">.</span><span class="token function">Create</span><span class="token punctuation">(</span>path<span class="token punctuation">.</span><span class="token function">Join</span><span class="token punctuation">(</span>fp<span class="token punctuation">.</span>savePath<span class="token punctuation">,</span> <span class="token function">string</span><span class="token punctuation">(</span>sid<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token function">string</span><span class="token punctuation">(</span>sid<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">,</span> sid<span class="token punctuation">)</span><span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">return</span> <span class="token boolean">nil</span><span class="token punctuation">,</span> err
+	<span class="token punctuation">&#125;</span>
+
+	<span class="token keyword">defer</span> f<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token comment">// 修改文件Modify时间，在CG中也是通过该属性判断文件是否要被CG</span>
+	os<span class="token punctuation">.</span><span class="token function">Chtimes</span><span class="token punctuation">(</span>path<span class="token punctuation">.</span><span class="token function">Join</span><span class="token punctuation">(</span>fp<span class="token punctuation">.</span>savePath<span class="token punctuation">,</span> <span class="token function">string</span><span class="token punctuation">(</span>sid<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token function">string</span><span class="token punctuation">(</span>sid<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">,</span> sid<span class="token punctuation">)</span><span class="token punctuation">,</span> time<span class="token punctuation">.</span><span class="token function">Now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> time<span class="token punctuation">.</span><span class="token function">Now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+	<span class="token keyword">var</span> kv <span class="token keyword">map</span><span class="token punctuation">[</span><span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">]</span><span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+    <span class="token comment">// 读取session信息</span>
+	b<span class="token punctuation">,</span> err <span class="token operator">:=</span> ioutil<span class="token punctuation">.</span><span class="token function">ReadAll</span><span class="token punctuation">(</span>f<span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">return</span> <span class="token boolean">nil</span><span class="token punctuation">,</span> err
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">if</span> <span class="token function">len</span><span class="token punctuation">(</span>b<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span> <span class="token punctuation">&#123;</span>
+		kv <span class="token operator">=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">map</span><span class="token punctuation">[</span><span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">]</span><span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+	<span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+		kv<span class="token punctuation">,</span> err <span class="token operator">=</span> <span class="token function">DecodeGob</span><span class="token punctuation">(</span>b<span class="token punctuation">)</span>
+		<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+			<span class="token keyword">return</span> <span class="token boolean">nil</span><span class="token punctuation">,</span> err
+		<span class="token punctuation">&#125;</span>
+	<span class="token punctuation">&#125;</span>
+
+	ss <span class="token operator">:=</span> <span class="token operator">&amp;</span>FileSessionStore<span class="token punctuation">&#123;</span>sid<span class="token punctuation">:</span> sid<span class="token punctuation">,</span> values<span class="token punctuation">:</span> kv<span class="token punctuation">&#125;</span>
+	<span class="token keyword">return</span> ss<span class="token punctuation">,</span> <span class="token boolean">nil</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>所以我们这里就可以解释，为什么日志显示服务启动了，但是请求就是不行</p>
+<p>因为在一开始启动的时候，<code>beego</code>就会自己对<code>session</code>文件进行CG同时<code>lock</code>了一个<code>RWMutex</code></p>
+<p>后面请求过来的时候，<code>beego</code>又会读取为了读<code>session</code>而上锁，但是如果前面的<code>CG</code>还未执行完成，那么这个就会被阻塞，直到可以上锁为止</p>
+<p>所以当<code>tmp</code>的<code>session</code>文件过多，那么启动的时候就要花大量时间进行<code>CG</code>导致请求被卡住，也说明为什么在生产环境中<code>nfs</code>的挂载进程会<code>cpu</code>过高，然后把<code>nfs</code>取消挂载后(<code>tmp</code>中的<code>session</code>被清空后)，启动后马上就可以正常访问了</p>
+<p>以下是在测试环境的模拟</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>root@rocky-testing casdoor<span class="token punctuation">]</span><span class="token comment"># du -h --max-depth=1 ./shared-tmp/ </span>
+<span class="token punctuation">..</span><span class="token punctuation">..</span>
+31G     ./shared-tmp/ <span class="token comment"># 这里弄了一个31G的session请求</span></code></pre>
+
+<p>重启一个<code>casdoor</code>服务后，<code>curl</code>该服务</p>
+<p><img src="/2025/04/03/casdoor%E6%9C%8D%E5%8A%A1%E5%90%AF%E5%8A%A8%E5%8D%B4%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E6%8E%92%E9%9A%9C/curl-8001.png" alt="log"></p>
+<p>在第一个curl通了以后，后面的curl服务响应时间才会正常</p>
+<p><img src="/2025/04/03/casdoor%E6%9C%8D%E5%8A%A1%E5%90%AF%E5%8A%A8%E5%8D%B4%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E6%8E%92%E9%9A%9C/curl-8001-normal.png" alt="log"></p>
+<h2 id="为什么会产生这么多tmp文件"><a href="#为什么会产生这么多tmp文件" class="headerlink" title="为什么会产生这么多tmp文件"></a>为什么会产生这么多tmp文件</h2><p>为什么一天多的时间，<code>tmp</code>文件会产生很多的文件，占用比较大的存储？</p>
+<p>这就不得不提这个<code>casdoor</code>了，从上面我们知道<code>casdoor</code>可以让是用来解决用户在多个应用中的登录问题的，那么应用在用户登录的时候就要访问<code>casdoor</code>获取用户的信息，而刚好，我们在生产的环境中，有一个服务大概会每秒请求<code>casdoor</code>服务3次左右(后面改成利用缓存机制了)，同时<code>casdoor</code>内部的缓存超时时间配置设置成了30天🙁，而<code>beego</code>自己默认是1小时。</p>
+<p>这里又有一个问题，<code>beego</code>里面的<code>session/session.go</code>中不是有<code>manager.provider.SessionExist</code>来查看<code>sid</code>是否存在，不存在的话才创建新的。对的，这个对一般网页上使用的用户来说是没有问题的，因为浏览器会帮你把<code>cookie</code>放到每次的请求中，所以一个用户只用创建一个<code>sid</code>即可，但是这个是应用的请求，取决于编写应用的人有没有把<code>cookie</code>或者<code>sid</code>给你传递过来，如果没有传递就会出现每次请求都有重新创建一个<code>sid</code>和对应的<code>session</code>信息</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>根据上述的分析，我画出来了整个请求流程图</p>
+<p><img src="/2025/04/03/casdoor%E6%9C%8D%E5%8A%A1%E5%90%AF%E5%8A%A8%E5%8D%B4%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E6%8E%92%E9%9A%9C/%E6%B5%81%E7%A8%8B%E5%9B%BE.png" alt="log"></p>
+<p>同时得出这次的问题<strong>应该是</strong><code>beego</code>框架的问题🤥，但是<code>casdoor</code>也是存在这一些问题的<del>（感觉像是最佳实践）</del></p>
+<p>首先<code>casdoor</code>的缓存设置成立30天，如果用的是<code>file</code>作为<code>sessionProvider</code>，当用户数量多的时候还是会有问题，或者使用<code>redis</code>来做<code>session</code>缓存，至少<code>io</code>性能比磁盘要快，<code>sessionCG</code>时间也快</p>
+<p>除了上面的问题，我们在其它地方也发现了一些问题</p>
+<p>比如在访问<code>/api/get-groups</code>时，对应的接口在调用的时候没有传分页参数，所以会全查数据表，刚好里面有个获取多条数据，然后循环多条数据并协程查询数据库，那个时候刚好我们弄了很多测试数据，导致该环境下调用该接口就会把数据库连接打满了。后面处理方案应该是更换了其它版本的<code>casdoor</code>，在目前环境的那个版本找不到对应的接口信息了。</p>
+
+        
+        <br />
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+        <div id="lv-container"></div>
+        <div class="giscus"></div>
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+        <li>
+            <a target="_blank"  href="https://github.com/kehaha-5">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-github"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+    </ul>
+    
+    <p>
+        <span id="busuanzi_container_site_pv">
+            <span id="busuanzi_value_site_pv"></span>PV
+        </span>
+        <span id="busuanzi_container_site_uv">
+            <span id="busuanzi_value_site_uv"></span>UV
+        </span>
+        Created By <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>  Theme <a target="_blank" rel="noopener" href="https://github.com/aircloud/hexo-theme-aircloud">AirCloud</a></p>
+</footer>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = "search.json"
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="/js/index.js"></script>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+</html>
+
+<!-- fancybox support -->
+
+    <!-- for theme: default is false -->
+    <!-- for page: default is true -->
+    
+<script src="/js/fancybox/jquery.fancybox.min.js" key="fancybox_js"></script>
+<script src="/js/fancybox/wrapImage.js" key="wrap_image_js"></script>
+
+        
+<link rel="stylesheet" href="/js/fancybox/jquery.fancybox.min.css" key="fancybox_css">
+
+            

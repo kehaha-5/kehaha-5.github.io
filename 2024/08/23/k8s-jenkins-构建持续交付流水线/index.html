@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang=zh-CN>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="website">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        k8s-jenkins-构建持续交付流水线 - kehaha-5
+        
+    </title>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/aircloud.css">
+
+    
+<link rel="stylesheet" href="/css/gitment.css">
+
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_28hi1hpxx24.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i> Just record it ! </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar radius">
+            <img src="/img/avatar.jpg" />
+        </div>
+        <div class="name">
+            <i>kehaha-5</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li >
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li >
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li >
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li >
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+            <li>
+                <a id="search">
+                    <i class="iconfont icon-sousuo1"></i>
+                    <span>搜索</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%A6%82%E8%A6%81"><span class="toc-text">概要</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83"><span class="toc-text">环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%81%E7%A8%8B"><span class="toc-text">流程</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Harbor"><span class="toc-text">Harbor</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Jenkins"><span class="toc-text">Jenkins</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#git%E9%85%8D%E7%BD%AE"><span class="toc-text">git配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Kubernetes"><span class="toc-text">Kubernetes</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8K8S%E4%B8%AD%E5%8A%A8%E6%80%81%E5%88%9B%E5%BB%BA%E4%BB%A3%E7%90%86"><span class="toc-text">在K8S中动态创建代理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8K8s%E4%B8%AD%E7%9A%84%E6%9D%83%E9%99%90%E9%85%8D%E7%BD%AE"><span class="toc-text">在K8s中的权限配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%93%E5%8C%85%E9%95%9C%E5%83%8F"><span class="toc-text">打包镜像</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%81%E6%B0%B4%E7%BA%BF"><span class="toc-text">流水线</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%A7%E8%A1%8C"><span class="toc-text">执行</span></a></li></ol></li></ol>
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-bg" id="search-bg"></div>
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input"/>
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+
+        <div class="index-about-mobile">
+            <i> Just record it ! </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        k8s-jenkins-构建持续交付流水线
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2024-08-23 10:07:22</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#k8s_demo" title="k8s_demo">k8s_demo</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#k3s" title="k3s">k3s</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#jenkins" title="jenkins">jenkins</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+</span>
+    </div>
+    <div class="post-content no-indent">
+        <blockquote>
+<p>本次配置和代码都在<a target="_blank" rel="noopener" href="https://github.com/kehaha-5/k8s_demo">github</a>上 </p>
+</blockquote>
+<p>使用方法:</p>
+<blockquote>
+<p><code>git clone https://github.com/kehaha-5/k8s_demo</code><br><code>cd k8s_demo</code><br><code>git fetch --all</code><br><code>git checkout -b tag 2.0</code></p>
+</blockquote>
+<h1 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h1><h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><p>本次的环境跟上一章<a href="https://kehaha-5.github.io/2024/08/16/%E4%BB%8E%E9%9B%B6%E5%88%B0%E4%B8%80--%E6%90%AD%E5%BB%BAweb%E9%A1%B9%E7%9B%AE%E9%9B%86%E7%BE%A4/">从零到一–搭建web项目集群 - kehaha-5</a>的环境一摸一样，都是使用<code>k3s</code>来进行集群的搭建</p>
+<h2 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h2><p>这次用到了k8s集群+jenkins+harbor构建持续交付流水线</p>
+<ol>
+<li>手动在jenkins中触发构建</li>
+<li>拉去<code>git</code>项目代码</li>
+<li>分别构建<code>vue3</code>前端 和 <code>go</code> 后端项目 <a target="_blank" rel="noopener" href="https://github.com/kehaha-5/k8s_demo/tree/main/web">k8s_demo&#x2F;web at main · kehaha-5&#x2F;k8s_demo (github.com)</a></li>
+<li>修改<code>k8s</code>部署文件，添加版本号和 <code>kubernetes.io/change-cause</code></li>
+<li>更新<code>k8s</code>部署</li>
+</ol>
+<p>这次没有私有化部署<code>gitlab</code>是因为没有用到<code>webhook</code>，是直接通过jenkins直接触发构建然后拉去的代码</p>
+<h1 id="Harbor"><a href="#Harbor" class="headerlink" title="Harbor"></a>Harbor</h1><p>首先要先部署<code>harbor</code>作为私有镜像仓库，方便上传后续构建的私有镜像和所需要的镜像。</p>
+<p>这次部署会去配置harbor的<code>tls </code> <a target="_blank" rel="noopener" href="https://goharbor.io/docs/2.0.0/install-config/configure-https/">Harbor docs | Configure HTTPS Access to Harbor (goharbor.io)</a> 按着该文档就可以生成对应的域名证书，并且要配置<code>k3s</code>的私有仓库配置<a target="_blank" rel="noopener" href="https://docs.k3s.io/installation/private-registry">Private Registry Configuration | K3s</a>，同时在我的<code>ubuntu</code>系统上面还要进行<code>update-ca-certificates</code> <a target="_blank" rel="noopener" href="https://goharbor.io/docs/2.0.0/install-config/troubleshoot-installation/">Harbor docs | Troubleshooting Harbor Installation (goharbor.io)</a></p>
+<p>在生成好证书以后还要把证书配置到<code>secret</code></p>
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Secret
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> my<span class="token punctuation">-</span>harbor<span class="token punctuation">-</span>tls
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> devops<span class="token punctuation">-</span>tools  
+<span class="token key atrule">type</span><span class="token punctuation">:</span> kubernetes.io/tls
+<span class="token key atrule">data</span><span class="token punctuation">:</span>
+  <span class="token key atrule">tls.crt</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string">
+    LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0t....</span>
+  <span class="token key atrule">tls.key</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string">
+    LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tL....</span>
+    </code></pre>
+
+<p>这次安装是通过<code>helm</code>来安装，所以需要修改<code>value.yaml</code>来进行详细配置 <a target="_blank" rel="noopener" href="https://goharbor.io/docs/2.0.0/install-config/harbor-ha-helm/">Harbor docs | Deploying Harbor with High Availability via Helm (goharbor.io)</a></p>
+<p>这里说一下我的<code>expose</code>配置，我是要通过<code>ingress</code>来进行对外暴露的，因为我自己生成了tls证书，所以<code>certSource</code>要改成<code>secret</code>，并且把<code>secretName: </code>改成我上述配置的secret中</p>
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"> <span class="token punctuation">...</span>.
+ <span class="token key atrule">type</span><span class="token punctuation">:</span> ingress
+ <span class="token key atrule">tls</span><span class="token punctuation">:</span>
+   <span class="token key atrule">enabled</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+   <span class="token comment"># The source of the tls certificate. Set as "auto", "secret"</span>
+   <span class="token comment"># or "none" and fill the information in the corresponding section</span>
+   <span class="token comment"># 1) auto: generate the tls certificate automatically</span>
+   <span class="token comment"># 2) secret: read the tls certificate from the specified secret.</span>
+   <span class="token comment"># The tls certificate can be generated manually or by cert manager</span>
+   <span class="token comment"># 3) none: configure no tls certificate for the ingress. If the default</span>
+   <span class="token comment"># tls certificate is configured in the ingress controller, choose this option</span>
+   <span class="token key atrule">certSource</span><span class="token punctuation">:</span> secret
+   <span class="token key atrule">auto</span><span class="token punctuation">:</span>
+     <span class="token comment"># The common name used to generate the certificate, it's necessary</span>
+     <span class="token comment"># when the type isn't "ingress"</span>
+     <span class="token key atrule">commonName</span><span class="token punctuation">:</span> <span class="token string">""</span>
+   <span class="token key atrule">secret</span><span class="token punctuation">:</span>
+     <span class="token comment"># The name of secret which contains keys named:</span>
+     <span class="token comment"># "tls.crt" - the certificate</span>
+     <span class="token comment"># "tls.key" - the private key</span>
+     <span class="token key atrule">secretName</span><span class="token punctuation">:</span> <span class="token string">"my-harbor-tls"</span>
+<span class="token key atrule">ingress</span><span class="token punctuation">:</span>
+     <span class="token key atrule">hosts</span><span class="token punctuation">:</span>
+       <span class="token key atrule">core</span><span class="token punctuation">:</span> harbor.k8s.demo
+   <span class="token punctuation">...</span>.</code></pre>
+
+<p>其他的按需配置即可</p>
+<p><img src="/2024/08/23/k8s-jenkins-%E6%9E%84%E5%BB%BA%E6%8C%81%E7%BB%AD%E4%BA%A4%E4%BB%98%E6%B5%81%E6%B0%B4%E7%BA%BF/1.png" alt="harbor"></p>
+<p>在成功部署以后，先把项目需要到的镜像进行构建和上传</p>
+<pre class="language-Dockerfile" data-language="Dockerfile"><code class="language-Dockerfile">FROM alpine:3.20.2
+RUN set -eux &amp;&amp; sed -i &#39;s&#x2F;dl-cdn.alpinelinux.org&#x2F;mirrors.ustc.edu.cn&#x2F;g&#39; &#x2F;etc&#x2F;apk&#x2F;repositories
+RUN apk update &amp;&amp; apk add tzdata</code></pre>
+
+<p>先构建后端基础镜像，到时候就流水线中直接使用，不需要而外下载所需要的包，节约流水线时间</p>
+<p>同时在<code>docker login</code>以后把配置文件保存到<code>Secret</code>里面，方便后续在流水线中进行镜像上传</p>
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment">#harborLoginSecret.yaml</span>
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Secret
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> harbor<span class="token punctuation">-</span>login
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> devops<span class="token punctuation">-</span>tools  <span class="token comment"># Specify your namespace</span>
+<span class="token key atrule">type</span><span class="token punctuation">:</span> kubernetes.io/dockerconfigjson
+<span class="token key atrule">data</span><span class="token punctuation">:</span>
+  <span class="token key atrule">.dockerconfigjson</span><span class="token punctuation">:</span> ewoJImF1dGhzIjogewoJCSJoYXJib3IuazhzLmRlbW8iOiB7CgkJCSJhdXRoIjogIllXUnRhVzQ2U0dGeVltOXlNVEl6TkRVPSIKCQl9Cgl9Cn0=</code></pre>
+
+<h1 id="Jenkins"><a href="#Jenkins" class="headerlink" title="Jenkins"></a>Jenkins</h1><p>这里按着官方文档<a target="_blank" rel="noopener" href="https://www.jenkins.io/doc/book/installing/kubernetes/">Kubernetes (jenkins.io)</a>在k8s中部署jenkins</p>
+<p>其中因为jenkins在流水线中会使用到<code>kubernetes</code>的<code>agents</code> <a target="_blank" rel="noopener" href="https://www.jenkins.io/doc/book/using/using-agents/">Using Jenkins agents</a>，所以这里再service中要同时代理<code>50000</code>端口的流量，让<code>agents</code>可以和<code>jenkins</code>可以进行连接 <a target="_blank" rel="noopener" href="https://www.jenkins.io/projects/remoting/">Jenkins Remoting</a></p>
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Service
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> jenkins<span class="token punctuation">-</span>service
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> devops<span class="token punctuation">-</span>tools
+  <span class="token key atrule">annotations</span><span class="token punctuation">:</span>
+      <span class="token key atrule">prometheus.io/scrape</span><span class="token punctuation">:</span> <span class="token string">'true'</span>
+      <span class="token key atrule">prometheus.io/path</span><span class="token punctuation">:</span>   /
+      <span class="token key atrule">prometheus.io/port</span><span class="token punctuation">:</span>   <span class="token string">'8080'</span>
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> jenkins<span class="token punctuation">-</span>server
+  <span class="token key atrule">type</span><span class="token punctuation">:</span> NodePort
+  <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">8080</span>
+      <span class="token key atrule">name</span><span class="token punctuation">:</span> httpport
+      <span class="token key atrule">targetPort</span><span class="token punctuation">:</span> <span class="token number">8080</span>
+      <span class="token key atrule">nodePort</span><span class="token punctuation">:</span> <span class="token number">32000</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">50000</span>
+      <span class="token key atrule">name</span><span class="token punctuation">:</span> jnlpport
+      <span class="token key atrule">targetPort</span><span class="token punctuation">:</span> <span class="token number">50000</span>
+      <span class="token key atrule">nodePort</span><span class="token punctuation">:</span> <span class="token number">32500</span></code></pre>
+
+<p><img src="/2024/08/23/k8s-jenkins-%E6%9E%84%E5%BB%BA%E6%8C%81%E7%BB%AD%E4%BA%A4%E4%BB%98%E6%B5%81%E6%B0%B4%E7%BA%BF/2.png" alt="jenkins"></p>
+<h2 id="git配置"><a href="#git配置" class="headerlink" title="git配置"></a>git配置</h2><p>这里要去系统配置里面的凭证里面配置一个<code>SSH Username with private key</code>，这样才可以通过<code>git</code>来拉去私有仓库</p>
+<p>同时还要再<code>安全配置</code>里面配置<code>Git Host Key Verification Configuration</code> 把它配置为<strong>Accept first connection</strong></p>
+<blockquote>
+<p>Controls how Git plugin verifies the keys presented by the host during SSH connecting.</p>
+<ul>
+<li><p>Known hosts file (default)</p>
+<p>Verifies all host keys using the <code>known_hosts</code> file.</p>
+</li>
+<li><p>Accept first connection</p>
+<p>Automatically adds host keys to the <code>known_hosts</code> file if the host has not been seen before, and does not allow connections to previously-seen hosts with modified keys.</p>
+<ul>
+<li><p>Note that when using ephemeral agents (ex. cloud agents), this strategy is essentially equivalent to <strong>No verification</strong> because it uses the <code>known_hosts</code> file on the agent. To avoid this, you can pre-configure <code>known_hosts</code> with all relevant hosts when creating the images or templates used to define your agents, or use the <strong>Manually provided keys</strong> or <strong>Known hosts file</strong> strategies.</p>
+</li>
+<li><p>OpenSSH version 7.6 or higher is required to use this option with command line Git.</p>
+</li>
+</ul>
+</li>
+<li><p>Manually provided keys</p>
+<p>Verifies all host keys using a set of keys manually configured here.</p>
+</li>
+<li><p>No verification (not recommended)</p>
+<p>Does not verify host keys at all.</p>
+</li>
+</ul>
+</blockquote>
+<h2 id="Kubernetes"><a href="#Kubernetes" class="headerlink" title="Kubernetes"></a>Kubernetes</h2><p>对应k8s的配置，先要去下载Kubernetes的插件<a target="_blank" rel="noopener" href="https://plugins.jenkins.io/kubernetes/">Kubernetes | Jenkins plugin</a></p>
+<p>并且在系统的<code>clouds</code>中添加一个k8s集群，其中有一个<code>Kubernetes 地址</code>可以不用进行配置，因为我的jenkins是部署在k8s集群里面的，在每个pods都可以访问其自身的k8s集群 <a target="_blank" rel="noopener" href="https://kubernetes.io/zh-cn/docs/tasks/run-application/access-api-from-pod/">从 Pod 中访问 Kubernetes API | Kubernetes</a></p>
+<blockquote>
+<p><strong>直接访问 REST API</strong></p>
+<p>在运行在 Pod 中时，你的容器可以通过获取 <code>KUBERNETES_SERVICE_HOST</code> 和 <code>KUBERNETES_SERVICE_PORT_HTTPS</code> 环境变量为 Kubernetes API 服务器生成一个 HTTPS URL。 API 服务器的集群内地址也发布到 <code>default</code> 命名空间中名为 <code>kubernetes</code> 的 Service 中， 从而 Pod 可以引用 <code>kubernetes.default.svc</code> 作为本地 API 服务器的 DNS 名称。</p>
+</blockquote>
+<h3 id="在K8S中动态创建代理"><a href="#在K8S中动态创建代理" class="headerlink" title="在K8S中动态创建代理"></a>在K8S中动态创建代理</h3><p>Jenkins构建项目时，并行构建，如果多个项目同时构建就会有等待。所以这里采用<code>master/slave</code>架构</p>
+<p>这里官方是提供了基础的<code>slave</code>镜像 <a target="_blank" rel="noopener" href="https://hub.docker.com/r/jenkins/inbound-agent/">jenkins&#x2F;inbound-agent - Docker Image | Docker Hub</a></p>
+<p>但是我是需要<code>node</code>和<code>go</code>环境来进行项目构建的，所以这里需要在官方镜像的基础上面添加所需要的构建工具</p>
+<pre class="language-docker" data-language="docker"><code class="language-docker"><span class="token instruction"><span class="token keyword">FROM</span> jenkins/inbound-agent:alpine3.20-jdk17</span>
+
+<span class="token comment"># 切换到 root 用户</span>
+<span class="token instruction"><span class="token keyword">USER</span> root</span>
+
+<span class="token instruction"><span class="token keyword">RUN</span> set -eux &amp;&amp; sed -i <span class="token string">'s/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g'</span> /etc/apk/repositories &amp;&amp; apk update  &amp;&amp;<span class="token operator">\</span>
+apk add nodejs npm &amp;&amp; npm config set registry https://registry.npmmirror.com/ &amp;&amp; <span class="token operator">\</span>
+npm install @vue/cli@5.0.8</span>
+
+<span class="token instruction"><span class="token keyword">COPY</span> go1.22.6.linux-amd64.tar.gz /app/go1.22.6.linux-amd64.tar.gz</span>
+<span class="token instruction"><span class="token keyword">COPY</span> kubectl /usr/local/bin/</span>
+
+<span class="token instruction"><span class="token keyword">RUN</span> rm -rf /usr/local/go &amp;&amp; <span class="token operator">\</span>
+    tar -C /usr/local -xzf /app/go1.22.6.linux-amd64.tar.gz &amp;&amp; <span class="token operator">\</span>
+    ln -s /usr/local/go/bin/go /usr/local/bin/go &amp;&amp; rm -rf /app/go1.22.6.linux-amd64.tar.gz</span>
+
+<span class="token instruction"><span class="token keyword">USER</span> jenkins</span>
+</code></pre>
+
+<p>把它打包成镜像并上传到私有的<code>harbor</code>中</p>
+<h3 id="在K8s中的权限配置"><a href="#在K8s中的权限配置" class="headerlink" title="在K8s中的权限配置"></a>在K8s中的权限配置</h3><p>因为在流水线中，会使用<code>kubectl</code>对不同<code>namespace</code>的deployment进行操作所以需要有对应的权限</p>
+<pre class="language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> ServiceAccount
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> jenkins<span class="token punctuation">-</span>prod
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> devops<span class="token punctuation">-</span>tools
+
+<span class="token punctuation">---</span> 
+
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> rbac.authorization.k8s.io/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Role
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> prod<span class="token punctuation">-</span>pod<span class="token punctuation">-</span>management
+<span class="token key atrule">rules</span><span class="token punctuation">:</span>
+<span class="token punctuation">-</span> <span class="token key atrule">apiGroups</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"*"</span><span class="token punctuation">]</span> 
+  <span class="token key atrule">resources</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"deployments"</span><span class="token punctuation">]</span>
+  <span class="token key atrule">verbs</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"*"</span><span class="token punctuation">]</span>
+
+<span class="token punctuation">---</span>
+
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> rbac.authorization.k8s.io/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> RoleBinding
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> jenkins<span class="token punctuation">-</span>prod<span class="token punctuation">-</span>rolebinding
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> prod
+<span class="token key atrule">subjects</span><span class="token punctuation">:</span>
+<span class="token punctuation">-</span> <span class="token key atrule">kind</span><span class="token punctuation">:</span> ServiceAccount
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> jenkins<span class="token punctuation">-</span>prod
+  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> devops<span class="token punctuation">-</span>tools
+<span class="token key atrule">roleRef</span><span class="token punctuation">:</span>
+  <span class="token key atrule">kind</span><span class="token punctuation">:</span> Role
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> prod<span class="token punctuation">-</span>pod<span class="token punctuation">-</span>management
+  <span class="token key atrule">apiGroup</span><span class="token punctuation">:</span> rbac.authorization.k8s.io
+
+</code></pre>
+
+<p>这里创建了一个<code>jenkins-prod</code>的用户，并且可以操作 <code>namespace</code>为 <code> prod</code>下的<code>deployments</code>所有行为</p>
+<ul>
+<li>我这里<code>jenkins-prod</code>只需要操作<code>prod</code> 下的权限所以使用<code>Role</code></li>
+<li>如果想操作任意<code>namespace</code>下的资源 使用<code>ClusterRole </code></li>
+<li><a target="_blank" rel="noopener" href="https://kubernetes.io/zh-cn/docs/reference/access-authn-authz/rbac/#clusterrole-example">使用 RBAC 鉴权 | Kubernetes</a></li>
+</ul>
+<h3 id="打包镜像"><a href="#打包镜像" class="headerlink" title="打包镜像"></a>打包镜像</h3><p>我的jenkinis是部署在k8s的环境中，无法使用<code>docker</code>来进行打包，所以这里使用<code>kaniko</code><a target="_blank" rel="noopener" href="https://github.com/GoogleContainerTools/kaniko">GoogleContainerTools&#x2F;kaniko: Build Container Images In Kubernetes (github.com)</a>来进行镜像打包和上传到私有镜像仓库，所以需要提前准备一份<code>docker login</code>的<code>Secret</code></p>
+<h2 id="流水线"><a href="#流水线" class="headerlink" title="流水线"></a>流水线</h2><p>ok，在一切都准备好了就可以创建一个流水线项目，并编写对应流水线代码</p>
+<p>这里需要注意几点：</p>
+<ul>
+<li>我要定义了<code>parameters</code>就是在执行流水线前，要输入本次构建的版本号和镜像地址配置，这样打包出来的镜像都会存在版本信息，方便追踪和管理</li>
+</ul>
+<pre class="language-groovy" data-language="groovy"><code class="language-groovy">parameters <span class="token punctuation">&#123;</span>
+    <span class="token function">string</span><span class="token punctuation">(</span>name<span class="token punctuation">:</span> <span class="token string">'FRONTEND_VERSION'</span><span class="token punctuation">,</span> defaultValue<span class="token punctuation">:</span> <span class="token string">'1.0.0'</span><span class="token punctuation">,</span> description<span class="token punctuation">:</span> <span class="token string">'前端版本号'</span><span class="token punctuation">)</span>
+    <span class="token function">string</span><span class="token punctuation">(</span>name<span class="token punctuation">:</span> <span class="token string">'BACKEND_VERSION'</span><span class="token punctuation">,</span> defaultValue<span class="token punctuation">:</span> <span class="token string">'1.0.0'</span><span class="token punctuation">,</span> description<span class="token punctuation">:</span> <span class="token string">'后端版本号'</span><span class="token punctuation">)</span>
+    <span class="token function">string</span><span class="token punctuation">(</span>name<span class="token punctuation">:</span> <span class="token string">'HARBOR_IP'</span><span class="token punctuation">,</span> defaultValue<span class="token punctuation">:</span> <span class="token string">'192.168.1.120'</span><span class="token punctuation">,</span> description<span class="token punctuation">:</span> <span class="token string">'harbor仓库ip'</span><span class="token punctuation">)</span>
+    <span class="token function">string</span><span class="token punctuation">(</span>name<span class="token punctuation">:</span> <span class="token string">'HARBOR_REGISTRY'</span><span class="token punctuation">,</span> defaultValue<span class="token punctuation">:</span> <span class="token string">'harbor.k8s.demo'</span><span class="token punctuation">,</span> description<span class="token punctuation">:</span> <span class="token string">'harbor仓库地址'</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<ul>
+<li><p>在使用<code>agents</code>时要进行一定的配置</p>
+<ul>
+<li><p>缓存配置，通过nfs挂载<code>go</code>和<code>npm</code>的目录来进行资源缓存</p>
+</li>
+<li><p>配置<code>serviceAccountName</code>为我创建的<code>jenkins-prod</code> ，<code>serviceAccountName</code>可以为pod指定一个账号，如果不指定那么账号将会时该<code>namespace</code>下的<code>default </code>它是没有权限操作其他<code>namesapce</code>下的资源的 <a target="_blank" rel="noopener" href="https://kubernetes.io/zh-cn/docs/tasks/configure-pod-container/configure-service-account/">为 Pod 配置服务账号 | Kubernetes</a></p>
+</li>
+<li><p>因为在这个镜像里面，执行的用户是<code>jenkins</code>，但是挂载缓存的权限是<code>root</code>,所以是无法访问到的，但是通过修改<code>securityContext.fsGroup</code>容器中所有进程会是其附组ID的一部分，所以这样就可以把缓存的权限分配到<code>jenkins</code>中，使其有足够的权限操作缓存</p>
+<ul>
+<li><p>那为什么是1000捏？因为在镜像定义的时候，就指定了容器内用户和组ID 都为1000</p>
+<p><img src="/2024/08/23/k8s-jenkins-%E6%9E%84%E5%BB%BA%E6%8C%81%E7%BB%AD%E4%BA%A4%E4%BB%98%E6%B5%81%E6%B0%B4%E7%BA%BF/3.png" alt="alpine3.20-jdk17"></p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<pre class="language-groovy" data-language="groovy"><code class="language-groovy">agent <span class="token punctuation">&#123;</span>
+    kubernetes <span class="token punctuation">&#123;</span>
+        yaml <span class="token string">'''
+        apiVersion: v1
+        kind: Pod
+        metadata:
+          name: jenkins-slave
+        spec:
+          serviceAccountName: jenkins-prod
+          securityContext:
+            fsGroup: 1000
+          containers:
+          - name: jnlp
+            image: harbor.k8s.demo/library/jenkins/inbound-agent-k8s-demo:alpine3.20-jdk17
+            resources:
+              limits:
+                memory: "1Gi"
+                cpu: "1000m"
+              requests:
+                memory: "256Mi"
+                cpu: "250m"
+            volumeMounts:  
+              - name: go-cache
+                mountPath: /home/jenkins/go
+              - name: npm-cache
+                mountPath: /home/jenkins/.npm
+          volumes:  
+          - name: go-cache
+            nfs:
+              server: 192.168.1.125  
+              path: /mnt/nfs_share/go-cache  
+          - name: npm-cache
+            nfs:
+              server: 192.168.1.125  
+              path: /mnt/nfs_share/npm-cache  
+        '''</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<ul>
+<li>在构建镜像时，使用了<code>kaniko</code>作为<code>agents</code><ul>
+<li>这里使用的版本为<code>debug</code>因为流程是启动<code>agents</code>，等待jnlp对其进行连接，连接成功了才可以使用，所以不能让pod退出，而<code>debug</code>的版本是有<code>busybox shell</code> 可以使用<code>sleep 99d</code>是pod不会退出</li>
+<li>这里就是挂载了上述配置的<code>docker login</code>后的<code>config.json</code>文件，保证了推送到私有仓库的权限</li>
+</ul>
+</li>
+</ul>
+<pre class="language-groovy" data-language="groovy"><code class="language-groovy">agent <span class="token punctuation">&#123;</span>
+               kubernetes <span class="token punctuation">&#123;</span>
+                   yaml <span class="token string">'''
+                   apiVersion: v1
+                   kind: Pod
+                   metadata:
+                     labels:
+                       app: kaniko
+                   spec:
+                     containers:
+                     - name: kaniko
+                       image: harbor.k8s.demo/library/kaniko-project/executor:v1.23.2-debug
+                       command: ["sleep","99d"]
+                       volumeMounts:
+                       - name: kaniko-secret
+                         mountPath: /kaniko/.docker
+                     volumes:
+                       - name: kaniko-secret
+                         secret:
+                           secretName: harbor-login
+                           items:
+                             - key: .dockerconfigjson
+                               path: config.json
+                   '''</span>
+               <span class="token punctuation">&#125;</span>
+           <span class="token punctuation">&#125;</span></code></pre>
+
+<ul>
+<li>构建镜像命令<ul>
+<li>在构建的时候需要把所需要的文件从上一个<code>steps</code>中获取，这里使用了<code>stash</code>和<code>unstash</code>  <a target="_blank" rel="noopener" href="https://www.jenkins.io/doc/pipeline/steps/workflow-basic-steps/#stash-stash-some-files-to-be-used-later-in-the-build">Pipeline: Basic Steps (jenkins.io)</a><ul>
+<li>在小文件的时候可以这样使用，但是如果文件过多或太大，会影响流水线执行的效率，这个时候可以考虑使用外部挂载，给构建的agents添加一个新的挂载，把打包的所需文件复制到其中，在打包pod中挂载该<code>volumne</code>也可以获取所需的文件</li>
+</ul>
+</li>
+<li>这里把版本配置到了镜像中，这样可以通过配置文件快速了解其对应的后端和前端的版本</li>
+</ul>
+</li>
+</ul>
+<pre class="language-groovy" data-language="groovy"><code class="language-groovy">    steps <span class="token punctuation">&#123;</span>
+        parallel <span class="token punctuation">(</span>
+            <span class="token string">'构建前端镜像'</span><span class="token punctuation">:</span> <span class="token punctuation">&#123;</span>
+                unstash <span class="token string">'frontend-artifact'</span>
+                <span class="token function">container</span><span class="token punctuation">(</span><span class="token string">'kaniko'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    sh <span class="token interpolation-string"><span class="token string">"echo </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span><span class="token expression">params<span class="token punctuation">.</span>HARBOR_IP</span><span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string"> </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span><span class="token expression">params<span class="token punctuation">.</span>HARBOR_REGISTRY</span><span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string"> >> /etc/hosts"</span></span>
+                    sh <span class="token interpolation-string"><span class="token string">"""
+                        /kaniko/executor  --context `pwd`/web/k8s/front/docker -f `pwd`/web/k8s/front/docker/Dockerfile \
+                        --skip-tls-verify \
+                        --force \
+                        --destination </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span><span class="token expression">params<span class="token punctuation">.</span>HARBOR_REGISTRY</span><span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">/k8s_demo/front:</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span><span class="token expression">params<span class="token punctuation">.</span>FRONTEND_VERSION</span><span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">  
+                    """</span></span>
+                <span class="token punctuation">&#125;</span>
+            <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+            <span class="token string">'构建后端镜像'</span><span class="token punctuation">:</span> <span class="token punctuation">&#123;</span>
+                unstash <span class="token string">'backend-artifact'</span>
+                <span class="token function">container</span><span class="token punctuation">(</span><span class="token string">'kaniko'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    sh <span class="token interpolation-string"><span class="token string">"echo </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span><span class="token expression">params<span class="token punctuation">.</span>HARBOR_IP</span><span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string"> </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span><span class="token expression">params<span class="token punctuation">.</span>HARBOR_REGISTRY</span><span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string"> >> /etc/hosts"</span></span>
+                    sh <span class="token interpolation-string"><span class="token string">"""
+                        /kaniko/executor --context `pwd`/web/k8s/back/docker --dockerfile `pwd`/web/k8s/back/docker/Dockerfile \
+                        --skip-tls-verify \
+                        --force \
+                        --destination </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span><span class="token expression">params<span class="token punctuation">.</span>HARBOR_REGISTRY</span><span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">/k8s_demo/back:</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span><span class="token expression">params<span class="token punctuation">.</span>BACKEND_VERSION</span><span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string"> 
+                    """</span></span>
+                <span class="token punctuation">&#125;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<ul>
+<li><p>k8s更新部署</p>
+<ul>
+<li><p>这里利用了<code>annotate</code>给每个版本都<code>rollout histroy</code>都配置了<code>change-cause</code> 方便后期进行版本回退和查看</p>
+</li>
+<li><p>同时利用了<code>rollout restart</code>来进行滚动更新</p>
+<ul>
+<li><p>滚动更新是 Kubernetes 提供的一种部署更新策略，它逐步替换 Pod 的旧版本，确保在更新过程中始终保持应用程序的可用性。</p>
+<ul>
+<li><strong>零停机时间 (Zero Downtime):</strong> 这是滚动更新最大的优势。在更新过程中，旧 Pod 会逐步被新 Pod 替换，而不会一次性停止所有旧 Pod。这保证了应用在更新过程中始终至少有一部分实例在运行，避免了服务中断。</li>
+<li><strong>控制更新速度:</strong> 你可以控制滚动更新的速度，例如一次更新多少个 Pod，以及每次更新之间等待的时间。这让你可以根据应用的实际情况和风险承受能力来调整更新节奏。</li>
+<li><strong>回滚能力:</strong> 如果新版本出现问题，你可以轻松地回滚到之前的版本。Kubernetes 会保留旧 Pod 的历史版本，方便你快速回滚。</li>
+</ul>
+</li>
+<li><p><strong>滚动更新的配置</strong></p>
+<p>在 Kubernetes 中，你可以通过 Deployment 对象来管理应用的部署和更新。以下是配置滚动更新的一些关键参数：</p>
+<ul>
+<li><strong><code>strategy.type: RollingUpdate</code></strong>: 指定使用滚动更新策略。</li>
+<li><strong><code>strategy.rollingUpdate.maxSurge</code></strong>: 指定在更新过程中，可以额外创建的最大 Pod 数量。例如，设置为 <code>20%</code> 表示可以额外创建当前 Pod 数量 20% 的 Pod。</li>
+<li><strong><code>strategy.rollingUpdate.maxUnavailable</code></strong>: 指定在更新过程中，不可用 Pod 的最大数量或百分比。例如，设置为 <code>25%</code> 表示在更新过程中，最多允许 25% 的 Pod 不可 用。</li>
+<li><strong><code>minReadySeconds</code></strong>: 指定新 Pod 进入 “Ready” 状态后，需要等待的最短时间（秒），才会被认为是可用的，并继续更新其他 Pod。</li>
+</ul>
+</li>
+<li><p>所以最好每个应用的副本数至少为2，这样在滚动更新时可以做到继续服务</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://kubernetes.io/zh-cn/docs/tutorials/kubernetes-basics/update/update-intro/">执行滚动更新 | Kubernetes</a></p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<pre class="language-groovy" data-language="groovy"><code class="language-groovy"><span class="token function">stage</span><span class="token punctuation">(</span><span class="token string">'更新K8s部署'</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            steps <span class="token punctuation">&#123;</span>
+                script <span class="token punctuation">&#123;</span>
+                    sh <span class="token interpolation-string"><span class="token string">"""
+                    sed -i 's|image: .*k8s_demo/.*|image: </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span><span class="token expression">HARBOR_REGISTRY</span><span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">/k8s_demo/back:</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span><span class="token expression">params<span class="token punctuation">.</span>BACKEND_VERSION</span><span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">|g' ./web/k8s/back/k8s/k8sDemoBack.yaml
+                    sed -i 's|image: .*k8s_demo/.*|image: </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span><span class="token expression">HARBOR_REGISTRY</span><span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">/k8s_demo/front:</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span><span class="token expression">params<span class="token punctuation">.</span>FRONTEND_VERSION</span><span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">|g' ./web/k8s/front/k8s/k8sDemoFront.yaml
+                    kubectl apply -f ./web/k8s/back/k8s/k8sDemoBack.yaml
+                    kubectl apply -f ./web/k8s/front/k8s/k8sDemoFront.yaml
+                    kubectl annotate deployment k8s-demo-front-end -n prod  kubernetes.io/change-cause="ci/cd update version to </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span><span class="token expression">params<span class="token punctuation">.</span>BACKEND_VERSION</span><span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">"
+                    kubectl annotate deployment k8s-demo-back-end -n prod  kubernetes.io/change-cause="ci/cd update version to </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span><span class="token expression">params<span class="token punctuation">.</span>BACKEND_VERSION</span><span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">"
+                    kubectl rollout restart deployment -n prod -l app=k8s-demo-front-end
+                    kubectl rollout restart deployment -n prod -l app=k8s-demo-back-end
+                      """</span></span>
+                <span class="token punctuation">&#125;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span></code></pre>
+
+<p>最后完整的配置文件在 <a target="_blank" rel="noopener" href="https://github.com/kehaha-5/k8s_demo/blob/main/web/jenkins/jenkins.pipeline">k8s_demo&#x2F;web&#x2F;jenkins&#x2F;jenkins.pipeline at main · kehaha-5&#x2F;k8s_demo (github.com)</a></p>
+<h2 id="执行"><a href="#执行" class="headerlink" title="执行"></a>执行</h2><p>在执行的时候可以配置对应的版本和镜像信息</p>
+<p><img src="/2024/08/23/k8s-jenkins-%E6%9E%84%E5%BB%BA%E6%8C%81%E7%BB%AD%E4%BA%A4%E4%BB%98%E6%B5%81%E6%B0%B4%E7%BA%BF/4.png" alt="jenkins k8s-demo"></p>
+<p>在执行成功后可以查看对应的记录</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment">#查看滚动更新过程</span>
+root@node-m:~<span class="token comment"># kubectl rollout status  deployment  -n prod -l app=k8s-demo-back-end</span>
+deployment <span class="token string">"k8s-demo-back-end"</span> successfully rolled out
+root@node-m:~<span class="token comment"># kubectl rollout status  deployment  -n prod -l app=k8s-demo-back-end</span>
+Waiting <span class="token keyword">for</span> deployment <span class="token string">"k8s-demo-back-end"</span> rollout to finish: <span class="token number">1</span> out of <span class="token number">2</span> new replicas have been updated<span class="token punctuation">..</span>.
+Waiting <span class="token keyword">for</span> deployment <span class="token string">"k8s-demo-back-end"</span> rollout to finish: <span class="token number">1</span> out of <span class="token number">2</span> new replicas have been updated<span class="token punctuation">..</span>.
+Waiting <span class="token keyword">for</span> deployment <span class="token string">"k8s-demo-back-end"</span> rollout to finish: <span class="token number">1</span> old replicas are pending termination<span class="token punctuation">..</span>.
+Waiting <span class="token keyword">for</span> deployment <span class="token string">"k8s-demo-back-end"</span> rollout to finish: <span class="token number">1</span> old replicas are pending termination<span class="token punctuation">..</span>.
+deployment <span class="token string">"k8s-demo-back-end"</span> successfully rolled out
+<span class="token comment">#查看滚动更新历史记录</span>
+root@node-m:~<span class="token comment"># kubectl rollout history deployment  -n prod -l app=k8s-demo-back-end</span>
+deployment.apps/k8s-demo-back-end
+REVISION  CHANGE-CAUSE
+<span class="token number">1</span>         <span class="token operator">&lt;</span>none<span class="token operator">></span>
+<span class="token number">2</span>         <span class="token operator">&lt;</span>none<span class="token operator">></span>
+<span class="token number">3</span>         <span class="token operator">&lt;</span>none<span class="token operator">></span>
+<span class="token number">4</span>         <span class="token operator">&lt;</span>none<span class="token operator">></span>
+<span class="token number">5</span>         ci/cd-update-version-to-1.0.0
+<span class="token number">6</span>         ci/cd update version to <span class="token number">1.1</span>.2
+<span class="token number">7</span>         ci/cd update version to <span class="token number">1.1</span>.2
+<span class="token number">8</span>         ci/cd update version to <span class="token number">1.1</span>.5
+<span class="token number">9</span>         ci/cd update version to <span class="token number">1.1</span>.5
+<span class="token comment">#查看目前pod信息</span>
+root@node-m:~<span class="token comment"># kubectl get pods -n prod -l app=k8s-demo-back-end</span>
+NAME                                 READY   STATUS    RESTARTS   AGE
+k8s-demo-back-end-5c74755bcd-cgt78   <span class="token number">1</span>/1     Running   <span class="token number">0</span>          2m13s
+k8s-demo-back-end-5c74755bcd-md6j2   <span class="token number">1</span>/1     Running   <span class="token number">0</span>          2m14s</code></pre>
+
+<p>ok，以上就是实现了在k8s中部署jenkins和harbor实现自动交付流水线</p>
+
+        
+        <br />
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+        <div id="lv-container"></div>
+        <div class="giscus"></div>
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+        <li>
+            <a target="_blank"  href="https://github.com/kehaha-5">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-github"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+    </ul>
+    
+    <p>
+        <span id="busuanzi_container_site_pv">
+            <span id="busuanzi_value_site_pv"></span>PV
+        </span>
+        <span id="busuanzi_container_site_uv">
+            <span id="busuanzi_value_site_uv"></span>UV
+        </span>
+        Created By <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>  Theme <a target="_blank" rel="noopener" href="https://github.com/aircloud/hexo-theme-aircloud">AirCloud</a></p>
+</footer>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = "search.json"
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="/js/index.js"></script>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+</html>
+
+<!-- fancybox support -->
+
+    <!-- for theme: default is false -->
+    <!-- for page: default is true -->
+    
+<script src="/js/fancybox/jquery.fancybox.min.js" key="fancybox_js"></script>
+<script src="/js/fancybox/wrapImage.js" key="wrap_image_js"></script>
+
+        
+<link rel="stylesheet" href="/js/fancybox/jquery.fancybox.min.css" key="fancybox_css">
+
+            

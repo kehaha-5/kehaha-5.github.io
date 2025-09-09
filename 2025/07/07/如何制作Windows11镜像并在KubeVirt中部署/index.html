@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang=zh-CN>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="website">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        如何制作Windows11镜像并在KubeVirt中部署 - kehaha-5
+        
+    </title>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/aircloud.css">
+
+    
+<link rel="stylesheet" href="/css/gitment.css">
+
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_28hi1hpxx24.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i> Just record it ! </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar radius">
+            <img src="/img/avatar.jpg" />
+        </div>
+        <div class="name">
+            <i>kehaha-5</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li >
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li >
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li >
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li >
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+            <li>
+                <a id="search">
+                    <i class="iconfont icon-sousuo1"></i>
+                    <span>搜索</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#win11%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%85%8D%E7%BD%AE"><span class="toc-text">win11虚拟机配置</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A9%B1%E5%8A%A8%E5%AE%89%E8%A3%85"><span class="toc-text">驱动安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E9%94%81BitLocker"><span class="toc-text">解锁BitLocker</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#cloudbase-init-%E5%AE%89%E8%A3%85"><span class="toc-text">cloudbase-init 安装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AEcloudbase-init"><span class="toc-text">配置cloudbase-init</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%87%86%E5%A4%87-NoCloudConfigDriveService-%E6%95%B0%E6%8D%AE"><span class="toc-text">准备 NoCloudConfigDriveService 数据</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sysprep%E7%B3%BB%E7%BB%9F%E5%B0%81%E8%A3%85"><span class="toc-text">sysprep系统封装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E9%AA%8C%E8%AF%81"><span class="toc-text">配置验证</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#kubevirt%E9%85%8D%E7%BD%AE"><span class="toc-text">kubevirt配置</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#biso%E9%85%8D%E7%BD%AE"><span class="toc-text">biso配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#cpu%E9%85%8D%E7%BD%AE"><span class="toc-text">cpu配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#cloudbase%E9%85%8D%E7%BD%AE"><span class="toc-text">cloudbase配置</span></a></li></ol></li></ol>
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-bg" id="search-bg"></div>
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input"/>
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+
+        <div class="index-about-mobile">
+            <i> Just record it ! </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        如何制作Windows11镜像并在KubeVirt中部署
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2025-07-07 21:52:01</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#边做边学" title="边做边学">边做边学</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#windows11" title="windows11">windows11</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#kubevirt" title="kubevirt">kubevirt</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+</span>
+    </div>
+    <div class="post-content no-indent">
+        <blockquote>
+<p>最近需要在k8s中解锁win11虚拟机，所以进行了相关学习并记录下此篇博客</p>
+</blockquote>
+<h1 id="win11虚拟机配置"><a href="#win11虚拟机配置" class="headerlink" title="win11虚拟机配置"></a>win11虚拟机配置</h1><p>本地先安装win11虚拟机并准备所需要的软件，这里使用linux来创建win11虚拟机</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">virt-install <span class="token punctuation">\</span>
+ --virt-type<span class="token operator">=</span>kvm <span class="token punctuation">\</span>
+ <span class="token parameter variable">--name</span> win11-render-1.6 <span class="token punctuation">\</span>
+ <span class="token parameter variable">--ram</span> <span class="token number">16384</span> <span class="token punctuation">\</span>
+ <span class="token parameter variable">--vcpus</span><span class="token operator">=</span><span class="token number">8</span> <span class="token punctuation">\</span>
+ --os-variant<span class="token operator">=</span>win11  <span class="token punctuation">\</span>
+ <span class="token parameter variable">--cdrom</span><span class="token operator">=</span>/data/render/Win11_24H2_Chinese_Simplified_x64.iso <span class="token punctuation">\</span>
+ <span class="token parameter variable">--network</span><span class="token operator">=</span>default,model<span class="token operator">=</span>virtio <span class="token punctuation">\</span>
+ <span class="token parameter variable">--graphics</span> vnc,listen<span class="token operator">=</span><span class="token number">0.0</span>.0.0 <span class="token parameter variable">--noautoconsole</span> <span class="token punctuation">\</span>
+ <span class="token parameter variable">--disk</span> <span class="token assign-left variable">path</span><span class="token operator">=</span>/data/render/virtio-win-0.1.271.iso,device<span class="token operator">=</span>cdrom <span class="token punctuation">\</span>
+ <span class="token parameter variable">--disk</span> <span class="token assign-left variable">path</span><span class="token operator">=</span>/data/render/win11-render-1.6.qcow2,size<span class="token operator">=</span><span class="token number">256</span>,bus<span class="token operator">=</span>virtio,format<span class="token operator">=</span>qcow2 <span class="token punctuation">\</span>
+ <span class="token parameter variable">--boot</span> uefi <span class="token comment"># win11默认使用uefi启动</span></code></pre>
+
+<p>这里有一个要注意的点是启动的时候除了挂载win11的iso还要挂载virtio-win的驱动，不然会出现个别硬件无法使用的问题</p>
+<p>virtio-win下载地址：<a target="_blank" rel="noopener" href="https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/">https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/</a></p>
+<h2 id="驱动安装"><a href="#驱动安装" class="headerlink" title="驱动安装"></a>驱动安装</h2><p>参考文档</p>
+<p><a target="_blank" rel="noopener" href="https://kubevirt.io/user-guide/user_workloads/windows_virtio_drivers/">https://kubevirt.io/user-guide/user_workloads&#x2F;windows_virtio_drivers&#x2F;</a></p>
+<p>在安装系统的时候会出现无可选磁盘的问题，这个时候就要安装virtio-win里面的磁盘驱动（vioscsi），同时也可以把网络驱动给安装了(NetKvm)</p>
+<p><img src="/2025/07/07/%E5%A6%82%E4%BD%95%E5%88%B6%E4%BD%9CWindows11%E9%95%9C%E5%83%8F%E5%B9%B6%E5%9C%A8KubeVirt%E4%B8%AD%E9%83%A8%E7%BD%B2/install-vioscsi.png"></p>
+<p>进到系统后打开设备管理器看看那些设备需要安装驱动（从virtio-win里面安装）</p>
+<p><img src="/2025/07/07/%E5%A6%82%E4%BD%95%E5%88%B6%E4%BD%9CWindows11%E9%95%9C%E5%83%8F%E5%B9%B6%E5%9C%A8KubeVirt%E4%B8%AD%E9%83%A8%E7%BD%B2/driver.png"></p>
+<h2 id="解锁BitLocker"><a href="#解锁BitLocker" class="headerlink" title="解锁BitLocker"></a>解锁BitLocker</h2><p>成功进入系统后先别急着对系统进行定制安装，先把磁盘的BitLocker给关闭掉，以便后面进行sysprep打包</p>
+<p>在powershell中输入</p>
+<pre class="language-powershell" data-language="powershell"><code class="language-powershell"><span class="token comment"># 查看磁盘解锁状态</span>
+manage-bde <span class="token operator">-</span>status
+BitLocker 驱动器加密: 配置工具版本 10<span class="token punctuation">.</span>0<span class="token punctuation">.</span>26100
+版权所有 <span class="token punctuation">(</span>C<span class="token punctuation">)</span> 2013 Microsoft Corporation。保留所有权利。
+
+可以使用 BitLocker 驱动器加密
+保护的磁盘卷:
+卷 C: <span class="token punctuation">[</span><span class="token punctuation">]</span>
+<span class="token namespace">[OS 卷]</span>
+
+    大小:              255<span class="token punctuation">.</span>19 GB
+    BitLocker 版本:    无
+    转换状态:          完全解密
+    已加密百分比:      0<span class="token punctuation">.</span>0%  <span class="token comment"># 查看解密进度</span>
+    加密方法:          无
+    保护状态:          保护关闭
+    锁定状态:          已解锁
+    标识字段:          无
+    密钥保护器:        找不到
+    
+<span class="token comment"># 关闭对应磁盘BitLocker</span>
+manage-bde <span class="token operator">-</span>off C:</code></pre>
+
+<h2 id="cloudbase-init-安装"><a href="#cloudbase-init-安装" class="headerlink" title="cloudbase-init 安装"></a>cloudbase-init 安装</h2><p>在完成系统定制化软件安装后，下载cloudbase-init进行系统配置 <a target="_blank" rel="noopener" href="https://cloudbase.it/cloudbase-init/">https://cloudbase.it/cloudbase-init/</a></p>
+<p>使用cloudbase-init可以读取虚拟机启动时的配置进行动态配置系统信息（比如hostname、用户密码等）</p>
+<p><img src="/2025/07/07/%E5%A6%82%E4%BD%95%E5%88%B6%E4%BD%9CWindows11%E9%95%9C%E5%83%8F%E5%B9%B6%E5%9C%A8KubeVirt%E4%B8%AD%E9%83%A8%E7%BD%B2/cloudbase1.png"></p>
+<p>如果你这个时候已经配置好系统了，可以勾选下面的选项，它将会自动执行sysprep并关机</p>
+<p><img src="/2025/07/07/%E5%A6%82%E4%BD%95%E5%88%B6%E4%BD%9CWindows11%E9%95%9C%E5%83%8F%E5%B9%B6%E5%9C%A8KubeVirt%E4%B8%AD%E9%83%A8%E7%BD%B2/cloudbase2.png"></p>
+<h3 id="配置cloudbase-init"><a href="#配置cloudbase-init" class="headerlink" title="配置cloudbase-init"></a>配置cloudbase-init</h3><p> cloudbase-init 的典型用法主要是通过配置文件进行配置，以确定要使用哪些服务（services）和插件（plugins），然后在这些文件中设置参数来定制它们的行为以及整体初始化过程  </p>
+<p><a target="_blank" rel="noopener" href="https://cloudbase-init.readthedocs.io/en/latest/">https://cloudbase-init.readthedocs.io/en/latest/</a></p>
+<p>这里进行默认用户密码修改和hostname的配置</p>
+<p>首先先配置对应的配置文件 cloudbase-init.conf ，这里只用配置 cloudbase-init.conf ，不用配置cloudbase-init-unattend.conf </p>
+<p>因为我们这使用的plugins是 <strong>cloudbaseinit.plugins.common.sethostname.SetHostNamePlugin</strong> 、<strong>cloudbaseinit.plugins.common.setuserpassword.SetUserPasswordPlugin</strong> 和 <strong>cloudbaseinit.plugins.common.userdata.UserDataPlugin</strong></p>
+<p>而cloudbase-init-unattend.conf中只能使用<strong>MTU</strong> 和 <strong>hostname</strong> plugins</p>
+<p>因为要在本地验证配置，所以使用的service是  <strong>cloudbaseinit.metadata.services.nocloudservice.NoCloudConfigDriveService</strong></p>
+<p><a target="_blank" rel="noopener" href="https://cloudbase-init.readthedocs.io/en/latest/tutorial.html#configuration-file">https://cloudbase-init.readthedocs.io/en/latest/tutorial.html#configuration-file</a></p>
+<pre class="language-plain" data-language="plain"><code class="language-plain"># cloudbase-init.conf  metadata_services和plugins等相关配置
+metadata_services=cloudbaseinit.metadata.services.nocloudservice.NoCloudConfigDriveService
+plugins=cloudbaseinit.plugins.common.sethostname.SetHostNamePlugin,cloudbaseinit.plugins.common.setuserpassword.SetUserPasswordPlugin,cloudbaseinit.plugins.windows.updates.WindowsAutoUpdatesPlugin,cloudbaseinit.plugins.common.userdata.UserDataPlugin
+allow_reboot=false    # allow the service to reboot the system
+stop_service_on_exit=false</code></pre>
+
+<h3 id="准备-NoCloudConfigDriveService-数据"><a href="#准备-NoCloudConfigDriveService-数据" class="headerlink" title="准备 NoCloudConfigDriveService 数据"></a>准备 <font style="color:rgb(0, 0, 0);">NoCloudConfigDriveService 数据</font></h3><blockquote>
+<p><font style="color:rgb(64, 64, 64);background-color:rgb(252, 252, 252);">The metadata is provided on a config-drive (vfat or iso9660) with the label cidata or CIDATA.</font></p>
+<p><font style="color:rgb(64, 64, 64);background-color:rgb(252, 252, 252);">The default folder structure for NoCloud is:</font></p>
+<ul>
+<li><font style="color:rgb(64, 64, 64);background-color:rgb(252, 252, 252);">&#x2F;user-data</font></li>
+<li><font style="color:rgb(64, 64, 64);background-color:rgb(252, 252, 252);">&#x2F;meta-data</font></li>
+</ul>
+</blockquote>
+<p>这个 <code>NoCloudConfigDriveServic </code> 数据是一个iso磁盘，并且名称要为 cidata 或 CIDATA</p>
+<p><font style="color:rgb(0, 0, 0);">里面的文件可以有：meta-data(元数据) 和user-data(用户定义的数据)</font></p>
+<p><a target="_blank" rel="noopener" href="https://cloudinit.readthedocs.io/en/latest/reference/datasources/nocloud.html">https://cloudinit.readthedocs.io/en/latest/reference/datasources/nocloud.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://cloudbase-init.readthedocs.io/en/latest/plugins.html#user-data-main">https://cloudbase-init.readthedocs.io/en/latest/plugins.html#user-data-main</a></p>
+<p>以下就是这次meta_data和user_data的配置</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># cat meta_data.yaml </span>
+instance-id: test-windows
+hostname: test-windows
+<span class="token comment"># cat user_data.yaml</span>
+<span class="token comment">#cloud-config</span>
+set_hostname: test-windows
+
+users:
+  - name: admin
+    passwd: 1qaz@WSX <span class="token comment"># 对应用户的初始化密码</span>
+    groups:
+      - Administrators
+
+runcmd:
+  - <span class="token string">'powershell -command "Write-Host \"Cloudbase-Init configuration applied successfully!\""'</span></code></pre>
+
+<p>进行iso打包</p>
+<p><a target="_blank" rel="noopener" href="https://documentation.ubuntu.com/public-images/public-images-how-to/use-local-cloud-init-ds/">https://documentation.ubuntu.com/public-images/public-images-how-to/use-local-cloud-init-ds/</a></p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 下载 cloud-localds</span>
+<span class="token comment"># dnf --enablerepo=devel install cloud-utils</span>
+<span class="token comment"># cloud-localds config-drive.iso user_data.yaml meta_data.yaml</span></code></pre>
+
+<p>把打包出来的config-drive.iso挂载到对应的虚拟机里面</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># virsh edit --domain win11-test-cloudbase-init </span>
+<span class="token punctuation">..</span>.
+    <span class="token operator">&lt;</span>disk <span class="token assign-left variable">type</span><span class="token operator">=</span><span class="token string">'file'</span> <span class="token assign-left variable">device</span><span class="token operator">=</span><span class="token string">'cdrom'</span><span class="token operator">></span>
+      <span class="token operator">&lt;</span>driver <span class="token assign-left variable">name</span><span class="token operator">=</span><span class="token string">'qemu'</span> <span class="token assign-left variable">type</span><span class="token operator">=</span><span class="token string">'raw'</span>/<span class="token operator">></span>
+      <span class="token operator">&lt;</span>source <span class="token assign-left variable">file</span><span class="token operator">=</span><span class="token string">'/data/render/cloudbase-init/config-drive.iso'</span>/<span class="token operator">></span>
+      <span class="token operator">&lt;</span>target <span class="token assign-left variable">dev</span><span class="token operator">=</span><span class="token string">'sdd'</span> <span class="token assign-left variable">bus</span><span class="token operator">=</span><span class="token string">'sata'</span>/<span class="token operator">></span>
+      <span class="token operator">&lt;</span>readonly/<span class="token operator">></span>
+      <span class="token operator">&lt;</span>address <span class="token assign-left variable">type</span><span class="token operator">=</span><span class="token string">'drive'</span> <span class="token assign-left variable">controller</span><span class="token operator">=</span><span class="token string">'0'</span> <span class="token assign-left variable">bus</span><span class="token operator">=</span><span class="token string">'0'</span> <span class="token assign-left variable">target</span><span class="token operator">=</span><span class="token string">'0'</span> <span class="token assign-left variable">unit</span><span class="token operator">=</span><span class="token string">'3'</span>/<span class="token operator">></span>
+    <span class="token operator">&lt;</span>/disk<span class="token operator">></span>
+<span class="token punctuation">..</span>.</code></pre>
+
+<p><img src="/2025/07/07/%E5%A6%82%E4%BD%95%E5%88%B6%E4%BD%9CWindows11%E9%95%9C%E5%83%8F%E5%B9%B6%E5%9C%A8KubeVirt%E4%B8%AD%E9%83%A8%E7%BD%B2/disk.png"></p>
+<pre class="language-powershell" data-language="powershell"><code class="language-powershell"><span class="token function">PS</span> G:\> <span class="token function">dir</span>
+
+    目录: G:\
+
+Mode                 LastWriteTime         Length Name
+<span class="token operator">--</span><span class="token operator">--</span>                 <span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span><span class="token operator">-</span>         <span class="token operator">--</span><span class="token operator">--</span><span class="token operator">--</span> <span class="token operator">--</span><span class="token operator">--</span>
+<span class="token operator">--</span>r-<span class="token operator">--</span>          2025/7/6     23:32             49 meta-<span class="token keyword">data</span>
+<span class="token operator">--</span>r-<span class="token operator">--</span>          2025/7/6     23:32            224 user-<span class="token keyword">data</span></code></pre>
+
+<p>接下来可以按照项目要求安装软件，比如在windows上面安装openssh方便使用ansible进行管理</p>
+<p><a href="https://kehaha-5.github.io/2025/07/06/%E4%BD%BF%E7%94%A8ansible%E7%AE%A1%E7%90%86windwos/">使用ansible管理windwos - kehaha-5</a></p>
+<h2 id="sysprep系统封装"><a href="#sysprep系统封装" class="headerlink" title="sysprep系统封装"></a>sysprep系统封装</h2><p>手动进行sysprep系统封装</p>
+<p><a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-cn/windows-hardware/manufacture/desktop/sysprep--system-preparation--overview?view=windows-11">https://learn.microsoft.com/zh-cn/windows-hardware/manufacture/desktop/sysprep--system-preparation--overview?view=windows-11</a></p>
+<p>命令文档：<a target="_blank" rel="noopener" href="https://learn.microsoft.com/zh-cn/windows-hardware/manufacture/desktop/sysprep-command-line-options?view=windows-11">https://learn.microsoft.com/zh-cn/windows-hardware/manufacture/desktop/sysprep-command-line-options?view=windows-11</a></p>
+<p>如果你的系统想要第一次进入时进行重新配置(oobe)就执行 </p>
+<p>oobe: <font style="color:rgb(22, 22, 22);">客户可以通过开箱即用体验 (OOBE) 添加用户特定的信息并接受 Microsoft 软件许可条款</font></p>
+<pre class="language-powershell" data-language="powershell"><code class="language-powershell"><span class="token operator">%</span>WINDIR%\system32\sysprep\sysprep<span class="token punctuation">.</span>exe <span class="token operator">/</span>generalize <span class="token operator">/</span>shutdown <span class="token operator">/</span>oobe <span class="token operator">/</span>mode:vm</code></pre>
+
+<p>如果想要系统第一次进入时进入审核模式，方便系统调式就执行</p>
+<pre class="language-powershell" data-language="powershell"><code class="language-powershell"><span class="token operator">%</span>WINDIR%\system32\sysprep\sysprep<span class="token punctuation">.</span>exe <span class="token operator">/</span>generalize <span class="token operator">/</span>shutdown <span class="token operator">/</span>oobe <span class="token operator">/</span>mode:vm</code></pre>
+
+<p>如果想要进入到无人接触模式就要配置好unattend文件，同时命令中指定对应的文件</p>
+<pre class="language-powershell" data-language="powershell"><code class="language-powershell"><span class="token operator">%</span>WINDIR%\system32\sysprep\sysprep<span class="token punctuation">.</span>exe <span class="token operator">/</span>generalize <span class="token operator">/</span>oobe <span class="token operator">/</span>shutdown <span class="token operator">/</span>unattend:xxx <span class="token operator">/</span>mode:vm</code></pre>
+
+<p>这里使用的是无人接触模式，如果没有其它特殊的配置，unattend.xml可以用cloudbase-init安装时会携带的unattend.xml文件</p>
+<p>注意必须要添加 <code>/mode:vm</code> 参数，否则可能会出现启动蓝屏（code:INACCESSIBLE BOOT DEVICE）或者出现提示系统无法启动，请重新安装windwos等无法启动的问题</p>
+<p>这里使用添加 <code>/shutdown</code> 参数确保系统打包好后自动关机</p>
+<h2 id="配置验证"><a href="#配置验证" class="headerlink" title="配置验证"></a>配置验证</h2><p>在配置完上述的CloudBase-Init和Sysprep打包关机后，手动启动系统，在系统启动完成后可以在cloudbase-init的log目录下面查看对应的执行日志</p>
+<pre class="language-log" data-language="log"><code class="language-log"><span class="token date number">2025-07-07</span> <span class="token time number">14:59:04.852</span> <span class="token number">3768</span> <span class="token level info keyword">INFO</span> <span class="token domain constant">cloudbaseinit.metadata.services.osconfigdrive.windows</span> <span class="token punctuation">[</span><span class="token operator">-</span><span class="token punctuation">]</span> Config Drive found on G<span class="token operator">:</span>\
+<span class="token date number">2025-07-07</span> <span class="token time number">14:59:04.857</span> <span class="token number">3768</span> <span class="token level debug keyword">DEBUG</span> <span class="token domain constant">cloudbaseinit.metadata.services.baseconfigdrive</span> <span class="token punctuation">[</span><span class="token operator">-</span><span class="token punctuation">]</span> <span class="token property">Metadata copied to folder:</span> <span class="token string">'C:\\WINDOWS\\TEMP\\tmpbxgu6_cf'</span> load <span class="token file-path string">C:\Program</span> Files\Cloudbase Solutions\Cloudbase<span class="token operator">-</span>Init\Python\Lib\site<span class="token operator">-</span>packages\cloudbaseinit\metadata\services\baseconfigdrive<span class="token punctuation">.</span>py<span class="token operator">:</span><span class="token number">81</span>
+<span class="token date number">2025-07-07</span> <span class="token time number">14:59:04.862</span> <span class="token number">3768</span> <span class="token level info keyword">INFO</span> <span class="token domain constant">cloudbaseinit.init</span> <span class="token punctuation">[</span><span class="token operator">-</span><span class="token punctuation">]</span> <span class="token property">Metadata service loaded:</span> <span class="token string">'NoCloudConfigDriveService'</span>
+<span class="token date number">2025-07-07</span> <span class="token time number">14:59:04.864</span> <span class="token number">3768</span> <span class="token level debug keyword">DEBUG</span> <span class="token domain constant">cloudbaseinit.init</span> <span class="token punctuation">[</span><span class="token operator">-</span><span class="token punctuation">]</span> <span class="token property">Instance id:</span> test<span class="token operator">-</span>windows configure_host <span class="token file-path string">C:\Program</span> Files\Cloudbase Solutions\Cloudbase<span class="token operator">-</span>Init\Python\Lib\site<span class="token operator">-</span>packages\cloudbaseinit\init<span class="token punctuation">.</span>py<span class="token operator">:</span><span class="token number">202</span>
+<span class="token date number">2025-07-07</span> <span class="token time number">14:59:04.869</span> <span class="token number">3768</span> <span class="token level debug keyword">DEBUG</span> <span class="token domain constant">cloudbaseinit.utils.classloader</span> <span class="token punctuation">[</span><span class="token operator">-</span><span class="token punctuation">]</span> Loading class <span class="token string">'cloudbaseinit.plugins.common.sethostname.SetHostNamePlugin'</span> load_class <span class="token file-path string">C:\Program</span> Files\Cloudbase Solutions\Cloudbase<span class="token operator">-</span>Init\Python\Lib\site<span class="token operator">-</span>packages\cloudbaseinit\utils\classloader<span class="token punctuation">.</span>py<span class="token operator">:</span><span class="token number">35</span>
+<span class="token date number">2025-07-07</span> <span class="token time number">14:59:04.873</span> <span class="token number">3768</span> <span class="token level debug keyword">DEBUG</span> <span class="token domain constant">cloudbaseinit.utils.classloader</span> <span class="token punctuation">[</span><span class="token operator">-</span><span class="token punctuation">]</span> Loading class <span class="token string">'cloudbaseinit.plugins.common.setuserpassword.SetUserPasswordPlugin'</span> load_class <span class="token file-path string">C:\Program</span> Files\Cloudbase Solutions\Cloudbase<span class="token operator">-</span>Init\Python\Lib\site<span class="token operator">-</span>packages\cloudbaseinit\utils\classloader<span class="token punctuation">.</span>py<span class="token operator">:</span><span class="token number">35</span>
+<span class="token date number">2025-07-07</span> <span class="token time number">14:59:04.876</span> <span class="token number">3768</span> <span class="token level debug keyword">DEBUG</span> <span class="token domain constant">cloudbaseinit.utils.classloader</span> <span class="token punctuation">[</span><span class="token operator">-</span><span class="token punctuation">]</span> Loading class <span class="token string">'cloudbaseinit.plugins.windows.updates.WindowsAutoUpdatesPlugin'</span> load_class <span class="token file-path string">C:\Program</span> Files\Cloudbase Solutions\Cloudbase<span class="token operator">-</span>Init\Python\Lib\site<span class="token operator">-</span>packages\cloudbaseinit\utils\classloader<span class="token punctuation">.</span>py<span class="token operator">:</span><span class="token number">35</span>
+<span class="token date number">2025-07-07</span> <span class="token time number">14:59:04.882</span> <span class="token number">3768</span> <span class="token level debug keyword">DEBUG</span> <span class="token domain constant">cloudbaseinit.utils.classloader</span> <span class="token punctuation">[</span><span class="token operator">-</span><span class="token punctuation">]</span> Loading class <span class="token string">'cloudbaseinit.plugins.common.userdata.UserDataPlugin'</span> load_class <span class="token file-path string">C:\Program</span> Files\Cloudbase Solutions\Cloudbase<span class="token operator">-</span>Init\Python\Lib\site<span class="token operator">-</span>packages\cloudbaseinit\utils\classloader<span class="token punctuation">.</span>py<span class="token operator">:</span><span class="token number">35</span>
+<span class="token date number">2025-07-07</span> <span class="token time number">14:59:04.887</span> <span class="token number">3768</span> <span class="token level info keyword">INFO</span> <span class="token domain constant">cloudbaseinit.init</span> <span class="token punctuation">[</span><span class="token operator">-</span><span class="token punctuation">]</span> Executing plugins for stage <span class="token string">'MAIN'</span><span class="token operator">:</span>
+<span class="token date number">2025-07-07</span> <span class="token time number">14:59:04.888</span> <span class="token number">3768</span> <span class="token level debug keyword">DEBUG</span> <span class="token domain constant">cloudbaseinit.init</span> <span class="token punctuation">[</span><span class="token operator">-</span><span class="token punctuation">]</span> Plugin <span class="token string">'SetHostNamePlugin'</span> execution already done<span class="token punctuation">,</span> skipping _exec_plugin <span class="token file-path string">C:\Program</span> Files\Cloudbase Solutions\Cloudbase<span class="token operator">-</span>Init\Python\Lib\site<span class="token operator">-</span>packages\cloudbaseinit\init<span class="token punctuation">.</span>py<span class="token operator">:</span><span class="token number">61</span>
+<span class="token date number">2025-07-07</span> <span class="token time number">14:59:04.894</span> <span class="token number">3768</span> <span class="token level debug keyword">DEBUG</span> <span class="token domain constant">cloudbaseinit.init</span> <span class="token punctuation">[</span><span class="token operator">-</span><span class="token punctuation">]</span> Plugin <span class="token string">'SetUserPasswordPlugin'</span> execution already done<span class="token punctuation">,</span> skipping _exec_plugin <span class="token file-path string">C:\Program</span> Files\Cloudbase Solutions\Cloudbase<span class="token operator">-</span>Init\Python\Lib\site<span class="token operator">-</span>packages\cloudbaseinit\init<span class="token punctuation">.</span>py<span class="token operator">:</span><span class="token number">61</span>
+<span class="token date number">2025-07-07</span> <span class="token time number">14:59:04.899</span> <span class="token number">3768</span> <span class="token level debug keyword">DEBUG</span> <span class="token domain constant">cloudbaseinit.init</span> <span class="token punctuation">[</span><span class="token operator">-</span><span class="token punctuation">]</span> Plugin <span class="token string">'WindowsAutoUpdatesPlugin'</span> execution already done<span class="token punctuation">,</span> skipping _exec_plugin <span class="token file-path string">C:\Program</span> Files\Cloudbase Solutions\Cloudbase<span class="token operator">-</span>Init\Python\Lib\site<span class="token operator">-</span>packages\cloudbaseinit\init<span class="token punctuation">.</span>py<span class="token operator">:</span><span class="token number">61</span>
+<span class="token date number">2025-07-07</span> <span class="token time number">14:59:04.902</span> <span class="token number">3768</span> <span class="token level debug keyword">DEBUG</span> <span class="token domain constant">cloudbaseinit.init</span> <span class="token punctuation">[</span><span class="token operator">-</span><span class="token punctuation">]</span> Plugin <span class="token string">'UserDataPlugin'</span> execution already done<span class="token punctuation">,</span> skipping _exec_plugin <span class="token file-path string">C:\Program</span> Files\Cloudbase Solutions\Cloudbase<span class="token operator">-</span>Init\Python\Lib\site<span class="token operator">-</span>packages\cloudbaseinit\init<span class="token punctuation">.</span>py<span class="token operator">:</span><span class="token number">61</span>
+<span class="token date number">2025-07-07</span> <span class="token time number">14:59:04.906</span> <span class="token number">3768</span> <span class="token level debug keyword">DEBUG</span> <span class="token domain constant">cloudbaseinit.metadata.services.baseconfigdrive</span> <span class="token punctuation">[</span><span class="token operator">-</span><span class="token punctuation">]</span> <span class="token property">Deleting metadata folder:</span> <span class="token string">'C:\\WINDOWS\\TEMP\\tmpbxgu6_cf'</span> cleanup <span class="token file-path string">C:\Program</span> Files\Cloudbase Solutions\Cloudbase<span class="token operator">-</span>Init\Python\Lib\site<span class="token operator">-</span>packages\cloudbaseinit\metadata\services\baseconfigdrive<span class="token punctuation">.</span>py<span class="token operator">:</span><span class="token number">93</span>
+<span class="token date number">2025-07-07</span> <span class="token time number">14:59:04.911</span> <span class="token number">3768</span> <span class="token level info keyword">INFO</span> <span class="token domain constant">cloudbaseinit.init</span> <span class="token punctuation">[</span><span class="token operator">-</span><span class="token punctuation">]</span> Plugins execution done</code></pre>
+
+<p>从上面的日志可以看到，找到了Config Drive （G盘），获取了hostname为<code>test-windows</code>，并成功启动了 <code>UserDataPlugin</code>、<code>SetHostNamePlugin</code> 、<code>SetUserPasswordPlugin</code>  这几个插件</p>
+<blockquote>
+<p>注意如果想要hostname配置成功，可能需要重新系统</p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="https://cloudbase-init.readthedocs.io/en/latest/userdata.html#cloud-config">https://cloudbase-init.readthedocs.io/en/latest/userdata.html#cloud-config</a></p>
+<h1 id="kubevirt配置"><a href="#kubevirt配置" class="headerlink" title="kubevirt配置"></a>kubevirt配置</h1><p>此时就完成了系统的封装，接下来把对应的qcow2镜像导出到webserver，方便后续导入cdi中</p>
+<p>启动虚拟机用的是kubevirt组件，里面一个虚拟机的相关资源有 cdi、vm、vmi和pod，其中</p>
+<p>cdi是用来导入虚拟机镜像的，可以用http的方式导入上面打包好的win11的镜像</p>
+<p>vm可以理解为定义虚拟机的xml</p>
+<p>vmi就是对应的虚拟机运行时的实例</p>
+<p>pod就是对应k8s中的运行资源</p>
+<h2 id="biso配置"><a href="#biso配置" class="headerlink" title="biso配置"></a>biso配置</h2><p>其中需要额外配置一下vm，因为使用的镜像为win11要使用uef启动，kubevirt默认使用的是biso启动的</p>
+<p><img src="/2025/07/07/%E5%A6%82%E4%BD%95%E5%88%B6%E4%BD%9CWindows11%E9%95%9C%E5%83%8F%E5%B9%B6%E5%9C%A8KubeVirt%E4%B8%AD%E9%83%A8%E7%BD%B2/boot.png"></p>
+<h2 id="cpu配置"><a href="#cpu配置" class="headerlink" title="cpu配置"></a>cpu配置</h2><p>还有就是要配置一下cpu的相关配置，不然任务管理中的cpu数量会跟虚拟机配置和设备管理器中显示的数量不一致</p>
+<p><img src="/2025/07/07/%E5%A6%82%E4%BD%95%E5%88%B6%E4%BD%9CWindows11%E9%95%9C%E5%83%8F%E5%B9%B6%E5%9C%A8KubeVirt%E4%B8%AD%E9%83%A8%E7%BD%B2/cpu1.png"></p>
+<p>不一致的情况如下</p>
+<p><img src="/2025/07/07/%E5%A6%82%E4%BD%95%E5%88%B6%E4%BD%9CWindows11%E9%95%9C%E5%83%8F%E5%B9%B6%E5%9C%A8KubeVirt%E4%B8%AD%E9%83%A8%E7%BD%B2/cpu2.png"></p>
+<h2 id="cloudbase配置"><a href="#cloudbase配置" class="headerlink" title="cloudbase配置"></a>cloudbase配置</h2><p>kubevirt是支持 <code>cloudInitNoCloud</code> 和 <code>cloudInitConfigDrive</code>的配置的，并且也支持从k8s的secret中获取配置信息</p>
+<p>具体看如下链接</p>
+<p><a target="_blank" rel="noopener" href="https://kubevirt.io/user-guide/user_workloads/startup_scripts/#cloud-init-examples">https://kubevirt.io/user-guide/user_workloads&#x2F;startup_scripts&#x2F;#cloud-init-examples</a></p>
+<p>至此，就可以在k8s中解锁win11虚拟机了🥰</p>
+
+        
+        <br />
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+        <div id="lv-container"></div>
+        <div class="giscus"></div>
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+        <li>
+            <a target="_blank"  href="https://github.com/kehaha-5">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-github"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+    </ul>
+    
+    <p>
+        <span id="busuanzi_container_site_pv">
+            <span id="busuanzi_value_site_pv"></span>PV
+        </span>
+        <span id="busuanzi_container_site_uv">
+            <span id="busuanzi_value_site_uv"></span>UV
+        </span>
+        Created By <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>  Theme <a target="_blank" rel="noopener" href="https://github.com/aircloud/hexo-theme-aircloud">AirCloud</a></p>
+</footer>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = "search.json"
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="/js/index.js"></script>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+</html>
+
+<!-- fancybox support -->
+
+    <!-- for theme: default is false -->
+    <!-- for page: default is true -->
+    
+<script src="/js/fancybox/jquery.fancybox.min.js" key="fancybox_js"></script>
+<script src="/js/fancybox/wrapImage.js" key="wrap_image_js"></script>
+
+        
+<link rel="stylesheet" href="/js/fancybox/jquery.fancybox.min.css" key="fancybox_css">
+
+            
