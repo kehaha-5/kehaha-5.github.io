@@ -1,2 +1,0 @@
-const int MAX_MSG_LENGTH = 65507;
-const int MAX_SEND_PACKETS_LOOP = 10;

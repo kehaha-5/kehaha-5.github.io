@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang=zh-CN>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="website">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        记一次Linux网络丢包告警的排查实践 - kehaha-5
+        
+    </title>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/aircloud.css">
+
+    
+<link rel="stylesheet" href="/css/gitment.css">
+
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_28hi1hpxx24.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i> Just record it ! </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar radius">
+            <img src="/img/avatar.jpg" />
+        </div>
+        <div class="name">
+            <i>kehaha-5</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li >
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li >
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li >
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li >
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+            <li>
+                <a id="search">
+                    <i class="iconfont icon-sousuo1"></i>
+                    <span>搜索</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E8%8A%82%E7%82%B9%E6%B5%81%E9%87%8F%E7%8A%B6%E6%80%81"><span class="toc-text">查看节点流量状态</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%99%BB%E5%BD%95%E5%88%B0%E8%8A%82%E7%82%B9%E8%BF%9B%E8%A1%8C%E6%8E%92%E6%9F%A5"><span class="toc-text">登录到节点进行排查</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-bg" id="search-bg"></div>
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input"/>
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+
+        <div class="index-about-mobile">
+            <i> Just record it ! </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        记一次Linux网络丢包告警的排查实践
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2025-08-14 22:32:17</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#排障" title="排障">排障</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#linux" title="linux">linux</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+</span>
+    </div>
+    <div class="post-content no-indent">
+        <blockquote>
+<p>某天晚上，发现在告警群里面收到一条关于网络丢包的告警</p>
+</blockquote>
+<p><img src="/2025/08/14/%E8%AE%B0%E4%B8%80%E6%AC%A1Linux%E7%BD%91%E7%BB%9C%E4%B8%A2%E5%8C%85%E5%91%8A%E8%AD%A6%E7%9A%84%E6%8E%92%E6%9F%A5%E5%AE%9E%E8%B7%B5/alert_dingtalk.png"></p>
+<p>这里看到有两张网卡都出现了丢包，且丢包数量一致，那是因为这个boud4网卡是由enp26s0f0np0和enp26s0f1np1聚合出来了（为了做高可用），所以只要看enp26s0f0np0这张网卡就好了。</p>
+<h1 id="查看节点流量状态"><a href="#查看节点流量状态" class="headerlink" title="查看节点流量状态"></a>查看节点流量状态</h1><p><img src="/2025/08/14/%E8%AE%B0%E4%B8%80%E6%AC%A1Linux%E7%BD%91%E7%BB%9C%E4%B8%A2%E5%8C%85%E5%91%8A%E8%AD%A6%E7%9A%84%E6%8E%92%E6%9F%A5%E5%AE%9E%E8%B7%B5/grafana.png"></p>
+<p>在grafana中查看节点网络状态，确实是有大流量在跑</p>
+<h1 id="登录到节点进行排查"><a href="#登录到节点进行排查" class="headerlink" title="登录到节点进行排查"></a>登录到节点进行排查</h1><p>先用 <code>ip link</code> 来查看网卡相关信息</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># ip -s link show enp26s0f0np0 </span>
+<span class="token number">4</span>: enp26s0f0np0: <span class="token operator">&lt;</span>BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP<span class="token operator">></span> mtu <span class="token number">9000</span> qdisc mq master bond4 state UP mode DEFAULT group default qlen <span class="token number">1000</span>
+    link/ether 0c:42:a1:32:11:d6 brd ff:ff:ff:ff:ff:ff
+    RX:      bytes     packets errors dropped  missed   mcast           
+    <span class="token number">25911288114346</span> <span class="token number">25333203540</span>      <span class="token number">0</span>  <span class="token number">574380</span>       <span class="token number">0</span> <span class="token number">9523278</span> 
+    TX:      bytes     packets errors dropped carrier collsns           
+    <span class="token number">30755111916060</span> <span class="token number">25795803740</span>      <span class="token number">0</span>       <span class="token number">0</span>       <span class="token number">0</span>       <span class="token number">0</span></code></pre>
+
+<p>可以发现在网卡接受包的时候出现了丢包原因</p>
+<p>使用 <font style="color:rgb(51, 51, 51);">ethtool –S 查看网卡包信息，主要关注rx的信息</font></p>
+<p><font style="color:rgb(51, 51, 51);">其中关于丢包的信息要关注以下几个字段</font> （或者是带err、drop字样的字段）</p>
+<p><font style="color:rgb(51, 51, 51);">rx_err_lane_xx_phy  物理层（PHY层）接收过程中，特定传输通道上检测到的错误（可能是网线存在问题）</font></p>
+<p><font style="color:rgb(51, 51, 51);">rx_out_of_buffer  网卡没有可用的接收缓冲区来存储传入数据包而导致丢包  </font></p>
+<p><font style="color:rgb(51, 51, 51);">rx_buff_alloc_err   网卡在接收数据包时尝试分配内存缓冲区时发生而导致丢包</font></p>
+<p><font style="color:rgb(51, 51, 51);">rx_oversize_pkts_sw_drop 数据包大小超过了软件层面允许（MTU）的最大值而被丢弃的接收数据包数量    </font></p>
+<p><font style="color:rgb(51, 51, 51);">rx_wqe_err  接收工作队列项（Work Queue Entry）错误 , 意味着网卡驱动与硬件之间的通信问题  </font></p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># ethtool -S enp26s0f0np0 | grep -i rx</span>
+<span class="token punctuation">..</span>.
+rx_out_of_buffer  <span class="token number">572782</span>
+<span class="token punctuation">..</span>.</code></pre>
+
+<p><font style="color:rgb(51, 51, 51);">我这里发现rx_out_of_buffer的数量一直在增加，说明网卡的缓冲区处理速度更不上网络传输速度，在上图中也看到网络确实有大量流量进来</font></p>
+<p><font style="color:rgb(51, 51, 51);">查看网卡缓冲区大小</font></p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># ethtool -g enp26s0f0np0 </span>
+Ring parameters <span class="token keyword">for</span> enp26s0f0np0:
+Pre-set maximums:
+RX:             <span class="token number">1024</span>
+RX Mini:        n/a
+RX Jumbo:       n/a
+TX:             <span class="token number">1024</span>
+Current hardware settings:
+RX:             <span class="token number">1024</span>
+RX Mini:        n/a
+RX Jumbo:       n/a
+TX:             <span class="token number">1024</span>
+RX Buf Len:             n/a
+TX Push:        n/a</code></pre>
+
+<p><font style="color:rgb(51, 51, 51);">发现RX的网卡缓冲区大小为1024，临时修改为8192，看看问题是否还存在</font></p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># ethtool -G enp26s0f0np0 rx 8192</span>
+<span class="token comment"># ethtool -g enp26s0f0np0 </span>
+Ring parameters <span class="token keyword">for</span> enp26s0f0np0:
+Pre-set maximums:
+RX:             <span class="token number">8192</span>
+RX Mini:        n/a
+RX Jumbo:       n/a
+TX:             <span class="token number">8192</span>
+Current hardware settings:
+RX:             <span class="token number">8192</span>
+RX Mini:        n/a
+RX Jumbo:       n/a
+TX:             <span class="token number">1024</span>
+RX Buf Len:             n/a
+TX Push:        n/a
+<span class="token comment">#  ethtool -S enp26s0f0np0 | grep -i rx_out_of_buffer</span></code></pre>
+
+<p>在修改后发现 rx_out_of_buffer 的数量没有再添加了，过了5分钟左右对应的告警也恢复了</p>
+<p><img src="/2025/08/14/%E8%AE%B0%E4%B8%80%E6%AC%A1Linux%E7%BD%91%E7%BB%9C%E4%B8%A2%E5%8C%85%E5%91%8A%E8%AD%A6%E7%9A%84%E6%8E%92%E6%9F%A5%E5%AE%9E%E8%B7%B5/alert_recovery.png"></p>
+<p>现在就要把对应的配置进行持久化</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 修改对应的配置文件，添加对应的配置</span>
+<span class="token comment"># vi /etc/sysconfig/network-scripts/ifcfg-enp26s0f0np0</span>
+<span class="token punctuation">..</span>.
+<span class="token assign-left variable">ETHTOOL_OPTS</span><span class="token operator">=</span><span class="token string">"-G <span class="token variable">$&#123;DEVICE&#125;</span> rx 8192"</span>
+<span class="token comment"># 我这里是bond所以另一张网卡也要修改</span>
+<span class="token comment"># vi /etc/sysconfig/network-scripts/ifcfg-enp26s0f1np1</span>
+<span class="token punctuation">..</span>.
+<span class="token assign-left variable">ETHTOOL_OPTS</span><span class="token operator">=</span><span class="token string">"-G <span class="token variable">$&#123;DEVICE&#125;</span> rx 8192"</span></code></pre>
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>这个网卡的<font style="color:rgb(51, 51, 51);">缓冲区有什么用</font></p>
+<p><font style="color:rgb(51, 51, 51);">先看一下一个网络数据包到linux上的大概流程</font></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/256428917">https://zhuanlan.zhihu.com/p/256428917</a> 这里参考大佬的文章</p>
+<p><img src="/2025/08/14/%E8%AE%B0%E4%B8%80%E6%AC%A1Linux%E7%BD%91%E7%BB%9C%E4%B8%A2%E5%8C%85%E5%91%8A%E8%AD%A6%E7%9A%84%E6%8E%92%E6%9F%A5%E5%AE%9E%E8%B7%B5/net1.png"></p>
+<p>这里可以看到把数据保存在缓冲区（Ring buffer）为第6步</p>
+<p><img src="/2025/08/14/%E8%AE%B0%E4%B8%80%E6%AC%A1Linux%E7%BD%91%E7%BB%9C%E4%B8%A2%E5%8C%85%E5%91%8A%E8%AD%A6%E7%9A%84%E6%8E%92%E6%9F%A5%E5%AE%9E%E8%B7%B5/net2.png"></p>
+<p>这个流程再细分一下就是以上的步骤，也就是说当网卡把数据拷到内存的时候发现缓冲区队列满了，无法再添加数据导致本次丢包</p>
+<p>同时上述的文章里面也说了为什么ethtool可以修改这个缓冲区的配置，因为<font style="color:rgb(25, 27, 31);">网卡驱动实现了ethtool所需要的接口，也在这里完成函数地址的注册。当 ethtool 发起一个系统调用之后，内核会找到对应操作的回调函数（实际上调用的就是网卡的接口）。</font></p>
+<p><img src="/2025/08/14/%E8%AE%B0%E4%B8%80%E6%AC%A1Linux%E7%BD%91%E7%BB%9C%E4%B8%A2%E5%8C%85%E5%91%8A%E8%AD%A6%E7%9A%84%E6%8E%92%E6%9F%A5%E5%AE%9E%E8%B7%B5/net3.png"></p>
+
+        
+        <br />
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+        <div id="lv-container"></div>
+        <div class="giscus"></div>
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+        <li>
+            <a target="_blank"  href="https://github.com/kehaha-5">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-github"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+    </ul>
+    
+    <p>
+        <span id="busuanzi_container_site_pv">
+            <span id="busuanzi_value_site_pv"></span>PV
+        </span>
+        <span id="busuanzi_container_site_uv">
+            <span id="busuanzi_value_site_uv"></span>UV
+        </span>
+        Created By <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>  Theme <a target="_blank" rel="noopener" href="https://github.com/aircloud/hexo-theme-aircloud">AirCloud</a></p>
+</footer>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = "search.json"
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="/js/index.js"></script>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+    <script src="https://giscus.app/client.js"
+        data-repo="kehaha-5/kehaha-5.github.io"
+        data-repo-id="R_kgDOLah6DA"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOLah6DM4CvJGE"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+
+
+</html>
+
+<!-- fancybox support -->
+
+    <!-- for theme: default is false -->
+    <!-- for page: default is true -->
+    
+<script src="/js/fancybox/jquery.fancybox.min.js" key="fancybox_js"></script>
+<script src="/js/fancybox/wrapImage.js" key="wrap_image_js"></script>
+
+        
+<link rel="stylesheet" href="/js/fancybox/jquery.fancybox.min.css" key="fancybox_css">
+
+            
