@@ -1,5 +1,5 @@
 ---
-title: 记一次K8s中VPC-NAT-GW公网IP无法访问的排障过程
+title: K8s中VPC-NAT-GW公网IP无法访问的排障过程
 date: 2025-05-15 22:45:59
 tags: [k8s,kube-ovn,排障]
 ---
