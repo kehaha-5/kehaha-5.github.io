@@ -12,7 +12,7 @@
 
     <title>
         
-        记一次K8s中VPC-NAT-GW公网IP无法访问的排障过程 - kehaha-5
+        K8s中VPC-NAT-GW公网IP无法访问的排障过程 - kehaha-5
         
     </title>
 
@@ -137,7 +137,7 @@
 
 <div class="post-container">
     <div class="post-title">
-        记一次K8s中VPC-NAT-GW公网IP无法访问的排障过程
+        K8s中VPC-NAT-GW公网IP无法访问的排障过程
     </div>
 
     <div class="post-meta">
@@ -168,13 +168,13 @@
 <p><a target="_blank" rel="noopener" href="https://kubeovn.github.io/docs/v1.13.x/vpc/vpc/#vpc_2">VPC 入门 - Kube-OVN 文档</a></p>
 <p>进入对应的vpc-nat-gw的pod，查看信息是否正常</p>
 <p>查看网卡信息</p>
-<p><img src="/2025/05/15/%E8%AE%B0%E4%B8%80%E6%AC%A1K8s%E4%B8%ADVPC-NAT-GW%E5%85%AC%E7%BD%91IP%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E7%9A%84%E6%8E%92%E9%9A%9C%E8%BF%87%E7%A8%8B/ip-a.png" alt="ip-a"></p>
+<p><img src="/2025/05/15/K8s%E4%B8%ADVPC-NAT-GW%E5%85%AC%E7%BD%91IP%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E7%9A%84%E6%8E%92%E9%9A%9C%E8%BF%87%E7%A8%8B/ip-a.png" alt="ip-a"></p>
 <p>查看iptable配置</p>
-<p><img src="/2025/05/15/%E8%AE%B0%E4%B8%80%E6%AC%A1K8s%E4%B8%ADVPC-NAT-GW%E5%85%AC%E7%BD%91IP%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E7%9A%84%E6%8E%92%E9%9A%9C%E8%BF%87%E7%A8%8B/iptable-legacy-save.jpg" alt="ip-a"></p>
+<p><img src="/2025/05/15/K8s%E4%B8%ADVPC-NAT-GW%E5%85%AC%E7%BD%91IP%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E7%9A%84%E6%8E%92%E9%9A%9C%E8%BF%87%E7%A8%8B/iptable-legacy-save.jpg" alt="ip-a"></p>
 <p>查看路由配置</p>
-<p><img src="/2025/05/15/%E8%AE%B0%E4%B8%80%E6%AC%A1K8s%E4%B8%ADVPC-NAT-GW%E5%85%AC%E7%BD%91IP%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E7%9A%84%E6%8E%92%E9%9A%9C%E8%BF%87%E7%A8%8B/ip-r.jpg" alt="ip-r"></p>
+<p><img src="/2025/05/15/K8s%E4%B8%ADVPC-NAT-GW%E5%85%AC%E7%BD%91IP%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E7%9A%84%E6%8E%92%E9%9A%9C%E8%BF%87%E7%A8%8B/ip-r.jpg" alt="ip-r"></p>
 <p>上述都没有问题，开始使用tcpdump进行抓包</p>
-<p><img src="/2025/05/15/%E8%AE%B0%E4%B8%80%E6%AC%A1K8s%E4%B8%ADVPC-NAT-GW%E5%85%AC%E7%BD%91IP%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E7%9A%84%E6%8E%92%E9%9A%9C%E8%BF%87%E7%A8%8B/tcpdump.jpg" alt="ip-r"></p>
+<p><img src="/2025/05/15/K8s%E4%B8%ADVPC-NAT-GW%E5%85%AC%E7%BD%91IP%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E7%9A%84%E6%8E%92%E9%9A%9C%E8%BF%87%E7%A8%8B/tcpdump.jpg" alt="ip-r"></p>
 <p>可用看到有流量从eth0过来（在对应vpc上对应的subnet的应用上面ping 119.29.29.29）</p>
 <p>也有xxx.xxx.255.5的流量过来（本地ping对应的公网ip）</p>
 <p>上述说明应用流量和公网流量可以正常达到vpc-nat-gw</p>
@@ -201,7 +201,7 @@ Chain EXCLUSIVE_DNAT <span class="token punctuation">(</span><span class="token 
   <span class="token number">0</span> 	<span class="token number">0</span>    DNAT       <span class="token number">0</span>    --  *      *       <span class="token number">0.0</span>.0.0/0           xxx.xxx.xxx.71       to:10.0.4.10</code></pre>
 
 <p>查看ipv4的转发情况，发现没有开启对于的配置，使用 sysctl -w net.ipv4.ip_forward&#x3D;1 临时开启，访问就正常了</p>
-<p><img src="/2025/05/15/%E8%AE%B0%E4%B8%80%E6%AC%A1K8s%E4%B8%ADVPC-NAT-GW%E5%85%AC%E7%BD%91IP%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E7%9A%84%E6%8E%92%E9%9A%9C%E8%BF%87%E7%A8%8B/net.png" alt="ip-r"></p>
+<p><img src="/2025/05/15/K8s%E4%B8%ADVPC-NAT-GW%E5%85%AC%E7%BD%91IP%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE%E7%9A%84%E6%8E%92%E9%9A%9C%E8%BF%87%E7%A8%8B/net.png" alt="ip-r"></p>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>后面发现是对应被调度到vpc-nat-gw的节点没有配置ipv4转发</p>
 <p>可能是之前临时配置了（ sysctl -w net.ipv4.ip_forward&#x3D;1 ），后面被重置了</p>
 <p>后续通过编辑 &#x2F;etc&#x2F;sysctl.conf 添加 net.ipv4.ip_forward&#x3D;1进行永久配置</p>

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang=zh-CN>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="website">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        监控驱动的故障排查：利用PMQL定位集群问题 - kehaha-5
+        
+    </title>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/aircloud.css">
+
+    
+<link rel="stylesheet" href="/css/gitment.css">
+
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_28hi1hpxx24.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i> Just record it ! </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar radius">
+            <img src="/img/avatar.jpg" />
+        </div>
+        <div class="name">
+            <i>kehaha-5</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li >
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li >
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li >
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li >
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+            <li>
+                <a id="search">
+                    <i class="iconfont icon-sousuo1"></i>
+                    <span>搜索</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E5%AE%9A%E4%BD%8D"><span class="toc-text">问题定位</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#agent%E7%BB%84%E7%BD%91%E8%8A%82%E7%82%B9%E6%A3%80%E6%9F%A5"><span class="toc-text">agent组网节点检查</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%BA%E6%88%BF%E5%85%AC%E7%BD%91%E6%B5%81%E9%87%8F%E6%A3%80%E6%9F%A5"><span class="toc-text">机房公网流量检查</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%92%E6%9F%A5"><span class="toc-text">排查</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E9%83%A8%E6%B5%81%E9%87%8F%E6%8E%92%E6%9F%A5"><span class="toc-text">内部流量排查</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%96%E9%83%A8%E6%B5%81%E9%87%8F%E6%8E%92%E6%9F%A5"><span class="toc-text">外部流量排查</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%84%E7%90%86"><span class="toc-text">处理</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A3%B8%E9%87%91%E5%B1%9E%E5%A4%84%E7%90%86"><span class="toc-text">裸金属处理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B5%81%E9%87%8F%E6%9F%A5%E7%9C%8B"><span class="toc-text">流量查看</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%B4%E6%97%B6%E5%A4%84%E7%90%86"><span class="toc-text">临时处理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8E%92%E6%9F%A5-1"><span class="toc-text">排查</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-bg" id="search-bg"></div>
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input"/>
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+
+        <div class="index-about-mobile">
+            <i> Just record it ! </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        监控驱动的故障排查：利用PMQL定位集群问题
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2025-09-13 17:10:36</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#排障" title="排障">排障</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#k8s" title="k8s">k8s</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+</span>
+    </div>
+    <div class="post-content no-indent">
+        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><blockquote>
+<p>起因是钉钉群内发现大量告警</p>
+</blockquote>
+<p>查看集群状态，发现node状态在ready和notready之间反复横跳，有问题的node都是某地区IDC机房的节点，<font style="color:rgb(44, 44, 54);">集群跟该地区IDC节点组网使用基于WireGuard协议的应用，节点间通信依赖公网出口。</font></p>
+<h2 id="问题定位"><a href="#问题定位" class="headerlink" title="问题定位"></a>问题定位</h2><h3 id="agent组网节点检查"><a href="#agent组网节点检查" class="headerlink" title="agent组网节点检查"></a>agent组网节点检查</h3><p>检查组网节点是否工作正常</p>
+<p>发现是agent节点出现无法连接中继节点或者直连master节点，所以有可能是网络问题</p>
+<p><img src="/2025/09/13/%E7%9B%91%E6%8E%A7%E9%A9%B1%E5%8A%A8%E7%9A%84%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5%EF%BC%9A%E5%88%A9%E7%94%A8PMQL%E5%AE%9A%E4%BD%8D%E9%9B%86%E7%BE%A4%E9%97%AE%E9%A2%98/tailscaled.png"></p>
+<h3 id="机房公网流量检查"><a href="#机房公网流量检查" class="headerlink" title="机房公网流量检查"></a>机房公网流量检查</h3><p>查看机房公网流量出口，发现公网的出流量把带宽都占满了，可以确定是有人把公网出流量占满了，导致集群组网出现问题，从而出现节点notready的情况</p>
+<p><img src="/2025/09/13/%E7%9B%91%E6%8E%A7%E9%A9%B1%E5%8A%A8%E7%9A%84%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5%EF%BC%9A%E5%88%A9%E7%94%A8PMQL%E5%AE%9A%E4%BD%8D%E9%9B%86%E7%BE%A4%E9%97%AE%E9%A2%98/outbound.png"></p>
+<h2 id="排查"><a href="#排查" class="headerlink" title="排查"></a>排查</h2><p>集群内的公网流量分为：</p>
+<ul>
+<li>内部流量：各个pod、node之间相关访问的流量（因为有组网，所以这些内部流量也是走公网出口）</li>
+<li>外部流量：集群中的工作负载通过网关访问公网</li>
+</ul>
+<h3 id="内部流量排查"><a href="#内部流量排查" class="headerlink" title="内部流量排查"></a>内部流量排查</h3><p>集群中内部组网使用了agent节点，所以该机房中的内部流量都会走该agent出去，查看其流量趋势</p>
+<p><img src="/2025/09/13/%E7%9B%91%E6%8E%A7%E9%A9%B1%E5%8A%A8%E7%9A%84%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5%EF%BC%9A%E5%88%A9%E7%94%A8PMQL%E5%AE%9A%E4%BD%8D%E9%9B%86%E7%BE%A4%E9%97%AE%E9%A2%98/grafana.png"></p>
+<p>发现流量数据还算正常，排除集群内大流量的问题</p>
+<h3 id="外部流量排查"><a href="#外部流量排查" class="headerlink" title="外部流量排查"></a>外部流量排查</h3><p>集群使用kube-ovn CNI，外部公网流量分为集中式网关和分布式网关两种方式。</p>
+<ul>
+<li>集中式网关用的是 vpc-nat-gateway + multus-cni ，它会把节点上面的网卡加入到对应pod上面，所以可以通过查看对应节点的网卡流量情况得出该网关的流量情况。</li>
+</ul>
+<p><img src="/2025/09/13/%E7%9B%91%E6%8E%A7%E9%A9%B1%E5%8A%A8%E7%9A%84%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5%EF%BC%9A%E5%88%A9%E7%94%A8PMQL%E5%AE%9A%E4%BD%8D%E9%9B%86%E7%BE%A4%E9%97%AE%E9%A2%98/kube-ovn-1.png"></p>
+<ul>
+<li>分布式网关是pod访问公网时，流量会经过pod所在节点的网卡，走节点自身的网络。</li>
+</ul>
+<p><img src="/2025/09/13/%E7%9B%91%E6%8E%A7%E9%A9%B1%E5%8A%A8%E7%9A%84%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5%EF%BC%9A%E5%88%A9%E7%94%A8PMQL%E5%AE%9A%E4%BD%8D%E9%9B%86%E7%BE%A4%E9%97%AE%E9%A2%98/kube-ovn-2.png"></p>
+<p>因为集群里面的节点都安装了node-exporter，所以可以使用pmql来定位哪个节点的网卡出流量最多</p>
+<pre class="language-plain" data-language="plain"><code class="language-plain"># 3小时内，平均发送数据(MB)top5的网卡信息
+topk(5, sum by (instance,device) (rate(node_network_transmit_bytes_total&#123;device!~"lo|veth.*|docker.*|br.*"&#125;[3h]))) / 1024 / 1024</code></pre>
+
+<p><img src="/2025/09/13/%E7%9B%91%E6%8E%A7%E9%A9%B1%E5%8A%A8%E7%9A%84%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5%EF%BC%9A%E5%88%A9%E7%94%A8PMQL%E5%AE%9A%E4%BD%8D%E9%9B%86%E7%BE%A4%E9%97%AE%E9%A2%98/pmql.png"></p>
+<p>结果发现有一张网卡的流量十分高，定位到是一个集中式网关的节点，上面的网卡被用来做网关的公网出口网卡了，所以可以确定大流量的应用就在这个网关后面。</p>
+<p>在集群中使用集中式网关的都会给它分配一个EIP资源，同时集群里面也有对应的exporter来收集EIP的流量使用情况，所以可以继续使用对应的pmql来定位对应的EIP资源。</p>
+<pre class="language-plain" data-language="plain"><code class="language-plain"># 内部查看eip流量的pmql，仅供参考
+topk(5, sum by (eipName) (rate(xxx_eip_network_traffic_egress_bytes&#123;xxx&#125;[3h]))) / 1024 / 1024</code></pre>
+
+<p>在成功定位到有问题的EIP后，后台马上找到了对应的资源，是一台裸金属。</p>
+<p>这台裸金属在1个月前因初始配置不当导致未授权访问，并被修改了密码，在修改密码后就可以登录回去了。但是因为上面有一些虚拟机应用在跑，所以没有选择重装系统，而是重装了部分核心软件，并检查和清除相关入侵痕迹。所以可以确定是裸金属被黑了导致出流量激增，不是因为相关业务。</p>
+<h4 id="处理"><a href="#处理" class="headerlink" title="处理"></a>处理</h4><p>这里处理分为两步：</p>
+<ul>
+<li>对应的同学备份虚拟机和系统上面的重要数据，确保系统可以重装</li>
+<li>对裸金属进行临时处理，并且看一下是否可以找到对应的问题</li>
+</ul>
+<h3 id="裸金属处理"><a href="#裸金属处理" class="headerlink" title="裸金属处理"></a>裸金属处理</h3><h4 id="流量查看"><a href="#流量查看" class="headerlink" title="流量查看"></a>流量查看</h4><p>通过<code>iftop</code>查看实时流量，发现随机向多个IP发送大流量数据</p>
+<p><img src="/2025/09/13/%E7%9B%91%E6%8E%A7%E9%A9%B1%E5%8A%A8%E7%9A%84%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5%EF%BC%9A%E5%88%A9%E7%94%A8PMQL%E5%AE%9A%E4%BD%8D%E9%9B%86%E7%BE%A4%E9%97%AE%E9%A2%98/iftop.png"></p>
+<p>使用tcpdump进行抓包查看相关数据，发现流量会访问目标ip的80或443端口，并且会一直发送SYN包</p>
+<p><img src="/2025/09/13/%E7%9B%91%E6%8E%A7%E9%A9%B1%E5%8A%A8%E7%9A%84%E6%95%85%E9%9A%9C%E6%8E%92%E6%9F%A5%EF%BC%9A%E5%88%A9%E7%94%A8PMQL%E5%AE%9A%E4%BD%8D%E9%9B%86%E7%BE%A4%E9%97%AE%E9%A2%98/tcpdump.png"></p>
+<p>综上所述，这台服务器是被人拿来做肉鸡，对公网服务发起SYN洪水攻击</p>
+<h4 id="临时处理"><a href="#临时处理" class="headerlink" title="临时处理"></a>临时处理</h4><p>为避免进一步影响业务，临时用tc给系统限速，确保不要再发送大流量把系统公网带宽占满。要求：业务ip流量不限制（ssh登录ip、虚拟机的业务流量），只限制异常流量（所有ip的80、443端口出流量）。</p>
+<pre class="language-plain" data-language="plain"><code class="language-plain"># 清空对应网卡旧规则
+# tc qdisc del dev enp1s0 root
+
+# 添加qdisc，并且默认归类为 1:20 的规则（没有匹配到规则的流量走 1:20 ）
+# tc qdisc add dev enp1s0  root handle 1: htb default 20
+
+# 添加class规则
+# tc class add dev enp1s0  parent 1: classid 1:1   htb rate 20Mbit ceil 20Mbit burst 15k
+# 异常流量限速规则
+# tc class add dev enp1s0 parent 1:1 classid 1:10 htb rate 1Mbit ceil 1Mbit burst 1k 
+# 其它流量规则
+# tc class add dev enp1s0 parent 1:1 classid 1:20 htb rate 20Mbit ceil 20Mbit burst 15k
+
+# 为了避免一个会话永占带宽,添加随即公平队列sfq
+# tc qdisc add dev enp1s0  parent 1:10 handle 10: sfq perturb 10 
+# tc qdisc add dev enp1s0  parent 1:20 handle 20: sfq perturb 10  
+
+# 添加filter来应用class规则，这里是目标端口为80、443的都到 1:10的class 中
+# tc filter add dev enp1s0  protocol ip parent 1:0 prio 3 u32   match ip dport 443 0xffff   flowid 1:10 
+# tc filter add dev enp1s0  protocol ip parent 1:0 prio 2 u32   match ip dport 80 0xffff   flowid 1:10
+
+# 规则检验
+# tc qdisc show dev enp1s0
+# tc class show dev enp1s0
+# tc filter show dev enp1s0 
+
+# 数据统计 查看有多少流量命中那些规则
+# tc -s class show dev enp1s0
+# tc -s filter show dev enp1s0 </code></pre>
+
+<p>限速后，公网流量恢复正常，集群节点状态恢复。</p>
+<h4 id="排查-1"><a href="#排查-1" class="headerlink" title="排查"></a>排查</h4><p>直接说结论，还没有排查出来问题系统就被重装了，<del>所以怀疑是有问题的进程被替换成正常的进程程序了</del>。😥</p>
+<p>这里说一下排查思路和过程：</p>
+<ul>
+<li>重新安装基础命令工具（ps、ss、lsof等）</li>
+<li>使用 iftop 持续监控流量</li>
+<li>使用 ss、ps、lsof 定位可疑进程：<ul>
+<li>未发现可疑进程与攻击IP的连接</li>
+<li>发现几个异常公网ip的VNC-console连接，禁止相关IP访问后重启libvirt服务，问题仍存在</li>
+</ul>
+</li>
+<li>检查系统日志、登录日志、操作日志、安全日志及内核日志</li>
+<li>检查iptables配置，确认无异常丢弃ACK&#x2F;FIN包规则</li>
+<li>检查定时任务、启动脚本、可疑用户及登录信息</li>
+<li>检查虚拟机内部流量，确认正常</li>
+<li>使用Rootkit工具进行全面检查</li>
+</ul>
+<p>值得注意的是，上述排查后发现，自上次修改密码后，系统无任何可疑IP登录记录，怀疑攻击者在初次入侵时植入了持久化后门或恶意程序。</p>
+<p>最后在其他同学备份好相关文件后，对系统进行了重装。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>在经历了上述事件后，还是要加强以下两点：</p>
+<ul>
+<li>系统暴露在公网环境下，最好是不要用弱密码（用密钥或者强密码）并且要开启防火墙，限制可以登录的ip白名单。</li>
+<li>要精细化监控告警，像上述的问题都是通过<font style="color:rgb(44, 44, 54);">PMQL</font>来定位的，这样完全可以编写对应的告警规则，在出现相关问题的时候，第一时间可以定位到对应的资源，加快故障恢复速度。</li>
+</ul>
+
+        
+        <br />
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+        <div id="lv-container"></div>
+        <div class="giscus"></div>
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+        <li>
+            <a target="_blank"  href="https://github.com/kehaha-5">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-github"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+    </ul>
+    
+    <p>
+        <span id="busuanzi_container_site_pv">
+            <span id="busuanzi_value_site_pv"></span>PV
+        </span>
+        <span id="busuanzi_container_site_uv">
+            <span id="busuanzi_value_site_uv"></span>UV
+        </span>
+        Created By <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>  Theme <a target="_blank" rel="noopener" href="https://github.com/aircloud/hexo-theme-aircloud">AirCloud</a></p>
+</footer>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = "search.json"
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="/js/index.js"></script>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+    <script src="https://giscus.app/client.js"
+        data-repo="kehaha-5/kehaha-5.github.io"
+        data-repo-id="R_kgDOLah6DA"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOLah6DM4CvJGE"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+
+
+</html>
+
+<!-- fancybox support -->
+
+    <!-- for theme: default is false -->
+    <!-- for page: default is true -->
+    
+<script src="/js/fancybox/jquery.fancybox.min.js" key="fancybox_js"></script>
+<script src="/js/fancybox/wrapImage.js" key="wrap_image_js"></script>
+
+        
+<link rel="stylesheet" href="/js/fancybox/jquery.fancybox.min.css" key="fancybox_css">
+
+            
