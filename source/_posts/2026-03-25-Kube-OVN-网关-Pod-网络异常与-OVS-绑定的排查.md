@@ -12,7 +12,7 @@ tags: [k8s,kube-ovn,排障]
 
 1. 项目使用了multus cni来把提供公网服务的网卡添加到网关pod，先判断该网卡是否可以正常ping通网络
 2. 查看对应的iptable规则，确认子网 IP 到指定公网 IP 的 NAT/SNAT 映射已正确下发
-3. 排查网关pod是否可通对应的子网ip（对应的子网ip为10.0.1.11）
+3. 排查网关pod是否可通对应的子网ip（所影响的业务pod的ip为10.0.1.11）
 
 ```bash
 kubectl exec -it -n kube-system vpc-nat-gw-v-gw-xxxx-0  -- bash
