@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang=zh-CN>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="website">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+        Kube-OVN 网关 Pod 网络异常与 OVS 绑定的排查 - kehaha-5
+        
+    </title>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/aircloud.css">
+
+    
+<link rel="stylesheet" href="/css/gitment.css">
+
+    <!--<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">-->
+    <link href="//at.alicdn.com/t/font_620856_28hi1hpxx24.css" rel="stylesheet" type="text/css">
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    
+
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+
+<div class="site-nav-toggle" id="site-nav-toggle">
+    <button>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+        <span class="btn-bar"></span>
+    </button>
+</div>
+
+<div class="index-about">
+    <i> Just record it ! </i>
+</div>
+
+<div class="index-container">
+    
+    <div class="index-left">
+        
+<div class="nav" id="nav">
+    <div class="avatar-name">
+        <div class="avatar radius">
+            <img src="/img/avatar.jpg" />
+        </div>
+        <div class="name">
+            <i>kehaha-5</i>
+        </div>
+    </div>
+    <div class="contents" id="nav-content">
+        <ul>
+            <li >
+                <a href="/">
+                    <i class="iconfont icon-shouye1"></i>
+                    <span>主页</span>
+                </a>
+            </li>
+            <li >
+                <a href="/tags">
+                    <i class="iconfont icon-biaoqian1"></i>
+                    <span>标签</span>
+                </a>
+            </li>
+            <li >
+                <a href="/archives">
+                    <i class="iconfont icon-guidang2"></i>
+                    <span>存档</span>
+                </a>
+            </li>
+            <li >
+                <a href="/about/">
+                    <i class="iconfont icon-guanyu2"></i>
+                    <span>关于</span>
+                </a>
+            </li>
+            
+            <li>
+                <a id="search">
+                    <i class="iconfont icon-sousuo1"></i>
+                    <span>搜索</span>
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+    
+        <div id="toc" class="toc-article">
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%83%8C%E6%99%AF"><span class="toc-text">背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BD%91%E5%85%B3pod%E6%9C%AC%E8%BA%AB%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5"><span class="toc-text">网关pod本身问题排查</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#OVN%E5%B1%82%E6%8E%92%E6%9F%A5"><span class="toc-text">OVN层排查</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%89%8B%E5%8A%A8%E8%A1%A5%E9%BD%90%E5%8F%82%E6%95%B0%E6%89%A7%E8%A1%8C-ovs-appctl-ofproto-trace"><span class="toc-text">手动补齐参数执行 ovs-appctl ofproto&#x2F;trace</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9A%E4%BD%8D%E6%A0%B9%E6%9C%AC%E9%97%AE%E9%A2%98"><span class="toc-text">定位根本问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3"><span class="toc-text">解决</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%8E%E7%BB%AD"><span class="toc-text">后续</span></a></li></ol>
+</div>
+    
+</div>
+
+
+<div class="search-field" id="search-field">
+    <div class="search-bg" id="search-bg"></div>
+    <div class="search-container">
+        <div class="search-input">
+            <span id="esc-search"> <i class="icon-fanhui iconfont"></i></span>
+            <input id="search-input"/>
+            <span id="begin-search">搜索</span>
+        </div>
+        <div class="search-result-container" id="search-result-container">
+
+        </div>
+    </div>
+</div>
+
+        <div class="index-about-mobile">
+            <i> Just record it ! </i>
+        </div>
+    </div>
+    
+    <div class="index-middle">
+        <!-- Main Content -->
+        
+
+
+<div class="post-container">
+    <div class="post-title">
+        Kube-OVN 网关 Pod 网络异常与 OVS 绑定的排查
+    </div>
+
+    <div class="post-meta">
+        <span class="attr">发布于：<span>2026-03-25 23:40:57</span></span>
+        
+        <span class="attr">标签：/
+        
+        <a class="tag" href="/tags/#排障" title="排障">排障</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#k8s" title="k8s">k8s</a>
+        <span>/</span>
+        
+        <a class="tag" href="/tags/#kube-ovn" title="kube-ovn">kube-ovn</a>
+        <span>/</span>
+        
+        
+        </span>
+        <span class="attr">访问：<span id="busuanzi_value_page_pv"></span>
+</span>
+</span>
+    </div>
+    <div class="post-content no-indent">
+        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><blockquote>
+<p> <font style="color:rgb(29, 29, 31);">在使用 Kube-OVN 部署集中式 VPC NAT 网关时，业务侧反馈无法正常通过该网关访问公网服务。</font></p>
+</blockquote>
+<h2 id="网关pod本身问题排查"><a href="#网关pod本身问题排查" class="headerlink" title="网关pod本身问题排查"></a>网关pod本身问题排查</h2><p>进入对应网关的pod，查看以下信息</p>
+<ol>
+<li>项目使用了multus cni来把提供公网服务的网卡添加到网关pod，先判断该网卡是否可以正常ping通网络</li>
+<li>查看对应的iptable规则，确认子网 IP 到指定公网 IP 的 NAT&#x2F;SNAT 映射已正确下发</li>
+<li>排查网关pod是否可通对应的子网ip</li>
+</ol>
+<pre class="language-bash" data-language="bash"><code class="language-bash">kubectl <span class="token builtin class-name">exec</span> <span class="token parameter variable">-it</span> <span class="token parameter variable">-n</span> kube-system vpc-nat-gw-v-gw-xxxx-0  -- <span class="token function">bash</span>
+<span class="token comment"># 判断公网是否正常</span>
+<span class="token function">ping</span> <span class="token number">119.29</span>.29.29   <span class="token parameter variable">-c</span> <span class="token number">3</span>
+ PING <span class="token number">119.29</span>.29.29 <span class="token punctuation">(</span><span class="token number">119.29</span>.29.29<span class="token punctuation">)</span> <span class="token number">56</span><span class="token punctuation">(</span><span class="token number">84</span><span class="token punctuation">)</span> bytes of data.
+ <span class="token number">64</span> bytes from <span class="token number">119.29</span>.29.29: <span class="token assign-left variable">icmp_seq</span><span class="token operator">=</span><span class="token number">1</span> <span class="token assign-left variable">ttl</span><span class="token operator">=</span><span class="token number">51</span> <span class="token assign-left variable">time</span><span class="token operator">=</span><span class="token number">6.52</span> ms
+ <span class="token number">64</span> bytes from <span class="token number">119.29</span>.29.29: <span class="token assign-left variable">icmp_seq</span><span class="token operator">=</span><span class="token number">2</span> <span class="token assign-left variable">ttl</span><span class="token operator">=</span><span class="token number">51</span> <span class="token assign-left variable">time</span><span class="token operator">=</span><span class="token number">6.40</span> ms
+ <span class="token number">64</span> bytes from <span class="token number">119.29</span>.29.29: <span class="token assign-left variable">icmp_seq</span><span class="token operator">=</span><span class="token number">3</span> <span class="token assign-left variable">ttl</span><span class="token operator">=</span><span class="token number">51</span> <span class="token assign-left variable">time</span><span class="token operator">=</span><span class="token number">13.0</span> ms
+
+ --- <span class="token number">119.29</span>.29.29 <span class="token function">ping</span> statistics ---
+ <span class="token number">3</span> packets transmitted, <span class="token number">3</span> received, <span class="token number">0</span>% packet loss, <span class="token function">time</span> 2003ms
+ rtt min/avg/max/mdev <span class="token operator">=</span> <span class="token number">6.398</span>/8.622/12.950/3.060 ms
+<span class="token comment"># 查看iptable规则</span>
+iptables-legacy-save 
+<span class="token comment"># Generated by iptables-save v1.8.11 on xxx 2026</span>
+<span class="token punctuation">..</span>.
+<span class="token parameter variable">-A</span> EXCLUSIVE_DNAT <span class="token parameter variable">-d</span> xx.xx.xx.140/32 <span class="token parameter variable">-j</span> DNAT --to-destination <span class="token number">10.0</span>.1.11
+<span class="token parameter variable">-A</span> EXCLUSIVE_SNAT <span class="token parameter variable">-s</span> <span class="token number">10.0</span>.1.0/24 <span class="token parameter variable">-d</span> <span class="token number">10.0</span>.1.11/32 <span class="token parameter variable">-m</span> conntrack <span class="token parameter variable">--ctstate</span> DNAT <span class="token parameter variable">-j</span> SNAT --to-source <span class="token number">10.0</span>.1.254
+<span class="token parameter variable">-A</span> EXCLUSIVE_SNAT <span class="token parameter variable">-s</span> <span class="token number">10.0</span>.1.11/32 <span class="token parameter variable">-j</span> SNAT --to-source xx.xx.xx.140
+<span class="token punctuation">..</span><span class="token punctuation">..</span>
+<span class="token comment"># ping 对应nat规则的ip</span>
+<span class="token function">ping</span> <span class="token number">10.0</span>.1.11 <span class="token parameter variable">-c</span> <span class="token number">3</span>
+PING <span class="token number">10.0</span>.1.11 <span class="token punctuation">(</span><span class="token number">10.0</span>.1.11<span class="token punctuation">)</span> <span class="token number">56</span><span class="token punctuation">(</span><span class="token number">84</span><span class="token punctuation">)</span> bytes of data.
+From <span class="token number">10.0</span>.1.254 <span class="token assign-left variable">icmp_seq</span><span class="token operator">=</span><span class="token number">1</span> Destination Host Unreachable
+From <span class="token number">10.0</span>.1.254 <span class="token assign-left variable">icmp_seq</span><span class="token operator">=</span><span class="token number">2</span> Destination Host Unreachable
+From <span class="token number">10.0</span>.1.254 <span class="token assign-left variable">icmp_seq</span><span class="token operator">=</span><span class="token number">3</span> Destination Host Unreachable
+
+--- <span class="token number">10.0</span>.1.11 <span class="token function">ping</span> statistics ---
+<span class="token number">3</span> packets transmitted, <span class="token number">0</span> received, +3 errors, <span class="token number">100</span>% packet loss, <span class="token function">time</span> 2044ms</code></pre>
+
+<p>上述排查发现问题并非出在公网侧或 NAT 规则本身，而是网关 Pod 与 OVN 内部网络之间的通信中断</p>
+<h2 id="OVN层排查"><a href="#OVN层排查" class="headerlink" title="OVN层排查"></a>OVN层排查</h2><p><a target="_blank" rel="noopener" href="https://kubeovn.github.io/docs/v1.13.x/ops/kubectl-ko/#trace-arguments">Kubectl 插件使用</a></p>
+<p> 借助 Kube-OVN 提供的 <code>ko</code> 插件追踪报文在 OVN 逻辑数据面的走向</p>
+<p>在使用该命令前，确保对应的pod的安全组是开放icmp协议</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 我们后面的子网IP为运行于 Underlay 网络下的虚拟机，需要额外添加mac地址</span>
+kubectl ko trace kube-system/vpc-nat-gw-v-gw-xxx-0  <span class="token number">10.0</span>.1.11 <span class="token number">56</span>:7f:db:12:9d:3f  icmp 
++ kubectl <span class="token builtin class-name">exec</span> ovn-central-xxx-xxx <span class="token parameter variable">-n</span> kube-system <span class="token parameter variable">-c</span> ovn-central -- ovn-trace subnet-xxx <span class="token string">'inport == "vpc-nat-gw-v-gw-xxx-0.kube-system" &amp;&amp; ip.ttl == 64 &amp;&amp; icmp &amp;&amp; eth.src == ce:6e:be:fd:44:61 &amp;&amp; ip4.src == 10.0.1.254 &amp;&amp; eth.dst == 56:7f:db:12:9d:3f &amp;&amp; ip4.dst == 10.0.1.11 &amp;&amp; ct.new'</span>
+<span class="token punctuation">..</span>.
+ingress<span class="token punctuation">(</span>dp<span class="token operator">=</span><span class="token string">"subnet-xxx"</span>, <span class="token assign-left variable">inport</span><span class="token operator">=</span><span class="token string">"vpc-nat-gw-v-gw-xxx-0.kube-system"</span><span class="token punctuation">)</span>
+----------------------------------------------------------------------------------------------
+<span class="token punctuation">..</span>.
+ct_next<span class="token punctuation">(</span>ct_state<span class="token operator">=</span>est<span class="token operator">|</span>trk /* default <span class="token punctuation">(</span>use <span class="token parameter variable">--ct</span> to customize<span class="token punctuation">)</span> */<span class="token punctuation">)</span>
+---------------------------------------------------------------
+<span class="token punctuation">..</span>.
+egress<span class="token punctuation">(</span>dp<span class="token operator">=</span><span class="token string">"subnet-xxxxx"</span>, <span class="token assign-left variable">inport</span><span class="token operator">=</span><span class="token string">"vpc-nat-gw-v-gw-xxxx-0.kube-system"</span>, <span class="token assign-left variable">outport</span><span class="token operator">=</span><span class="token string">"vi-mpzqrret1he80ahpmeyc.xxx"</span><span class="token punctuation">)</span>
+----------------------------------------------------------------------------------------------------------------------------------------
+<span class="token punctuation">..</span>.
+ct_next<span class="token punctuation">(</span>ct_state<span class="token operator">=</span>est<span class="token operator">|</span>trk /* default <span class="token punctuation">(</span>use <span class="token parameter variable">--ct</span> to customize<span class="token punctuation">)</span> */<span class="token punctuation">)</span>
+---------------------------------------------------------------
+<span class="token punctuation">..</span><span class="token punctuation">..</span>
+/* output to <span class="token string">"vi-mpzqrret1he80ahpmeyc.xxx"</span>, <span class="token builtin class-name">type</span> <span class="token string">""</span> */
+--------
+<span class="token comment">#上面的日志中显示了  output to "vi-mpzqrret1he80ahpmeyc.xxx" 说明ovn层流量是没有问题的</span>
+
+Start OVS Tracing
+
++ kubectl <span class="token builtin class-name">exec</span> ovs-ovn-xxx <span class="token parameter variable">-c</span> openvswitch <span class="token parameter variable">-n</span> kube-system -- ovs-appctl ofproto/trace br-int <span class="token assign-left variable">in_port</span><span class="token operator">=</span>,icmp,nw_ttl<span class="token operator">=</span><span class="token number">64</span>,nw_src<span class="token operator">=</span><span class="token number">10.0</span>.1.254,nw_dst<span class="token operator">=</span><span class="token number">10.0</span>.1.11,dl_src<span class="token operator">=</span>ce:6e:be:fd:44:61,dl_dst<span class="token operator">=</span><span class="token number">56</span>:7f:db:12:9d:3f
+Bad openflow flow syntax: <span class="token assign-left variable">in_port</span><span class="token operator">=</span>,icmp,nw_ttl<span class="token operator">=</span><span class="token number">64</span>,nw_src<span class="token operator">=</span><span class="token number">10.0</span>.1.254,nw_dst<span class="token operator">=</span><span class="token number">10.0</span>.1.11,dl_src<span class="token operator">=</span>ce:6e:be:fd:44:61,dl_dst<span class="token operator">=</span><span class="token number">56</span>:7f:db:12:9d:3f: bad value <span class="token keyword">for</span> in_port <span class="token punctuation">(</span>: invalid or unknown port <span class="token keyword">for</span> in_port<span class="token punctuation">)</span>
+ovs-appctl: ovs-vswitchd: server returned an error
+<span class="token builtin class-name">command</span> terminated with <span class="token builtin class-name">exit</span> code <span class="token number">2</span></code></pre>
+
+<p>在执行ovs层流量模拟时，发现参数错误导致的无法继续执行，缺少了in_port参数</p>
+<p>正常来说 kubectl ko trace 命令执行应该都是没有问题，哪怕流量被安全组之前类拦截了，所以推断问题可能在ovs上面</p>
+<h4 id="手动补齐参数执行-ovs-appctl-ofproto-trace"><a href="#手动补齐参数执行-ovs-appctl-ofproto-trace" class="headerlink" title="手动补齐参数执行 ovs-appctl ofproto&#x2F;trace"></a>手动补齐参数执行 <font style="color:rgb(20, 20, 19);">ovs-appctl ofproto&#x2F;trace</font></h4><p>获取in_port参数</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 到对应网关pod节点上面的ovs中执行ovs-vsctl命令获取相关接口信息</span>
+kubectl <span class="token builtin class-name">exec</span> ovs-ovn-xx   <span class="token parameter variable">-n</span> kube-system --   ovs-vsctl <span class="token parameter variable">--columns</span><span class="token operator">=</span>name,ofport,external_ids <span class="token function">find</span> Interface external_ids:pod_name<span class="token operator">=</span>vpc-nat-gw-b-gw-xxx-0 
+Defaulted container <span class="token string">"openvswitch"</span> out of: openvswitch, hostpath-init <span class="token punctuation">(</span>init<span class="token punctuation">)</span>
+name                <span class="token builtin class-name">:</span> xxxx_h
+ofport              <span class="token builtin class-name">:</span> <span class="token number">144</span>
+external_ids        <span class="token builtin class-name">:</span> <span class="token punctuation">&#123;</span>ip<span class="token operator">=</span><span class="token string">"10.0.1.254"</span>, ovn-installed<span class="token operator">=</span><span class="token string">"true"</span>, ovn-installed-ts<span class="token operator">=</span><span class="token string">"1774409185160"</span>, <span class="token assign-left variable">pod_name</span><span class="token operator">=</span>vpc-nat-gw-b-gw-xxx-0, <span class="token assign-left variable">pod_namespace</span><span class="token operator">=</span>kube-system, <span class="token assign-left variable">pod_netns</span><span class="token operator">=</span><span class="token string">"/var/run/netns/cni-xxxxxx-xxx-xxx-xxx-xxx"</span>, <span class="token assign-left variable">vendor</span><span class="token operator">=</span>kube-ovn<span class="token punctuation">&#125;</span></code></pre>
+
+<p>获得到的ofport为144，手动补齐并执行</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">kubectl <span class="token builtin class-name">exec</span> ovs-ovn-xxx <span class="token parameter variable">-c</span> openvswitch <span class="token parameter variable">-n</span> kube-system -- <span class="token punctuation">\</span>
+  ovs-appctl ofproto/trace br-int <span class="token punctuation">\</span>
+  <span class="token string">'in_port=144,icmp,nw_ttl=64,nw_src=10.0.1.254,nw_dst=10.0.1.11,dl_src=ce:6e:be:fd:44:61,dl_dst=56:7f:db:12:9d:3f'</span> 
+<span class="token punctuation">..</span><span class="token punctuation">..</span>
+bridge<span class="token punctuation">(</span><span class="token string">"br-int"</span><span class="token punctuation">)</span>
+----------------
+ <span class="token number">0</span>. priority <span class="token number">0</span>
+    drop
+Final flow: unchanged
+Megaflow: <span class="token assign-left variable">recirc_id</span><span class="token operator">=</span><span class="token number">0</span>,eth,ip,in_port<span class="token operator">=</span><span class="token number">144</span>,nw_frag<span class="token operator">=</span>no
+Datapath actions: drop</code></pre>
+
+<p>发现ovs中没有对应的规则，数据包被丢弃，从而导致网关pod无法ping通子网的IP，排查焦点转向 OVS 端口与 OVN 的绑定状态。</p>
+<h2 id="定位根本问题"><a href="#定位根本问题" class="headerlink" title="定位根本问题"></a>定位根本问题</h2><p>获取对应ovs接口信息</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 在对应pod网关的节点上面执行相关命令</span>
+kubectl <span class="token builtin class-name">exec</span> ovs-ovn-xxx <span class="token parameter variable">-n</span> kube-system -- <span class="token punctuation">\</span>
+  ovs-vsctl get Interface fbe82fdce1a1_h external_id
+<span class="token punctuation">..</span>.
+external_ids        <span class="token builtin class-name">:</span> <span class="token punctuation">&#123;</span>ip<span class="token operator">=</span><span class="token string">"10.0.1.254"</span>, ovn-installed<span class="token operator">=</span><span class="token string">"true"</span>, ovn-installed-ts<span class="token operator">=</span><span class="token string">"1774409185160"</span>, <span class="token assign-left variable">pod_name</span><span class="token operator">=</span>vpc-nat-gw-b-gw-xxx-0, <span class="token assign-left variable">pod_namespace</span><span class="token operator">=</span>kube-system, <span class="token assign-left variable">pod_netns</span><span class="token operator">=</span><span class="token string">"/var/run/netns/cni-f0f3f7b3-b13d-0d26-4a53-fcb05e46b346"</span>, <span class="token assign-left variable">vendor</span><span class="token operator">=</span>kube-ovn<span class="token punctuation">&#125;</span></code></pre>
+
+<p>发现在返回的 <code>external_ids</code>里面缺失了 <code>iface-id</code>字段，这个字段作用是把对应的ovs的接口跟ovn的端口进行绑定，具体可以查看我另一篇文章 <a href="https://kehaha-5.github.io/2026/01/04/%E8%99%9A%E6%8B%9F%E5%8C%96%E5%88%9D%E6%8E%A2-libvirt-OVN%E5%AE%9E%E8%B7%B5/">虚拟化初探–libvirt+OVN实践</a></p>
+<p>查看对应的ovn中对应Port状态</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># ovn-central 中可以执行 ovn-nbclt、ovn-sbctl 等ovn命令</span>
+kubectl <span class="token builtin class-name">exec</span> <span class="token parameter variable">-n</span> kube-system ovn-central-xxx-xxx  <span class="token parameter variable">-c</span> ovn-central --   ovn-sbctl <span class="token function">find</span> Port_Binding <span class="token assign-left variable">logical_port</span><span class="token operator">=</span><span class="token string">"vpc-nat-gw-v-gw-xxxx-0.kube-system"</span> 
+<span class="token punctuation">..</span><span class="token punctuation">..</span>
+logical_port        <span class="token builtin class-name">:</span> vpc-nat-gw-v-gw-xxx-0.kube-system
+mac                 <span class="token builtin class-name">:</span> <span class="token punctuation">[</span><span class="token string">"ce:6e:be:fd:44:61 10.0.1.254"</span><span class="token punctuation">]</span>
+<span class="token punctuation">..</span><span class="token punctuation">..</span>
+up                  <span class="token builtin class-name">:</span> <span class="token boolean">false</span></code></pre>
+
+<p>发现up状态为false，就确定时因为ovs中的接口缺少了 <code>iface-id</code> 导致无法正常工作</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">kube-ovn-cni 新建网关 Pod 时未正确设置 iface-id
+         ↓
+ovn-controller 无法识别该 OVS 端口
+         ↓
+Port Binding up <span class="token operator">=</span> <span class="token boolean">false</span>
+         ↓
+OVS table <span class="token number">0</span> 未下发流表规则
+         ↓
+所有从网关 Pod 发出的流量在 table <span class="token number">0</span> 直接 drop
+         ↓
+网关 <span class="token function">ping</span> 不通子网 Pod → NAT 失效 → 公网无法访问</code></pre>
+
+<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><p>由于当前环境基于 Kube-OVN 集成架构，所以没有必要通过ovs-vsctl命令手动补齐<code>iface-id</code></p>
+<p>直接重启对应的网关的资源即可</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">kubectl rollout  restart statefulset <span class="token parameter variable">-n</span> kube-system vpc-nat-gw-v-gw-xxxx </code></pre>
+
+<p>重启后，CNI 会自动为 OVS 接口补全 <code>iface-id</code>，OVN <code>Port_Binding</code> 状态恢复为 <code>up: true</code>，底层流表正常下发，NAT 网关功能即刻恢复。</p>
+<h2 id="后续"><a href="#后续" class="headerlink" title="后续"></a>后续</h2><p>为避免同类问题在生产环境潜伏，结合 Kube-OVN 官方提供的 Metrics 体系，对相关问题添加监控告警</p>
+<p>根据 <a target="_blank" rel="noopener" href="https://kubeovn.github.io/docs/v1.11.x/reference/metrics/">Kube-OVN 官方文档</a> 提供的指标，添加了以下指标的监控</p>
+<ul>
+<li>指标名称：pinger_inconsistent_port_binding（类型：Gauge）</li>
+<li>指标含义：OVN-SB 中记录的 Port_Binding 数量与宿主机 OVS Interface 数量不一致的差值。</li>
+</ul>
+
+        
+        <br />
+        <div id="comment-container">
+        </div>
+        <div id="disqus_thread"></div>
+        <div id="lv-container"></div>
+        <div class="giscus"></div>
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+<footer class="footer">
+    <ul class="list-inline text-center">
+        
+        
+
+        
+
+        
+
+        
+        <li>
+            <a target="_blank"  href="https://github.com/kehaha-5">
+                            <span class="fa-stack fa-lg">
+                                <i class="iconfont icon-github"></i>
+                            </span>
+            </a>
+        </li>
+        
+
+        
+
+    </ul>
+    
+    <p>
+        <span id="busuanzi_container_site_pv">
+            <span id="busuanzi_value_site_pv"></span>PV
+        </span>
+        <span id="busuanzi_container_site_uv">
+            <span id="busuanzi_value_site_uv"></span>UV
+        </span>
+        Created By <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>  Theme <a target="_blank" rel="noopener" href="https://github.com/aircloud/hexo-theme-aircloud">AirCloud</a></p>
+</footer>
+
+
+
+
+</body>
+
+<script>
+    // We expose some of the variables needed by the front end
+    window.hexo_search_path = "search.json"
+    window.hexo_root = "/"
+    window.isPost = true
+</script>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+
+<script src="/js/index.js"></script>
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+    <script src="https://giscus.app/client.js"
+        data-repo="kehaha-5/kehaha-5.github.io"
+        data-repo-id="R_kgDOLah6DA"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOLah6DM4CvJGE"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async>
+</script>
+
+
+
+
+</html>
+
+<!-- fancybox support -->
+
+    <!-- for theme: default is false -->
+    <!-- for page: default is true -->
+    
+<script src="/js/fancybox/jquery.fancybox.min.js" key="fancybox_js"></script>
+<script src="/js/fancybox/wrapImage.js" key="wrap_image_js"></script>
+
+        
+<link rel="stylesheet" href="/js/fancybox/jquery.fancybox.min.css" key="fancybox_css">
+
+            
